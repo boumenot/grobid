@@ -58,7 +58,7 @@ public class FeatureFactory {
         add("November");
         add("December");
         add("Jan");
-        add("feb");
+        add("Feb");
         add("Mar");
         add("Apr");
         add("May");
