@@ -549,7 +549,7 @@ public class Segmentation extends AbstractParser {
             int endPage = -1;
             File file = new File(inputFile);
             if (!file.exists()) {
-                throw new GrobidResourceException("Cannot train for fulltext, becuase file '" +
+                throw new GrobidResourceException("Cannot train for fulltext, because file '" +
                         file.getAbsolutePath() + "' does not exists.");
             }
             String PDFFileName = file.getName();
