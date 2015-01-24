@@ -45,7 +45,7 @@ public class BookStructureParser extends AbstractParser {
                                             String pathFullText,
                                             String pathTEI,
                                             int id) throws Exception {
-        Document doc = new Document(inputFile, tmpPath.getAbsolutePath());
+        Document doc = new Document(inputFile);
         String pathXML = null;
         try {
             int startPage = -1;

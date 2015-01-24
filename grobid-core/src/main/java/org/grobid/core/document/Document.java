@@ -109,7 +109,7 @@ public class Document {
         top = new DocumentNode("top", "0");
     }
 
-    public Document(String pdfPath, String repositPath) {
+    public Document(String pdfPath) {
         path = pdfPath;
         top = new DocumentNode("top", "0");
     }

@@ -1,6 +1,5 @@
 package org.grobid.core.engines;
 
-import org.apache.commons.io.FileUtils;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.document.BasicStructureBuilder;
 import org.grobid.core.document.Document;
@@ -99,7 +98,7 @@ public class Segmentation extends AbstractParser {
             throw new GrobidResourceException("Cannot process pdf file, because temp path '" +
                     tmpPath.getAbsolutePath() + "' does not exists.");
         }
-        Document doc = new Document(input, tmpPath.getAbsolutePath());
+        Document doc = new Document(input);
         String pathXML = null;
         try {
             int startPage = -1;
@@ -542,7 +541,7 @@ public class Segmentation extends AbstractParser {
             throw new GrobidResourceException("Cannot process pdf file, because temp path '" +
                     tmpPath.getAbsolutePath() + "' does not exists.");
         }
-        Document doc = new Document(inputFile, tmpPath.getAbsolutePath());
+        Document doc = new Document(inputFile);
         String pathXML = null;
         try {
             int startPage = -1;
