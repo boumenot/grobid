@@ -98,7 +98,7 @@ public class Segmentation extends AbstractParser {
             throw new GrobidResourceException("Cannot process pdf file, because temp path '" +
                     tmpPath.getAbsolutePath() + "' does not exists.");
         }
-        Document doc = new Document(input);
+        Document doc = new Document();
         String pathXML = null;
         try {
             int startPage = -1;
@@ -541,7 +541,7 @@ public class Segmentation extends AbstractParser {
             throw new GrobidResourceException("Cannot process pdf file, because temp path '" +
                     tmpPath.getAbsolutePath() + "' does not exists.");
         }
-        Document doc = new Document(inputFile);
+        Document doc = new Document();
         String pathXML = null;
         try {
             int startPage = -1;

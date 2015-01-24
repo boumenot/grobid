@@ -79,7 +79,7 @@ public class HeaderParser extends AbstractParser {
 	 *  zone.  
 	 */ 
 	public Pair<String, Document> processing2(String input, boolean consolidate, BiblioItem resHeader, int startPage, int endPage) throws TimeoutException {
-        Document doc = new Document(input);
+        Document doc = new Document();
         String pathXML = null;
         try {
             // int startPage = 0;
@@ -778,7 +778,7 @@ public class HeaderParser extends AbstractParser {
 	 *            path to TEI
 	 */
 	public Document createTrainingHeader(String inputFile, String pathHeader, String pathTEI) {
-        Document doc = new Document(inputFile);
+        Document doc = new Document();
         String pathXML = null;
         try {
             int startPage = 0;

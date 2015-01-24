@@ -55,8 +55,6 @@ public class Document {
      */
     private static final int KILLED_DUE_2_TIMEOUT = 143;
 
-    private String path = null; // path where the pdf file is stored
-
     private String pathXML = null; // XML representation of the current PDF file
 
     private int beginBody = -1;
@@ -102,11 +100,6 @@ public class Document {
         top = new DocumentNode("top", "0");
     }
 
-    public Document(String pdfPath) {
-        path = pdfPath;
-        top = new DocumentNode("top", "0");
-    }
-
     public void setLanguage(String l) {
         lang = l;
     }
@@ -131,10 +124,6 @@ public class Document {
         if (blocks == null)
             blocks = new ArrayList<Block>();
         blocks.add(b);
-    }
-
-    public void setPdf(String pdfPath) {
-        path = pdfPath;
     }
 
     public void setPathXML(String pathXML) {
