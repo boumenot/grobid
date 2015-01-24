@@ -1209,7 +1209,7 @@ public class Engine implements Closeable {
      * @return conclusion.
      */
     public String getConclusion(Document doc) throws Exception {
-        return doc.getConclusion(this);
+        return doc.getConclusion();
     }
 
     /**

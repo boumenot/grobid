@@ -1491,7 +1491,7 @@ public class Document {
      * Get the conclusion, i.e. section before the references or the
      * acknowlegement
      */
-    public String getConclusion(Engine engine) throws Exception {
+    public String getConclusion() throws Exception {
         String conclusion = "";
         int add = 0;
         for (int i = beginReferences - 1; i > 0; i--) {
