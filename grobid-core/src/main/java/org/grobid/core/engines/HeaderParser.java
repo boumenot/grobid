@@ -68,7 +68,7 @@ public class HeaderParser extends AbstractParser {
 			String tei = processingHeaderSection(doc, consolidate, resHeader);
             return new ImmutablePair<String, Document>(tei, doc);
         } catch (TimeoutException timeoutExp) {
-            throw new TimeoutException("A time out occured");
+            throw new TimeoutException("A time out occurred");
         } catch (final Exception exp) {
             throw new GrobidException("An exception occurred while running Grobid on file " + tmpPath.getAbsolutePath() + ": " + exp);
         } 
@@ -105,7 +105,7 @@ public class HeaderParser extends AbstractParser {
             String tei = processingHeaderBlock(consolidate, doc, resHeader);
             return new ImmutablePair<String, Document>(tei, doc);
         } catch (TimeoutException timeoutExp) {
-            throw new TimeoutException("A time out occured");
+            throw new TimeoutException("A time out occurred");
         } catch (final Exception exp) {
             throw new GrobidException("An exception occurred while running Grobid on file " + input + ": " + exp);
         } finally {
