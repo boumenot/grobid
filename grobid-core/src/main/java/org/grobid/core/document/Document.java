@@ -202,10 +202,6 @@ public class Document {
         return tokenizationsReferences;
     }
 
-    public String getPDFPath() {
-        return path;
-    }
-
 	/*
      * private static String pdftoxml = GrobidProperties.getPdf2XMLPath()
 	 * .getAbsolutePath() +
@@ -1044,9 +1040,6 @@ public class Document {
         return header.toString();
     }
 
-    // default bins for relative position
-    private static final int nbBins = 12;
-
     // heuristics to get the header section... should be replaced be a global
     // CRF structure recognition
     // model
@@ -1324,19 +1317,6 @@ public class Document {
                     }
                 }
             }
-            i++;
-        }
-        return accumulated.toString();
-    }
-
-    /**
-     * Return all blocks.
-     */
-    public String getAllBlocks() {
-        StringBuilder accumulated = new StringBuilder();
-        int i = 0;
-        for (Block block : blocks) {
-            accumulated.append("@block ").append(i).append("\n").append(block.getText()).append("\n");
             i++;
         }
         return accumulated.toString();
