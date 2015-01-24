@@ -199,7 +199,7 @@ public class GrobidServiceProperties {
 
 		// prevent NullPointerException if GrobidProperties is not yet
 		// instantiated
-		if (GrobidProperties.getGrobidHomePath() == null) {
+		if (GrobidProperties.get_GROBID_HOME_PATH() == null) {
 			GrobidProperties.getInstance();
 		}
 		GrobidProperties.setContextExecutionServer(true);

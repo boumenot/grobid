@@ -130,7 +130,7 @@ public class PatentRefParser {
 		languageResources = new TreeMap<String, List<String>>();
 		for(String language : languages) {
 			// opening the corresponding language resource file
-			String path = GrobidProperties.getGrobidHomePath() + "/lexicon/patent/" + language + ".local";
+			String path = GrobidProperties.get_GROBID_HOME_PATH() + "/lexicon/patent/" + language + ".local";
 			File localFile = new File(path);
 			if (!localFile.exists()) {
 	            throw new GrobidResourceException(

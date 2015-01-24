@@ -321,7 +321,7 @@ public class GrobidPropertiesTest {
 	public void testgetGrobidHomePath() throws IOException {
 		assertEquals("The property has not the value expected", new File(
 				MockContext.GROBID_HOME_PATH).getCanonicalFile(),
-				GrobidProperties.getGrobidHomePath());
+				GrobidProperties.get_GROBID_HOME_PATH());
 	}
 
 	@Test

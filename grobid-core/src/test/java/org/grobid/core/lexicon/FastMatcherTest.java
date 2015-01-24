@@ -29,7 +29,7 @@ public class FastMatcherTest {
 	@Test
 	public void testFastMatcher() {
 		new FastMatcher(new File(
-				GrobidProperties.getGrobidHomePath()
+				GrobidProperties.get_GROBID_HOME_PATH()
 						+ "/lexicon/journals/abbrev_journals.txt"));
 	}
 	

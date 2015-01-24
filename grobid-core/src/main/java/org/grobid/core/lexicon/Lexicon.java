@@ -82,15 +82,15 @@ public class Lexicon {
         initDictionary();
         initNames();
 		// the loading of the journal and conference names is lazy
-        addDictionary(GrobidProperties.getGrobidHomePath() + "/lexicon/wordforms/english.wf", Language.EN);
-        addDictionary(GrobidProperties.getGrobidHomePath() + "/lexicon/wordforms/german.wf", Language.EN);
-        addLastNames(GrobidProperties.getGrobidHomePath() + "/lexicon/names/names.family");
-		addLastNames(GrobidProperties.getGrobidHomePath() + "/lexicon/names/lastname.5k");
-        addFirstNames(GrobidProperties.getGrobidHomePath() + "/lexicon/names/names.female");
-        addFirstNames(GrobidProperties.getGrobidHomePath() + "/lexicon/names/names.male");
-		addFirstNames(GrobidProperties.getGrobidHomePath() + "/lexicon/names/firstname.5k");
+        addDictionary(GrobidProperties.get_GROBID_HOME_PATH() + "/lexicon/wordforms/english.wf", Language.EN);
+        addDictionary(GrobidProperties.get_GROBID_HOME_PATH() + "/lexicon/wordforms/german.wf", Language.EN);
+        addLastNames(GrobidProperties.get_GROBID_HOME_PATH() + "/lexicon/names/names.family");
+		addLastNames(GrobidProperties.get_GROBID_HOME_PATH() + "/lexicon/names/lastname.5k");
+        addFirstNames(GrobidProperties.get_GROBID_HOME_PATH() + "/lexicon/names/names.female");
+        addFirstNames(GrobidProperties.get_GROBID_HOME_PATH() + "/lexicon/names/names.male");
+		addFirstNames(GrobidProperties.get_GROBID_HOME_PATH() + "/lexicon/names/firstname.5k");
         initCountryCodes();
-        addCountryCodes(GrobidProperties.getGrobidHomePath() +
+        addCountryCodes(GrobidProperties.get_GROBID_HOME_PATH() +
                 "/lexicon/countries/CountryCodes.xml");
     }
 
@@ -395,10 +395,10 @@ public class Lexicon {
     public void initJournals() {
         try {
             abbrevJournalPattern = new FastMatcher(new
-                    File(GrobidProperties.getGrobidHomePath() + "/lexicon/journals/abbrev_journals.txt"));
+                    File(GrobidProperties.get_GROBID_HOME_PATH() + "/lexicon/journals/abbrev_journals.txt"));
 
             journalPattern = new FastMatcher(new
-                    File(GrobidProperties.getGrobidHomePath() + "/lexicon/journals/journals.txt"));
+                    File(GrobidProperties.get_GROBID_HOME_PATH() + "/lexicon/journals/journals.txt"));
         } catch (PatternSyntaxException e) {
             throw new GrobidResourceException(
                     "Error when compiling lexicon regular expression for abbreviated journal names.", e);
@@ -409,7 +409,7 @@ public class Lexicon {
         // ArrayList<String> conferences = new ArrayList<String>();
         try {
             conferencePattern = new FastMatcher(new
-                    File(GrobidProperties.getGrobidHomePath() + "/lexicon/journals/proceedings.txt"));
+                    File(GrobidProperties.get_GROBID_HOME_PATH() + "/lexicon/journals/proceedings.txt"));
         } catch (PatternSyntaxException e) {
             throw new GrobidResourceException("Error when compiling lexicon regular expression for conference names.", e);
         }
@@ -418,7 +418,7 @@ public class Lexicon {
     public void initPublishers() {
         try {
             publisherPattern = new FastMatcher(new
-                    File(GrobidProperties.getGrobidHomePath() + "/lexicon/publishers/publishers.txt"));
+                    File(GrobidProperties.get_GROBID_HOME_PATH() + "/lexicon/publishers/publishers.txt"));
         } catch (PatternSyntaxException e) {
             throw new GrobidResourceException("Error when compiling lexicon regular expression for conference names.", e);
         }
@@ -427,7 +427,7 @@ public class Lexicon {
     public void initCities() {
         try {
             cityPattern = new FastMatcher(new
-                    File(GrobidProperties.getGrobidHomePath() + "/lexicon/places/cities15000.txt"));
+                    File(GrobidProperties.get_GROBID_HOME_PATH() + "/lexicon/places/cities15000.txt"));
         } catch (PatternSyntaxException e) {
             throw new GrobidResourceException("Error when compiling lexicon regular expression for cities.", e);
         }
@@ -436,12 +436,12 @@ public class Lexicon {
 	public void initOrganisations() {
         try {
             organisationPattern = new FastMatcher(new
-                    File(GrobidProperties.getGrobidHomePath() + "/lexicon/organisations/WikiOrganizations.lst"));
-			organisationPattern.loadTerms(new File(GrobidProperties.getGrobidHomePath() + 
+                    File(GrobidProperties.get_GROBID_HOME_PATH() + "/lexicon/organisations/WikiOrganizations.lst"));
+			organisationPattern.loadTerms(new File(GrobidProperties.get_GROBID_HOME_PATH() +
 				"/lexicon/organisations/government.government_agency"));
-			organisationPattern.loadTerms(new File(GrobidProperties.getGrobidHomePath() + 
+			organisationPattern.loadTerms(new File(GrobidProperties.get_GROBID_HOME_PATH() +
 				"/lexicon/organisations/known_corporations.lst"));
-			organisationPattern.loadTerms(new File(GrobidProperties.getGrobidHomePath() + 
+			organisationPattern.loadTerms(new File(GrobidProperties.get_GROBID_HOME_PATH() +
 				"/lexicon/organisations/venture_capital.venture_funded_company"));
         } catch (PatternSyntaxException e) {
             throw new GrobidResourceException("Error when compiling lexicon regular expression for organisations.", e);
@@ -456,7 +456,7 @@ public class Lexicon {
 	public void initOrgForms() {
         try {
 			orgFormPattern = new FastMatcher(new
-                    File(GrobidProperties.getGrobidHomePath() + "/lexicon/organisations/orgClosings.txt"));	
+                    File(GrobidProperties.get_GROBID_HOME_PATH() + "/lexicon/organisations/orgClosings.txt"));
         } catch (PatternSyntaxException e) {
             throw new GrobidResourceException("Error when compiling lexicon regular expression for organisations.", e);
         } catch (Exception e) {
@@ -467,7 +467,7 @@ public class Lexicon {
 	public void initLocations() {
         try {
             locationPattern = new FastMatcher(new
-                    File(GrobidProperties.getGrobidHomePath() + "/lexicon/places/location.txt"));
+                    File(GrobidProperties.get_GROBID_HOME_PATH() + "/lexicon/places/location.txt"));
         } catch (PatternSyntaxException e) {
             throw new GrobidResourceException("Error when compiling lexicon regular expression for locations.", e);
         }
@@ -476,7 +476,7 @@ public class Lexicon {
 	public void initPersonTitles() {
         try {
             personTitlePattern = new FastMatcher(new
-                    File(GrobidProperties.getGrobidHomePath() + "/lexicon/names/VincentNgPeopleTitles.txt"));
+                    File(GrobidProperties.get_GROBID_HOME_PATH() + "/lexicon/names/VincentNgPeopleTitles.txt"));
         } catch (PatternSyntaxException e) {
             throw new GrobidResourceException("Error when compiling lexicon regular expression for locations.", e);
         }

@@ -212,10 +212,6 @@ public class GrobidProperties {
 		return GROBID_HOME_PATH;
 	}
 
-	public static File getGrobidHomePath() {
-		return GROBID_HOME_PATH;
-	}
-
 	/**
 	 * Set the GROBID_HOME path.
 	 *
