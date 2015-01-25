@@ -120,11 +120,11 @@ public class Segmentation extends AbstractParser {
             doc.setPathXML(pathXML);
             List<String> tokenizations = doc.addTokenizedDocument();
 
-            if (doc.getBlocks() == null) {
+            if (doc.getBlocks() == null || doc.getBlocks().isEmpty()) {
                 throw new GrobidException("PDF parsing resulted in empty content");
             }
 
-			String content = getFulltextFeatured(doc, headerMode);
+			String content = getFulltextFeatured(doc.getBlocks(), headerMode);
 			if ( (content != null) && (content.trim().length() > 0) ) {
 	            String labelledResult = label(content);
 
@@ -155,16 +155,11 @@ public class Segmentation extends AbstractParser {
     }
 
 
-	private String getFulltextFeatured(Document doc, boolean headerMode) {
+	private String getFulltextFeatured(List<Block> blocks, boolean headerMode) {
 		FeatureFactory featureFactory = FeatureFactory.getInstance();
         StringBuilder fulltext = new StringBuilder();
         String currentFont = null;
         int currentFontSize = -1;
-
-		List<Block> blocks = doc.getBlocks();
-		if ( (blocks == null) || blocks.size() == 0) {
-			return null;
-		}
 
         // vector for features
         FeaturesVectorFulltext features;
@@ -178,10 +173,7 @@ public class Segmentation extends AbstractParser {
         int documentLength = 0;
         int pageLength = 0; // length of the current page
 
-		List<String> tokenizationsBody = new ArrayList<String>();
-		List<String> tokenizations = doc.getTokenizations();
-
-        // we calculate current document length and intialize the body tokenization structure
+        // we calculate current document length
 		for(Block block : blocks) {
 			List<LayoutToken> tokens = block.getTokens();
 			if (tokens == null) 
@@ -564,11 +556,11 @@ public class Segmentation extends AbstractParser {
             doc.setPathXML(pathXML);
             doc.addTokenizedDocument();
 
-            if (doc.getBlocks() == null) {
+            if (doc.getBlocks() == null || doc.getBlocks().isEmpty()) {
                 throw new Exception("PDF parsing resulted in empty content");
             }
 
-            String fulltext = getFulltextFeatured(doc, false);
+            String fulltext = getFulltextFeatured(doc.getBlocks(), false);
             List<String> tokenizations = doc.getTokenizationsFulltext();
 
             // we write the full text untagged
