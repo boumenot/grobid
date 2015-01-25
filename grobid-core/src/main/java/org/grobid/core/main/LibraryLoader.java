@@ -26,6 +26,16 @@ public class LibraryLoader {
 
     private static boolean isContextMocked = false;
 
+    /**
+     * Explicitly load a library.
+     *
+     * XXX: Why have this call when it just forwards to System.load?
+     * But, calling System.load via KVM does not appear to work, but this does.
+     */
+    public static void explicitLoad(String libraryPath) {
+        System.load(libraryPath);
+    }
+
     public static void load() {
         if (loaded) {
             return;
