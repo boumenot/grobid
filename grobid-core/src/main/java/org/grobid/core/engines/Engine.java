@@ -66,7 +66,7 @@ public class Engine implements Closeable {
     // Name of the pdf file
 //	public String fileName = null;
 
-    private final EngineParsers parsers = new EngineParsers();
+    private final EngineParsers parsers = EngineParsers.Create();
     //TODO: when using one instance of Engine in e.g. grobid-service, then make this field not static
     private static CntManager cntManager = CntManagerFactory.getCntManager();
 
@@ -411,7 +411,7 @@ public class Engine implements Closeable {
 
     /**
      * Apply a parsing model for the header of a PDF file based on CRF, using
-     * first three pages of the PDF
+     * dynamic range of pages as header
      *
      * @param inputFile   : the path of the PDF file to be processed
      * @param consolidate - the consolidation option allows GROBID to exploit Crossref
@@ -422,24 +422,6 @@ public class Engine implements Closeable {
      * @throws Exception if sth went wrong
      */
     public String processHeader(String inputFile, boolean consolidate, BiblioItem result) throws Exception {
-        return processHeader(inputFile, consolidate, 0, 2, result);
-    }
-
-    /**
-     * Apply a parsing model for the header of a PDF file based on CRF, using
-     * dynamic range of pages as header
-     *
-     * @param inputFile   : the path of the PDF file to be processed
-     * @param consolidate - the consolidation option allows GROBID to exploit Crossref
-     *                    web services for improving header information
-     * @param startPage   : start page of range to use (0-based)
-     * @param endPage     : stop page of range to use (0-based)
-     * @param result      bib result
-     * @return the TEI representation of the extracted bibliographical
-     *         information
-     * @throws Exception if sth went wrong
-     */
-    public String processHeader(String inputFile, boolean consolidate, int startPage, int endPage, BiblioItem result) throws Exception {
         // normally the BiblioItem reference must not be null, but if it is the
         // case, we still continue
         // with a new instance, so that the resulting TEI string is still
@@ -448,10 +430,7 @@ public class Engine implements Closeable {
             result = new BiblioItem();
         }
 
-        Pair<String, Document> resultTEI = parsers.getHeaderParser().processing2(inputFile, consolidate, result, startPage, endPage);
-		//Pair<String, Document> resultTEI = parsers.getHeaderParser().processing(inputFile, consolidate, result);
-        Document doc = resultTEI.getRight();
-        //close();
+        Pair<String, Document> resultTEI = parsers.getHeaderParser().processing2(inputFile, consolidate, result);
         return resultTEI.getLeft();
     }
 

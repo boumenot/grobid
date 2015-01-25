@@ -72,7 +72,7 @@ public class Evaluation {
 
         try {
             if (citationParser == null) {
-                citationParser = new CitationParser(new EngineParsers());
+                citationParser = new CitationParser(EngineParsers.Create());
             }
 
             // dis.available() returns 0 if the file does not have more lines.

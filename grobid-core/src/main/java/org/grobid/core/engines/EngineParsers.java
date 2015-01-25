@@ -1,7 +1,13 @@
 package org.grobid.core.engines;
 
+import org.grobid.core.document.DocumentFactory;
+import org.grobid.core.document.PdfXmlParser;
 import org.grobid.core.engines.entities.ChemicalParser;
 import org.grobid.core.engines.patent.ReferenceExtractor;
+import org.grobid.core.process.PdfToXmlCmdFactory;
+import org.grobid.core.process.PdfToXmlConverter;
+import org.grobid.core.process.PdfToXmlConverterImpl;
+import org.grobid.core.utilities.GrobidProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +20,8 @@ import java.io.IOException;
  */
 public class EngineParsers implements Closeable {
     public static final Logger LOGGER = LoggerFactory.getLogger(EngineParsers.class);
+    private final PdfToXmlConverter pdfToXmlConverter;
+    private final DocumentFactory documentFactory;
 
     private AuthorParser authorParser = null;
     private AffiliationAddressParser affiliationAddressParser = null;
@@ -26,6 +34,32 @@ public class EngineParsers implements Closeable {
     private Segmentation segmentationParser = null;
     private ReferenceSegmenterParser referenceSegmenterParser = null;
 
+    public static EngineParsers Create()
+    {
+        GrobidProperties.getInstance();
+
+        return EngineParsers.Create(
+                new PdfToXmlConverterImpl(
+                        new PdfToXmlCmdFactory(GrobidProperties.getPdf2XMLPath()),
+                        GrobidProperties.getTempPath()),
+                new DocumentFactory(
+                        new PdfXmlParser()));
+    }
+
+    public static EngineParsers Create(
+            PdfToXmlConverter pdfToXmlConverter,
+            DocumentFactory documentFactory)
+    {
+        return new EngineParsers(pdfToXmlConverter, documentFactory);
+    }
+
+    private EngineParsers(
+            PdfToXmlConverter pdfToXmlConverter,
+            DocumentFactory documentFactory) {
+
+        this.pdfToXmlConverter = pdfToXmlConverter;
+        this.documentFactory = documentFactory;
+    }
 
     public AffiliationAddressParser getAffiliationAddressParser() {
         if (affiliationAddressParser == null) {
@@ -53,7 +87,10 @@ public class EngineParsers implements Closeable {
         if (headerParser == null) {
             synchronized (this) {
                 if (headerParser == null) {
-                    headerParser = new HeaderParser(this);
+                    headerParser = new HeaderParser(
+                            this,
+                            this.pdfToXmlConverter,
+                            this.documentFactory);
                 }
             }
         }
@@ -99,7 +136,9 @@ public class EngineParsers implements Closeable {
         if (segmentationParser == null) {
             synchronized (this) {
                 if (segmentationParser == null) {
-                    segmentationParser = new Segmentation();
+                    segmentationParser = new Segmentation(
+                            this.pdfToXmlConverter,
+                            this.documentFactory);
                 }
             }
         }
@@ -110,7 +149,10 @@ public class EngineParsers implements Closeable {
         if (referenceExtractor == null) {
             synchronized (this) {
                 if (referenceExtractor == null) {
-                    referenceExtractor = new ReferenceExtractor(this);
+                    referenceExtractor = new ReferenceExtractor(
+                            this,
+                            this.pdfToXmlConverter,
+                            this.documentFactory);
                 }
             }
         }

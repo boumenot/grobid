@@ -34,6 +34,8 @@ public class PdfToXmlCmdFactoryTest {
                         this.input.getAbsolutePath(),
                         this.output.getAbsolutePath()
                 });
+
+        assertTrue(this.pdfToXml.getAbsoluteFile().toString(), args.get(0).endsWith("/usr/bin/pdftoxml"));
     }
 
     @Test

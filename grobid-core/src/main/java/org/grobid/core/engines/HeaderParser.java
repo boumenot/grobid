@@ -6,16 +6,14 @@ import org.grobid.core.GrobidModels;
 import org.grobid.core.data.BiblioItem;
 import org.grobid.core.data.Date;
 import org.grobid.core.data.Person;
-import org.grobid.core.document.Document;
-import org.grobid.core.document.DocumentPiece;
-import org.grobid.core.document.DocumentPointer;
-import org.grobid.core.document.TEIFormater;
+import org.grobid.core.document.*;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.features.FeatureFactory;
 import org.grobid.core.features.FeaturesVectorHeader;
 import org.grobid.core.lang.Language;
 import org.grobid.core.layout.Block;
 import org.grobid.core.layout.LayoutToken;
+import org.grobid.core.process.PdfToXmlConverter;
 import org.grobid.core.utilities.Consolidation;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.core.utilities.LanguageUtilities;
@@ -23,11 +21,7 @@ import org.grobid.core.utilities.TextUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
@@ -44,17 +38,19 @@ public class HeaderParser extends AbstractParser {
 	private LanguageUtilities languageUtilities = LanguageUtilities.getInstance();
 
 	private Consolidation consolidator = null;
-//	private Document doc = null;
 
-	private File tmpPath = null;
-    private EngineParsers parsers;
-//	private String pathXML = null;
+    private final EngineParsers parsers;
+	private final PdfToXmlConverter pdfToXmlConverter;
+	private final DocumentFactory documentFactory;
 
-	public HeaderParser(EngineParsers parsers) {
+	public HeaderParser(
+			EngineParsers parsers,
+			PdfToXmlConverter pdfToXmlConverter,
+			DocumentFactory documentFactory) {
 		super(GrobidModels.HEADER);
-        this.parsers = parsers;
-        GrobidProperties.getInstance();
-		tmpPath = GrobidProperties.getTempPath();
+		this.parsers = parsers;
+		this.pdfToXmlConverter = pdfToXmlConverter;
+		this.documentFactory = documentFactory;
 	}
 
 	/**
@@ -70,7 +66,7 @@ public class HeaderParser extends AbstractParser {
         } catch (TimeoutException timeoutExp) {
             throw new TimeoutException("A time out occurred");
         } catch (final Exception exp) {
-            throw new GrobidException("An exception occurred while running Grobid on file " + tmpPath.getAbsolutePath() + ": " + exp);
+            throw new GrobidException("An exception occurred while running Grobid: " + exp);
         } 
     }
 	
@@ -78,29 +74,12 @@ public class HeaderParser extends AbstractParser {
 	 *  Processing without application of the segmentation model, regex are used to identify the header
 	 *  zone.  
 	 */ 
-	public Pair<String, Document> processing2(String input, boolean consolidate, BiblioItem resHeader, int startPage, int endPage) throws TimeoutException {
-        Document doc = new Document();
-        String pathXML = null;
+	public Pair<String, Document> processing2(String input, boolean consolidate, BiblioItem resHeader) throws TimeoutException {
+        File pathXML = null;
         try {
-            // int startPage = 0;
-            // //int endPage = 1;
-            // int endPage = 2;
-            pathXML = doc.pdf2xml(true, false, startPage, endPage, input, tmpPath.getAbsolutePath(), false);
-            // timeout,
-            // no force pdf reloading
-            // input is the pdf file, tmpPath is the tmp directory for the lxml
-            // file,
-            // path is the resource path
-            // and we do not extract images in the PDF file
-            if (pathXML == null) {
-                throw new GrobidException("PDF parsing fails");
-            }
-            doc.setPathXML(pathXML);
-            doc.addTokenizedDocument();
-
-            if (doc.getBlocks() == null) {
-                throw new GrobidException("PDF parsing resulted in empty content");
-            }
+			pathXML = this.pdfToXmlConverter.convertHeaderOnly(new File(input));
+			Document doc = this.documentFactory.fromXmlPdf(
+					new FileInputStream(pathXML));
 
             String tei = processingHeaderBlock(consolidate, doc, resHeader);
             return new ImmutablePair<String, Document>(tei, doc);
@@ -109,7 +88,7 @@ public class HeaderParser extends AbstractParser {
         } catch (final Exception exp) {
             throw new GrobidException("An exception occurred while running Grobid on file " + input + ": " + exp);
         } finally {
-            doc.cleanLxmlFile(pathXML, true);
+            Document.cleanLxmlFile(pathXML, true);
         }
     }
 
@@ -778,30 +757,14 @@ public class HeaderParser extends AbstractParser {
 	 *            path to TEI
 	 */
 	public Document createTrainingHeader(String inputFile, String pathHeader, String pathTEI) {
-        Document doc = new Document();
-        String pathXML = null;
+        File pathXML = null;
         try {
-            int startPage = 0;
-            // int endPage = 1;
-            int endPage = 2;
             File file = new File(inputFile);
             String PDFFileName = file.getName();
-            pathXML = doc.pdf2xml(true, false, startPage, endPage, inputFile, tmpPath.getAbsolutePath(), false);
-            // timeout,
-            // no force pdf reloading
-            // pathPDF is the pdf file, tmpPath is the tmp directory for the
-            // lxml file,
-            // path is the resource path
-            // and we do not extract images in the PDF file
-            if (pathXML == null) {
-                throw new GrobidException("PDF parsing fails");
-            }
-            doc.setPathXML(pathXML);
-            doc.addTokenizedDocument();
 
-            if (doc.getBlocks() == null) {
-                throw new GrobidException("PDF parsing resulted in empty content");
-            }
+			pathXML = this.pdfToXmlConverter.convertHeaderOnly(file);
+			Document doc = this.documentFactory.fromXmlPdf(
+					new FileInputStream(pathXML));
 
             String header = doc.getHeaderFeatured(true, true, true);
             List<String> tokenizations = doc.getTokenizationsHeader();
@@ -1020,7 +983,7 @@ public class HeaderParser extends AbstractParser {
         } catch (Exception e) {
             throw new GrobidException("An exception occurred while running Grobid.", e);
         } finally {
-            doc.cleanLxmlFile(pathXML, true);
+            Document.cleanLxmlFile(pathXML, true);
         }
     }
 

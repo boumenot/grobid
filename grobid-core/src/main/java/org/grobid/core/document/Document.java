@@ -55,8 +55,6 @@ public class Document {
      */
     private static final int KILLED_DUE_2_TIMEOUT = 143;
 
-    private String pathXML = null; // XML representation of the current PDF file
-
     private int beginBody = -1;
     private int beginReferences = -1;
 
@@ -100,6 +98,13 @@ public class Document {
         top = new DocumentNode("top", "0");
     }
 
+    public Document(
+            List<Block> blocks,
+            List<String> tokenizations) {
+        this.blocks = blocks;
+        this.tokenizations = tokenizations;
+    }
+
     public void setLanguage(String l) {
         lang = l;
     }
@@ -118,16 +123,6 @@ public class Document {
 
     public List<BibDataSet> getBibDataSets() {
         return bibDataSets;
-    }
-
-    public void addBlock(Block b) {
-        if (blocks == null)
-            blocks = new ArrayList<Block>();
-        blocks.add(b);
-    }
-
-    public void setPathXML(String pathXML) {
-        this.pathXML = pathXML;
     }
 
     public List<String> getTokenizations() {
@@ -205,159 +200,24 @@ public class Document {
     // WARNING: it might be too
     // short for ebook !
 
-    protected String getPdf2xml(boolean full) {
-        String pdf2xml = GrobidProperties.getPdf2XMLPath().getAbsolutePath();
-
-        pdf2xml += GrobidProperties.isContextExecutionServer() ? "/pdftoxml_server" : "/pdftoxml";
-
-        if (full) {
-            pdf2xml += " -blocks -noImageInline -fullFontName ";
-        } else {
-            pdf2xml += " -blocks -noImage -noImageInline -fullFontName ";
-        }
-        return pdf2xml;
-    }
-
-    /**
-     * Create an XML representation from a pdf file. If tout is true (default),
-     * a timeout is used. If force is true, the xml file is always regenerated,
-     * even if already present (default is false, it can save up to 50% overall
-     * runtime). If full is true, the extraction covers also images within the
-     * pdf, which is relevant for fulltext extraction.
-     */
-    public String pdf2xml(boolean tout, boolean force, int startPage,
-                          int endPage, String pdfPath, String tmpPath, boolean full)
-            throws Exception {
-        LOGGER.debug("start pdf2xml");
-        long time = System.currentTimeMillis();
-        String pdftoxml0;
-
-        pdftoxml0 = getPdf2xml(full);
-
-        if (startPage > 0)
-            pdftoxml0 += " -f " + startPage + " ";
-        if (endPage > 0)
-            pdftoxml0 += " -l " + endPage + " ";
-
-        // if the XML representation already exists, no need to redo the
-        // conversion,
-        // except if the force parameter is set to true
-        String tmpPathXML = tmpPath + "/" + KeyGen.getKey() + ".lxml";
-        File f = new File(tmpPathXML);
-
-        if ((!f.exists()) || force) {
-            List<String> cmd = new ArrayList<String>();
-            String[] tokens = pdftoxml0.split(" ");
-            for (String token : tokens) {
-                if (token.trim().length() > 0)
-                    cmd.add(token);
-            }
-            cmd.add(pdfPath);
-            cmd.add(tmpPathXML);
-            if (GrobidProperties.isContextExecutionServer()) {
-                tmpPathXML = processPdf2Xml(pdfPath, tmpPathXML, cmd);
-            } else {
-                tmpPathXML = processPdf2XmlThreadMode(tout, pdfPath,
-                        tmpPathXML, cmd);
-            }
-
-        }
-        LOGGER.debug("end pdf2xml. Time to process:"
-                + (System.currentTimeMillis() - time) + "ms");
-        return tmpPathXML;
-    }
-
-    /**
-     * Process the conversion of pdf to xml format using thread calling native
-     * executable.
-     *
-     * @param tout       timeout
-     * @param pdfPath    path to pdf
-     * @param tmpPathXML temporary path to save the converted file
-     * @param cmd        arguments to call the executable pdf2xml
-     * @return the path the the converted file.
-     */
-    protected String processPdf2XmlThreadMode(boolean tout, String pdfPath,
-                                              String tmpPathXML, List<String> cmd) {
-        LOGGER.debug("Executing: " + cmd.toString());
-        ProcessRunner worker = new ProcessRunner(cmd, "pdf2xml[" + pdfPath + "]", true);
-
-        worker.start();
-
-        try {
-            if (tout) {
-                worker.join(timeout);
-            } else {
-                worker.join(50000); // max 50 second even without predefined
-                // timeout
-            }
-            if (worker.getExitStatus() == null) {
-                tmpPathXML = null;
-                throw new RuntimeException("PDF to XML conversion timed out");
-            }
-
-            if (worker.getExitStatus() != 0) {
-                throw new RuntimeException(
-                        "PDF to XML conversion failed due to: "
-                                + worker.getErrorStreamContents());
-            }
-        } catch (InterruptedException ex) {
-            tmpPathXML = null;
-            worker.interrupt();
-            Thread.currentThread().interrupt();
-        } finally {
-            worker.interrupt();
-        }
-        return tmpPathXML;
-    }
-
-    /**
-     * Process the conversion of pdf to xml format calling native executable. No
-     * thread used for the execution.
-     *
-     * @param pdfPath    path to pdf
-     * @param tmpPathXML temporary path to save the converted file
-     * @param cmd        arguments to call the executable pdf2xml
-     * @return the path the the converted file.
-     * @throws TimeoutException
-     */
-    protected String processPdf2Xml(String pdfPath, String tmpPathXML,
-                                    List<String> cmd) throws TimeoutException {
-        LOGGER.debug("Executing: " + cmd.toString());
-        Integer exitCode = org.grobid.core.process.ProcessPdf2Xml.process(cmd);
-
-        if (exitCode == null) {
-//			tmpPathXML = null;
-            throw new RuntimeException("An error occured while converting pdf "
-                    + pdfPath);
-        } else if (exitCode == KILLED_DUE_2_TIMEOUT) {
-            throw new TimeoutException("PDF to XML conversion timed out");
-        } else if (exitCode != 0) {
-            throw new RuntimeException(
-                    "PDF to XML conversion failed with error code: " + exitCode);
-        }
-
-        return tmpPathXML;
-    }
-
-    public boolean cleanLxmlFile(String thePathXML, boolean cleanImages) {
+    public static boolean cleanLxmlFile(File fff, boolean cleanImages) {
         boolean success = false;
+        if (fff == null) {
+            return success;
+        }
 
         try {
-            if (thePathXML != null) {
-                File fff = new File(thePathXML);
-                if (fff.exists()) {
-                    success = fff.delete();
-                    if (!success) {
-                        throw new GrobidResourceException("Deletion of temporary .lxml file failed for file '" + fff.getAbsolutePath() + "'");
-                    }
+            if (fff.exists()) {
+                success = fff.delete();
+                if (!success) {
+                    throw new GrobidResourceException("Deletion of temporary .lxml file failed for file '" + fff.getAbsolutePath() + "'");
                 }
             }
         } catch (Exception e) {
             if (e instanceof GrobidResourceException) {
                 throw (GrobidResourceException) e;
             } else {
-                throw new GrobidResourceException("An exception occured while deleting .lxml file '" + thePathXML + "'.", e);
+                throw new GrobidResourceException("An exception occured while deleting .lxml file '" + fff.getAbsolutePath() + "'.", e);
             }
         }
 
@@ -365,16 +225,13 @@ public class Document {
         // resources subdirectory
         if (cleanImages) {
             try {
-                if (thePathXML != null) {
-                    File fff = new File(thePathXML + "_data");
-                    if (fff.exists()) {
-                        if (fff.isDirectory()) {
-                            success = Utilities.deleteDir(fff);
+                if (fff.exists()) {
+                    if (fff.isDirectory()) {
+                        success = Utilities.deleteDir(fff);
 
-                            if (!success) {
-                                throw new GrobidResourceException(
-                                        "Deletion of temporary image files failed for file '" + fff.getAbsolutePath() + "'");
-                            }
+                        if (!success) {
+                            throw new GrobidResourceException(
+                                    "Deletion of temporary image files failed for file '" + fff.getAbsolutePath() + "'");
                         }
                     }
                 }
@@ -382,48 +239,12 @@ public class Document {
                 if (e instanceof GrobidResourceException) {
                     throw (GrobidResourceException) e;
                 } else {
-                    throw new GrobidResourceException("An exception occured while deleting .lxml file '" + thePathXML + "'.", e);
+                    throw new GrobidResourceException("An exception occured while deleting .lxml file '" + fff + "'.", e);
                 }
             }
         }
 
         return success;
-    }
-
-    /**
-     *  Parser PDF2XML output representation and get the tokenized form of the document.
-     *
-     * @return list of features
-     * @throws java.io.IOException      when a file can not be opened
-     * @throws javax.xml.parsers.ParserConfigurationException
-     *                                  when parsing
-     * @throws org.xml.sax.SAXException when parsing
-     */
-    public List<String> addTokenizedDocument() throws IOException,
-            ParserConfigurationException, SAXException {
-        List<String> images = new ArrayList<String>();
-        PDF2XMLSaxParser parser = new PDF2XMLSaxParser(this, images);
-
-
-        tokenizations = null;
-
-        File file = new File(pathXML);
-        FileInputStream in = new FileInputStream(file);
-
-        // get a factory
-        SAXParserFactory spf = SAXParserFactory.newInstance();
-        // get a new instance of parser
-        SAXParser p = spf.newSAXParser();
-        try {
-            p.parse(in, parser);
-            tokenizations = parser.getTokenization();
-        } catch (Exception e) {
-            throw new GrobidException("An exception occurs.", e);
-        }
-        in.close();
-        // we filter out possible line numbering for review works
-        // filterLineNumber();
-        return tokenizations;
     }
 
     /**
@@ -1835,5 +1656,9 @@ public class Document {
 			return null;
 		else 
 			return getDocumentPieceText(getDocumentPart(segmentationLabel));
+    }
+
+    public boolean isEmpty() {
+        return this.blocks.isEmpty();
     }
 }

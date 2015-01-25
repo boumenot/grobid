@@ -450,7 +450,7 @@ public class GrobidProperties {
 	}
 
 	/**
-	 * Returns the temprorary path of grobid
+	 * Returns the temporary path of grobid
 	 * 
 	 * @return a directory for temp files
 	 */
@@ -841,7 +841,7 @@ public class GrobidProperties {
 
 	/**
 	 * Returns the maximum parallel connections allowed in the pool.
-	 * 
+	 *
 	 * @return the number of connections
 	 */
 	public static int getMaxPoolConnections() {

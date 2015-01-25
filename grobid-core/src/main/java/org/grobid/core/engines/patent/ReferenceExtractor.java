@@ -6,6 +6,8 @@ import org.grobid.core.data.BibDataSet;
 import org.grobid.core.data.BiblioItem;
 import org.grobid.core.data.BiblioSet;
 import org.grobid.core.data.PatentItem;
+import org.grobid.core.document.Document;
+import org.grobid.core.document.DocumentFactory;
 import org.grobid.core.document.OPSService;
 import org.grobid.core.document.PatentDocument;
 import org.grobid.core.engines.CitationParser;
@@ -16,6 +18,7 @@ import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.exceptions.GrobidResourceException;
 import org.grobid.core.features.FeaturesVectorReference;
 import org.grobid.core.lexicon.Lexicon;
+import org.grobid.core.process.PdfToXmlConverter;
 import org.grobid.core.sax.PatentAnnotationSaxParser;
 import org.grobid.core.sax.TextSaxParser;
 import org.grobid.core.utilities.Consolidation;
@@ -57,6 +60,8 @@ import java.util.zip.GZIPInputStream;
  */
 public class ReferenceExtractor implements Closeable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReferenceExtractor.class);
+    private final PdfToXmlConverter pdfToXmlConverter;
+    private final DocumentFactory documentFactory;
 
     private GenericTagger taggerPatent = null;
     private GenericTagger taggerNPL = null;
@@ -87,13 +92,15 @@ public class ReferenceExtractor implements Closeable {
         path = dirName;
     }
 
-
-    public ReferenceExtractor() {
-        this(new EngineParsers());
-    }
     // constructors
-    public ReferenceExtractor(EngineParsers parsers) {
+    public ReferenceExtractor(
+            EngineParsers parsers,
+            PdfToXmlConverter pdfToXmlConverter,
+            DocumentFactory documentFactory) {
         this.parsers = parsers;
+        this.pdfToXmlConverter = pdfToXmlConverter;
+        this.documentFactory = documentFactory;
+
         taggerNPL = TaggerFactory.getTagger(GrobidModels.PATENT_NPL);
     	taggerAll = TaggerFactory.getTagger(GrobidModels.PATENT_ALL);
     	taggerPatent = TaggerFactory.getTagger(GrobidModels.PATENT_PATENT);
@@ -208,23 +215,15 @@ public class ReferenceExtractor implements Closeable {
                                            boolean consolidate,
                                            List<PatentItem> patents,
                                            List<BibDataSet> articles) {
-        try {
-            PatentDocument doc = new PatentDocument();
-            int startPage = -1;
-            int endPage = -1;
-            tmpPath = GrobidProperties.getTempPath().getAbsolutePath();
-            pathXML = doc.pdf2xml(true, false, startPage, endPage, inputFile, tmpPath, false); //with timeout,
-            // no force pdf reloading
-            // inputFile is the pdf file, tmpPath is the tmp directory for the lxml file,
-            // and we do not extract images in the PDF file
-            if (pathXML == null) {
-                throw new GrobidException("PDF parsing fails");
-            }
-            doc.setPathXML(pathXML);
 
-            if (doc.getBlocks() == null) {
-                throw new GrobidException("PDF parsing resulted in empty content");
-            }
+        File pathXML = null;
+        try {
+//            PatentDocument doc = new PatentDocument();
+
+            pathXML = this.pdfToXmlConverter.convert(new File(inputFile));
+            Document doc = this.documentFactory.fromXmlPdf(
+                    new FileInputStream(pathXML));
+
             description = doc.getAllBlocksClean(25, -1);
             if (description != null) {
                 return extractAllReferencesString(description,
@@ -236,6 +235,8 @@ public class ReferenceExtractor implements Closeable {
                 return null;
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            Document.cleanLxmlFile(pathXML, false);
         }
         return null;
     }

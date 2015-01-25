@@ -10,6 +10,7 @@ import java.util.StringTokenizer;
 
 import org.grobid.core.data.BibDataSet;
 import org.grobid.core.data.PatentItem;
+import org.grobid.core.engines.EngineParsers;
 import org.grobid.core.factory.AbstractEngineFactory;
 import org.grobid.core.mock.MockContext;
 import org.grobid.core.utilities.GrobidTimer;
@@ -42,7 +43,7 @@ public class ReferenceExtractorTest {
 
 	@Test
 	public void extractAllReferencesStringNull() {
-		ReferenceExtractor extractor = new ReferenceExtractor();
+		ReferenceExtractor extractor = EngineParsers.Create().getReferenceExtractor();
 		String res = extractor
 				.extractAllReferencesString(
 						"Economic Development Quarterly November 2011 25: 353-365, first published on August 25, 2011.",
@@ -52,7 +53,7 @@ public class ReferenceExtractorTest {
 
 	@Test
 	public void extractAllReferencesStringArticles() {
-		ReferenceExtractor extractor = new ReferenceExtractor();
+		ReferenceExtractor extractor = EngineParsers.Create().getReferenceExtractor();
 		List<PatentItem> patents = new ArrayList<PatentItem>();
 		List<BibDataSet> articles = new ArrayList<BibDataSet>();
 		String toExtract = "That article It refers to Economic Development Quarterly November 2011 25: 353-365, first published on August 25, 2011.";
@@ -75,7 +76,7 @@ public class ReferenceExtractorTest {
 
 	@Test
 	public void extractAllReferencesStringArticles2() {
-		ReferenceExtractor extractor = new ReferenceExtractor();
+		ReferenceExtractor extractor = EngineParsers.Create().getReferenceExtractor();
 		List<PatentItem> patents = new ArrayList<PatentItem>();
 		List<BibDataSet> articles = new ArrayList<BibDataSet>();
 		extractor
@@ -119,7 +120,7 @@ public class ReferenceExtractorTest {
 
 	@Test
 	public void extractAllReferencesStringPatents() {
-		ReferenceExtractor extractor = new ReferenceExtractor();
+		ReferenceExtractor extractor = EngineParsers.Create().getReferenceExtractor();
 		List<PatentItem> patents = new ArrayList<PatentItem>();
 		List<BibDataSet> articles = new ArrayList<BibDataSet>();
 		String toExtract = "US-8303618, Intravascular filter and method A filter disposed at the distal end of an elongate guidewire. Catheters are provided for delivering the filter to, and retrieving the filter from, a treatment...";
@@ -138,7 +139,7 @@ public class ReferenceExtractorTest {
 
 	@Test
 	public void extractAllReferencesXmlST36() {
-		ReferenceExtractor extractor = new ReferenceExtractor();
+		ReferenceExtractor extractor = EngineParsers.Create().getReferenceExtractor();
 		List<PatentItem> patents = new ArrayList<PatentItem>();
 		List<BibDataSet> articles = new ArrayList<BibDataSet>();
 		extractor
@@ -156,7 +157,7 @@ public class ReferenceExtractorTest {
 
 	@Ignore
 	public void extractAllReferencesPdf() {
-		ReferenceExtractor extractor = new ReferenceExtractor();
+		ReferenceExtractor extractor = EngineParsers.Create().getReferenceExtractor();
 		List<PatentItem> patents = new ArrayList<PatentItem>();
 		List<BibDataSet> articles = new ArrayList<BibDataSet>();
 		extractor

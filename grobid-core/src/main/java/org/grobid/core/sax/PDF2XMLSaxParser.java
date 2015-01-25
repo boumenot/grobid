@@ -1,7 +1,6 @@
 package org.grobid.core.sax;
 
 import org.grobid.core.layout.Block;
-import org.grobid.core.document.Document;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.utilities.TextUtilities;
 import org.slf4j.Logger;
@@ -22,6 +21,7 @@ public class PDF2XMLSaxParser extends DefaultHandler {
 	 * The Logger.
 	 */
 	public static final Logger LOGGER = LoggerFactory.getLogger(PDF2XMLSaxParser.class);
+	private final List<Block> blocks;
 
 	private StringBuffer accumulator = new StringBuffer(); // Accumulate parsed
 															// text
@@ -44,17 +44,16 @@ public class PDF2XMLSaxParser extends DefaultHandler {
 	private StringBuffer blabla = null;
 	private ArrayList<String> tokenizations = null;
 
-	private Document doc = null;
-
 	private int currentPage = -1;
 
 	public PDF2XMLSaxParser() {
 		blabla = new StringBuffer();
 		tokenizations = new ArrayList<String>();
+		blocks = new ArrayList<Block>();
 	}
 
-	public PDF2XMLSaxParser(Document d, List<String> im) {
-		doc = d;
+	public PDF2XMLSaxParser(List<Block> blocks, List<String> im) {
+		this.blocks = blocks;
 		blabla = new StringBuffer();
 		images = im;
 		tokenizations = new ArrayList<String>();
@@ -651,13 +650,13 @@ public class PDF2XMLSaxParser extends DefaultHandler {
 				tokenizations.add("\n");
 				block.setText(blabla.toString());
 				block.setNbTokens(nbTokens);
-				doc.addBlock(block);
+				this.blocks.add(block);
 			}
 			Block block0 = new Block();
 			block0.setText("@PAGE\n");
 			block0.setNbTokens(0);
 			block0.setPage(currentPage);
-			doc.addBlock(block0);
+			this.blocks.add(block0);
 			block = new Block();
 			block.setPage(currentPage);
 			blabla = new StringBuffer();
@@ -669,7 +668,7 @@ public class PDF2XMLSaxParser extends DefaultHandler {
 				blabla.append("\n");
 				block.setText(blabla.toString());
 				block.setNbTokens(nbTokens);
-				doc.addBlock(block);
+				this.blocks.add(block);
 			}
 			block = new Block();
 			block.setPage(currentPage);
@@ -687,7 +686,7 @@ public class PDF2XMLSaxParser extends DefaultHandler {
 				block.setWidth(currentWidth);
 			if (block.getHeight() == 0.0)
 				block.setHeight(currentHeight);
-			doc.addBlock(block);
+			this.blocks.add(block);
 			blabla = new StringBuffer();
 			nbTokens = 0;
 			block = new Block();
@@ -696,14 +695,14 @@ public class PDF2XMLSaxParser extends DefaultHandler {
 		/*
 		 * else if (qName.equals("VECTORIALIMAGES")) { if (block != null) {
 		 * blabla.append("\n"); block.setText(blabla.toString());
-		 * block.setNbTokens(nbTokens); doc.addBlock(block); } block = new
+		 * block.setNbTokens(nbTokens); this.blocks.add(block); } block = new
 		 * Block(); block.setPage(currentPage); blabla = new StringBuffer();
 		 * blabla.append("@IMAGE " + "vectorial \n");
 		 * block.setText(blabla.toString()); block.setNbTokens(nbTokens); if
 		 * (block.getX() == 0.0) block.setX(currentX); if (block.getY() == 0.0)
 		 * block.setY(currentY); if (block.getWidth() == 0.0)
 		 * block.setWidth(currentWidth); if (block.getHeight() == 0.0)
-		 * block.setHeight(currentHeight); doc.addBlock(block); blabla = new
+		 * block.setHeight(currentHeight); this.blocks.add(block); blabla = new
 		 * StringBuffer(); nbTokens = 0; block = new Block();
 		 * block.setPage(currentPage); }
 		 */
@@ -716,7 +715,7 @@ public class PDF2XMLSaxParser extends DefaultHandler {
 			block.setWidth(currentX - block.getX() + currentWidth);
 			block.setHeight(currentY - block.getY() + currentHeight);
 
-			doc.addBlock(block);
+			this.blocks.add(block);
 			// blabla = new StringBuffer();
 			nbTokens = 0;
 			block = null;
@@ -725,7 +724,7 @@ public class PDF2XMLSaxParser extends DefaultHandler {
 				blabla.append("\n");
 				block.setText(blabla.toString());
 				block.setNbTokens(nbTokens);
-				doc.addBlock(block);
+				this.blocks.add(block);
 			}
 			block = new Block();
 			block.setPage(currentPage);
@@ -733,7 +732,7 @@ public class PDF2XMLSaxParser extends DefaultHandler {
 			blabla.append("@IMAGE " + images.get(images.size() - 1) + "\n");
 			block.setText(blabla.toString());
 			block.setNbTokens(nbTokens);
-			doc.addBlock(block);
+			this.blocks.add(block);
 			blabla = new StringBuffer();
 			nbTokens = 0;
 			block = new Block();
@@ -775,9 +774,9 @@ public class PDF2XMLSaxParser extends DefaultHandler {
 			/*
 			 * if (block != null) { blabla.append("\n");
 			 * tokenizations.add("\n"); block.setText(blabla.toString());
-			 * block.setNbTokens(nbTokens); doc.addBlock(block); } Block block0
+			 * block.setNbTokens(nbTokens); this.blocks.add(block); } Block block0
 			 * = new Block(); block0.setText("@PAGE\n"); block0.setNbTokens(0);
-			 * doc.addBlock(block0);
+			 * this.blocks.add(block0);
 			 */
 			/*
 			 * block = new Block(); blabla = new StringBuffer(); nbTokens = 0;

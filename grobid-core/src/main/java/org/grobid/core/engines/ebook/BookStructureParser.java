@@ -2,19 +2,17 @@ package org.grobid.core.engines.ebook;
 
 import org.grobid.core.GrobidModels;
 import org.grobid.core.document.Document;
+import org.grobid.core.document.DocumentFactory;
 import org.grobid.core.engines.AbstractParser;
 import org.grobid.core.exceptions.GrobidException;
-import org.grobid.core.utilities.GrobidProperties;
+import org.grobid.core.process.PdfToXmlConverter;
 import org.grobid.core.utilities.TextUtilities;
 import org.grobid.core.layout.Block;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.features.FeatureFactory;
 import org.grobid.core.features.FeaturesVectorFulltext;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
@@ -27,15 +25,22 @@ import java.util.regex.Matcher;
  */
 
 public class BookStructureParser extends AbstractParser {
-    private File tmpPath = null;
+    private final PdfToXmlConverter pdfToXmlConverter;
+    private final DocumentFactory documentFactory;
+    private final String fileEndingTeiFullText;
 
-	// default bins for relative position
+    // default bins for relative position
     private static final int NBBINS = 12;
 
-    public BookStructureParser() {
+    public BookStructureParser(
+            PdfToXmlConverter pdfToXmlConverter,
+            DocumentFactory documentFactory,
+            String fileEndingTeiFullText) {
         super(GrobidModels.EBOOK);
-        GrobidProperties.getInstance();
-		tmpPath = GrobidProperties.getTempPath();
+
+        this.pdfToXmlConverter = pdfToXmlConverter;
+        this.documentFactory = documentFactory;
+        this.fileEndingTeiFullText = fileEndingTeiFullText;
     }
 
     /**
@@ -45,33 +50,18 @@ public class BookStructureParser extends AbstractParser {
                                             String pathFullText,
                                             String pathTEI,
                                             int id) throws Exception {
-        Document doc = new Document();
-        String pathXML = null;
+        File pathXML = null;
         try {
-            int startPage = -1;
-            int endPage = -1;
-            File file = new File(inputFile);
-            String PDFFileName = file.getName();
-            pathXML = doc.pdf2xml(false, false, startPage, endPage, inputFile, tmpPath.getAbsolutePath(), false); //without timeout,
-            //no force pdf reloading
-            // inputFile is the pdf file, tmpPath is the tmp directory for the lxml file,
-            // path is the resource path
-            // we do not extract the images in the pdf file
-            if (pathXML == null) {
-                throw new Exception("PDF parsing fails");
-            }
-            doc.setPathXML(pathXML);
-            doc.addTokenizedDocument();
-
-            if (doc.getBlocks() == null) {
-                throw new Exception("PDF parsing resulted in empty content");
-            }
+            File pdfFile = new File(inputFile);
+            pathXML = this.pdfToXmlConverter.convert(pdfFile);
+            Document doc = this.documentFactory.fromXmlPdf(
+                    new FileInputStream(pathXML));
 
             String fulltext = getFulltextFeatured(doc);
             List<String> tokenizations = doc.getTokenizationsFulltext();
 
             // we write the header untagged
-            String outPathFulltext = pathFullText + "/" + PDFFileName.replace(".pdf", ".fulltext");
+            String outPathFulltext = pathFullText + "/" + pdfFile.getName().replace(".pdf", ".fulltext");
             Writer writer = new OutputStreamWriter(new FileOutputStream(new File(outPathFulltext), false), "UTF-8");
             writer.write(fulltext + "\n");
             writer.close();
@@ -84,7 +74,7 @@ public class BookStructureParser extends AbstractParser {
 
             // write the TEI file to reflect the extract layout of the text as extracted from the pdf
             writer = new OutputStreamWriter(new FileOutputStream(new File(pathTEI +
-                    "/" + PDFFileName.replace(".pdf", GrobidProperties.FILE_ENDING_TEI_FULLTEXT)), false), "UTF-8");
+                    "/" + pdfFile.getName().replace(".pdf", this.fileEndingTeiFullText)), false), "UTF-8");
             writer.write("<?xml version=\"1.0\" ?>\n<tei>\n\t<teiHeader>\n\t\t<fileDesc xml:id=\"" + id +
                     "\"/>\n\t</teiHeader>\n\t<text xml:lang=\"en\">\n");
 
@@ -92,9 +82,9 @@ public class BookStructureParser extends AbstractParser {
             writer.write("\n\t</text>\n</tei>\n");
             writer.close();
         } catch (Exception e) {
-            throw new GrobidException("An exception occured while running Grobid.", e);
+            throw new GrobidException("An exception occurred while running Grobid.", e);
         } finally {
-            doc.cleanLxmlFile(pathXML, false);
+            Document.cleanLxmlFile(pathXML, false);
         }
     }
 

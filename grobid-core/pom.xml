@@ -263,7 +263,7 @@
 					<forkMode>pertest</forkMode>
 					<argLine>-Xms256m -Xmx1024m</argLine>
 					<testFailureIgnore>false</testFailureIgnore>
-					<skip>false</skip>
+					<skip>true</skip>
 					<systemPropertyVariables>
 						<log4j.configuration>log4j-test.properties</log4j.configuration>
 					</systemPropertyVariables>

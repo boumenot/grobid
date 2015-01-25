@@ -3,23 +3,21 @@ package org.grobid.core.engines;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.document.BasicStructureBuilder;
 import org.grobid.core.document.Document;
+import org.grobid.core.document.DocumentFactory;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.exceptions.GrobidResourceException;
 import org.grobid.core.features.FeatureFactory;
 import org.grobid.core.features.FeaturesVectorFulltext;
 import org.grobid.core.layout.Block;
 import org.grobid.core.layout.LayoutToken;
+import org.grobid.core.process.PdfToXmlConverter;
 import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.core.utilities.LanguageUtilities;
 import org.grobid.core.utilities.TextUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -47,6 +45,8 @@ public class Segmentation extends AbstractParser {
 	*/
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Segmentation.class);
+    private final PdfToXmlConverter pdfToXmlConverter;
+    private final DocumentFactory documentFactory;
 
     private LanguageUtilities languageUtilities = LanguageUtilities.getInstance();
 
@@ -54,12 +54,14 @@ public class Segmentation extends AbstractParser {
     private static final int NBBINS = 12;
     private File tmpPath = null;
 
-    /**
-     * TODO some documentation...
-     */
-    public Segmentation() {
+    public Segmentation(
+            PdfToXmlConverter pdfToXmlConverter,
+            DocumentFactory documentFactory) {
+
         super(GrobidModels.SEGMENTATION);
-        tmpPath = GrobidProperties.getTempPath();
+
+        this.pdfToXmlConverter = pdfToXmlConverter;
+        this.documentFactory = documentFactory;
     }
 
     /**
@@ -91,38 +93,17 @@ public class Segmentation extends AbstractParser {
             throw new GrobidResourceException("Cannot process pdf file, because input file '" +
                     inputFile.getAbsolutePath() + "' does not exists.");
         }
-        if (tmpPath == null) {
-            throw new GrobidResourceException("Cannot process pdf file, because temp path is null.");
-        }
-        if (!tmpPath.exists()) {
-            throw new GrobidResourceException("Cannot process pdf file, because temp path '" +
-                    tmpPath.getAbsolutePath() + "' does not exists.");
-        }
-        Document doc = new Document();
-        String pathXML = null;
-        try {
-            int startPage = -1;
-            int endPage = -1;
-			if (headerMode) {
-				startPage = 0;
-				endPage = 3;
-			}
-            pathXML = doc.pdf2xml(true, false, startPage, endPage, input, tmpPath.getAbsolutePath(), false);
-            //with timeout,
-            //no force pdf reloading
-            // input is the pdf absolute path, tmpPath is the temp. directory for the temp. lxml file,
-            // path is the resource path
-            // and we don't extract images in the PDF file
-            if (pathXML == null) {
-                throw new GrobidResourceException("PDF parsing fails, " +
-                        "because path of where to store xml file is null.");
-            }
-            doc.setPathXML(pathXML);
-            List<String> tokenizations = doc.addTokenizedDocument();
 
-            if (doc.getBlocks() == null || doc.getBlocks().isEmpty()) {
-                throw new GrobidException("PDF parsing resulted in empty content");
+        File pathXML = null;
+        try {
+			if (headerMode) {
+                pathXML = this.pdfToXmlConverter.convertHeaderOnly(inputFile);
+			} else {
+                pathXML = this.pdfToXmlConverter.convert(inputFile);
             }
+
+            Document doc = this.documentFactory.fromXmlPdf(
+                    new FileInputStream(pathXML));
 
 			String content = getFulltextFeatured(doc.getBlocks(), headerMode);
 			if ( (content != null) && (content.trim().length() > 0) ) {
@@ -132,7 +113,7 @@ public class Segmentation extends AbstractParser {
 				//FileUtils.writeStringToFile(new File("/tmp/x2.txt"), tokenizations.toString());
 
 	            // set the different sections of the Document object
-	            doc = BasicStructureBuilder.generalResultSegmentation(doc, labelledResult, tokenizations);
+	            doc = BasicStructureBuilder.generalResultSegmentation(doc, labelledResult, doc.getTokenizations());
 
 	//			System.out.println(doc.getBlockHeaders());
 	//            System.out.println("------------------");
@@ -150,7 +131,7 @@ public class Segmentation extends AbstractParser {
             throw new GrobidException("An exception occurred while running Grobid.", e);
         } finally {
             // keep it clean when leaving...
-            doc.cleanLxmlFile(pathXML, false);
+            Document.cleanLxmlFile(pathXML, false);
         }
     }
 
@@ -533,33 +514,19 @@ public class Segmentation extends AbstractParser {
             throw new GrobidResourceException("Cannot process pdf file, because temp path '" +
                     tmpPath.getAbsolutePath() + "' does not exists.");
         }
-        Document doc = new Document();
-        String pathXML = null;
+        File pathXML = null;
         try {
-            int startPage = -1;
-            int endPage = -1;
             File file = new File(inputFile);
             if (!file.exists()) {
                 throw new GrobidResourceException("Cannot train for fulltext, because file '" +
                         file.getAbsolutePath() + "' does not exists.");
             }
+
+            pathXML = this.pdfToXmlConverter.convertExtractImages(file);
+            Document doc = this.documentFactory.fromXmlPdf(
+                    new FileInputStream(pathXML));
+
             String PDFFileName = file.getName();
-            pathXML = doc.pdf2xml(true, false, startPage, endPage, inputFile, tmpPath.getAbsolutePath(), true);
-            //with timeout,
-            //no force pdf reloading
-            // pathPDF is the pdf file, tmpPath is the tmp directory for the lxml file,
-            // path is the resource path
-            // and we don't extract images in the pdf file
-            if (pathXML == null) {
-                throw new Exception("PDF parsing fails");
-            }
-            doc.setPathXML(pathXML);
-            doc.addTokenizedDocument();
-
-            if (doc.getBlocks() == null || doc.getBlocks().isEmpty()) {
-                throw new Exception("PDF parsing resulted in empty content");
-            }
-
             String fulltext = getFulltextFeatured(doc.getBlocks(), false);
             List<String> tokenizations = doc.getTokenizationsFulltext();
 
@@ -617,7 +584,7 @@ public class Segmentation extends AbstractParser {
             throw new GrobidException("An exception occured while running Grobid training" +
                     " data generation for segmentation model.", e);
         } finally {
-            doc.cleanLxmlFile(pathXML, true);
+            Document.cleanLxmlFile(pathXML, true);
         }
     }
 

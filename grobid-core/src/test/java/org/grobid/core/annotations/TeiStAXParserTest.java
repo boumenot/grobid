@@ -24,6 +24,7 @@ import javax.xml.stream.events.XMLEvent;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.custommonkey.xmlunit.XMLTestCase;
+import org.grobid.core.engines.EngineParsers;
 import org.grobid.core.engines.patent.ReferenceExtractor;
 import org.grobid.core.factory.AbstractEngineFactory;
 import org.grobid.core.mock.MockContext;
@@ -74,7 +75,7 @@ public class TeiStAXParserTest extends XMLTestCase {
 
 	@Test
 	public void testTeiStAXParser5Args() throws IOException {
-		final ReferenceExtractor refExtr = new ReferenceExtractor();
+		final ReferenceExtractor refExtr = EngineParsers.Create().getReferenceExtractor();
 		refExtr.currentPatentNumber = "patNb";
 		final String input = "<tag id=\"tId\">input</tag>";
 		TeiStAXParser parser = new TeiStAXParser(createInputStream(input), createOutputStream("output"), false, refExtr, false);
@@ -204,7 +205,7 @@ public class TeiStAXParserTest extends XMLTestCase {
 
 	@Test
 	public void testParserOnFullTEI() throws XMLStreamException, IOException {
-		ReferenceExtractor extractor = new ReferenceExtractor();
+		ReferenceExtractor extractor = EngineParsers.Create().getReferenceExtractor();
 		OutputStream out;
 		TeiStAXParser stax;
 		//out = getOutputStreamFromFile("src/test/resources/org/grobid/core/annotations/resTeiStAXParser/out.tei.xml");

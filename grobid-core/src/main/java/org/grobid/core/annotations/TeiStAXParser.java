@@ -136,7 +136,7 @@ public class TeiStAXParser {
 
 
 	public TeiStAXParser(final InputStream pInputStream, OutputStream pOutputStream, boolean consolidate) {
-		this(pInputStream, pOutputStream, true, new ReferenceExtractor(new EngineParsers()), consolidate);
+		this(pInputStream, pOutputStream, true, EngineParsers.Create().getReferenceExtractor(), consolidate);
 		isSelfInstanceRefExtractor = true;
 	}
 
@@ -150,7 +150,7 @@ public class TeiStAXParser {
 	 */
 	public TeiStAXParser(final InputStream pInputStream, OutputStream pOutputStream, 
 				final boolean pIsIndented, final boolean consolidate) {
-		this(pInputStream, pOutputStream, pIsIndented, new ReferenceExtractor(new EngineParsers()), consolidate);
+		this(pInputStream, pOutputStream, pIsIndented, EngineParsers.Create().getReferenceExtractor(), consolidate);
 		isSelfInstanceRefExtractor = true;
 	}
 
