@@ -5,8 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PdfToXmlCmdFactory {
+    private final File pdfToXml;
+
+    public PdfToXmlCmdFactory(File pdfToXml) {
+        this.pdfToXml = pdfToXml;
+    }
+
     public List<String> create(
-            File pdfToXml,
             int startPage,
             int endPage,
             Boolean isFull,
@@ -14,7 +19,7 @@ public class PdfToXmlCmdFactory {
             File tmpFilename) {
 
         List<String> cmd = new ArrayList<String>();
-        cmd.add(pdfToXml.getAbsolutePath());
+        cmd.add(this.pdfToXml.getAbsolutePath());
         cmd.add("-blocks");
         cmd.add("-noImageInline");
         cmd.add("-fullFontName");

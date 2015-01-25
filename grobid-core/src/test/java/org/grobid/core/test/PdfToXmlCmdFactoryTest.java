@@ -15,9 +15,8 @@ public class PdfToXmlCmdFactoryTest {
 
     @Test
     public void factoryShouldProcessArguments() throws Exception {
-        PdfToXmlCmdFactory testSubject = new PdfToXmlCmdFactory();
+        PdfToXmlCmdFactory testSubject = new PdfToXmlCmdFactory(this.pdfToXml);
         List<String> args = testSubject.create(
-                this.pdfToXml,
                 0 /* startPage */,
                 0 /* endPage */,
                 false /* isFull */,
@@ -39,9 +38,8 @@ public class PdfToXmlCmdFactoryTest {
 
     @Test
     public void factoryShouldProcessStartPage() throws Exception {
-        PdfToXmlCmdFactory testSubject = new PdfToXmlCmdFactory();
+        PdfToXmlCmdFactory testSubject = new PdfToXmlCmdFactory(this.pdfToXml);
         List<String> args = testSubject.create(
-                this.pdfToXml,
                 2 /* startPage */,
                 0 /* endPage */,
                 false /* isFull */,
@@ -65,9 +63,8 @@ public class PdfToXmlCmdFactoryTest {
 
     @Test
     public void factoryShouldPageMarkersArguments() throws Exception {
-        PdfToXmlCmdFactory testSubject = new PdfToXmlCmdFactory();
+        PdfToXmlCmdFactory testSubject = new PdfToXmlCmdFactory(this.pdfToXml);
         List<String> args = testSubject.create(
-                this.pdfToXml,
                 0 /* startPage */,
                 7 /* endPage */,
                 false /* isFull */,
@@ -91,9 +88,8 @@ public class PdfToXmlCmdFactoryTest {
 
     @Test
     public void factoryShouldFullPage() throws Exception {
-        PdfToXmlCmdFactory testSubject = new PdfToXmlCmdFactory();
+        PdfToXmlCmdFactory testSubject = new PdfToXmlCmdFactory(this.pdfToXml);
         List<String> args = testSubject.create(
-                this.pdfToXml,
                 2 /* startPage */,
                 6 /* endPage */,
                 true /* isFull */,
