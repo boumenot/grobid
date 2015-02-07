@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -807,8 +809,13 @@ public class GrobidProperties {
     }
 
     public static File getModelPath(final GrobidModel model) {
-        return new File(get_GROBID_HOME_PATH(), FOLDER_NAME_MODELS + File.separator + model.getFolderName() + File.separator
-                + FILE_NAME_MODEL + "." + grobidCRFEngine.getExt());
+        Path p = Paths.get(
+                get_GROBID_HOME_PATH().getAbsolutePath(),
+                FOLDER_NAME_MODELS,
+                model.getFolderName(),
+                FILE_NAME_MODEL + "." + grobidCRFEngine.getExt());
+
+        return p.toFile();
     }
 
     public static File getTemplatePath(final File resourcesDir, final GrobidModel model) {
