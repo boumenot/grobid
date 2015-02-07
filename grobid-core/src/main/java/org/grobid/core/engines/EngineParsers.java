@@ -1,5 +1,6 @@
 package org.grobid.core.engines;
 
+import org.grobid.core.GrobidModelStreamFactory;
 import org.grobid.core.document.DocumentFactory;
 import org.grobid.core.document.PdfXmlParser;
 import org.grobid.core.engines.entities.ChemicalParser;
@@ -22,6 +23,7 @@ public class EngineParsers implements Closeable {
     public static final Logger LOGGER = LoggerFactory.getLogger(EngineParsers.class);
     private final PdfToXmlConverter pdfToXmlConverter;
     private final DocumentFactory documentFactory;
+    private final GrobidModelStreamFactory grobidModelStreamFactory;
 
     private AuthorParser authorParser = null;
     private AffiliationAddressParser affiliationAddressParser = null;
@@ -43,29 +45,31 @@ public class EngineParsers implements Closeable {
                         new PdfToXmlCmdFactory(GrobidProperties.getPdf2XMLPath()),
                         GrobidProperties.getTempPath()),
                 new DocumentFactory(
-                        new PdfXmlParser()));
+                        new PdfXmlParser()),
+                new GrobidModelStreamFactory());
     }
 
     public static EngineParsers Create(
             PdfToXmlConverter pdfToXmlConverter,
-            DocumentFactory documentFactory)
-    {
-        return new EngineParsers(pdfToXmlConverter, documentFactory);
+            DocumentFactory documentFactory,
+            GrobidModelStreamFactory grobidModelStreamFactory) {
+        return new EngineParsers(pdfToXmlConverter, documentFactory, grobidModelStreamFactory);
     }
 
     private EngineParsers(
             PdfToXmlConverter pdfToXmlConverter,
-            DocumentFactory documentFactory) {
-
+            DocumentFactory documentFactory,
+            GrobidModelStreamFactory grobidModelStreamFactory) {
         this.pdfToXmlConverter = pdfToXmlConverter;
         this.documentFactory = documentFactory;
+        this.grobidModelStreamFactory = grobidModelStreamFactory;
     }
 
     public AffiliationAddressParser getAffiliationAddressParser() {
         if (affiliationAddressParser == null) {
             synchronized (this) {
                 if (affiliationAddressParser == null) {
-                    affiliationAddressParser = new AffiliationAddressParser();
+                    affiliationAddressParser = new AffiliationAddressParser(this.grobidModelStreamFactory);
                 }
             }
         }
@@ -76,7 +80,7 @@ public class EngineParsers implements Closeable {
         if (authorParser == null) {
             synchronized (this) {
                 if (authorParser == null) {
-                    authorParser = new AuthorParser();
+                    authorParser = new AuthorParser(this.grobidModelStreamFactory);
                 }
             }
         }
@@ -90,7 +94,8 @@ public class EngineParsers implements Closeable {
                     headerParser = new HeaderParser(
                             this,
                             this.pdfToXmlConverter,
-                            this.documentFactory);
+                            this.documentFactory,
+                            this.grobidModelStreamFactory);
                 }
             }
         }
@@ -101,7 +106,7 @@ public class EngineParsers implements Closeable {
         if (dateParser == null) {
             synchronized (this) {
                 if (dateParser == null) {
-                    dateParser = new DateParser();
+                    dateParser = new DateParser(this.grobidModelStreamFactory);
                 }
             }
         }
@@ -112,7 +117,7 @@ public class EngineParsers implements Closeable {
         if (citationParser == null) {
             synchronized (this) {
                 if (citationParser == null) {
-                    citationParser = new CitationParser(this);
+                    citationParser = new CitationParser(this, this.grobidModelStreamFactory);
                 }
             }
         }
@@ -124,7 +129,7 @@ public class EngineParsers implements Closeable {
         if (fullTextParser == null) {
             synchronized (this) {
                 if (fullTextParser == null) {
-                    fullTextParser = new FullTextParser(this);
+                    fullTextParser = new FullTextParser(this, this.grobidModelStreamFactory);
                 }
             }
         }
@@ -138,7 +143,8 @@ public class EngineParsers implements Closeable {
                 if (segmentationParser == null) {
                     segmentationParser = new Segmentation(
                             this.pdfToXmlConverter,
-                            this.documentFactory);
+                            this.documentFactory,
+                            this.grobidModelStreamFactory);
                 }
             }
         }
@@ -152,7 +158,8 @@ public class EngineParsers implements Closeable {
                     referenceExtractor = new ReferenceExtractor(
                             this,
                             this.pdfToXmlConverter,
-                            this.documentFactory);
+                            this.documentFactory,
+                            this.grobidModelStreamFactory);
                 }
             }
         }
@@ -163,7 +170,7 @@ public class EngineParsers implements Closeable {
         if (referenceSegmenterParser == null) {
             synchronized (this) {
                 if (referenceSegmenterParser == null) {
-                    referenceSegmenterParser = new ReferenceSegmenterParser();
+                    referenceSegmenterParser = new ReferenceSegmenterParser(this.grobidModelStreamFactory);
                 }
             }
         }
@@ -174,7 +181,7 @@ public class EngineParsers implements Closeable {
         if (chemicalParser == null) {
             synchronized (this) {
                 if (chemicalParser == null) {
-                    chemicalParser = new ChemicalParser();
+                    chemicalParser = new ChemicalParser(this.grobidModelStreamFactory);
                 }
             }
         }

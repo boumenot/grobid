@@ -1,5 +1,6 @@
 package org.grobid.core.engines;
 
+import org.grobid.core.GrobidModelStreamFactory;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.data.BibDataSet;
 import org.grobid.core.data.BiblioItem;
@@ -56,9 +57,10 @@ public class FullTextParser extends AbstractParser {
     /**
      * TODO some documentation...
      */
-    public FullTextParser(EngineParsers parsers) {
-        super(GrobidModels.FULLTEXT);
+    public FullTextParser(EngineParsers parsers, GrobidModelStreamFactory grobidModelStreamFactory) {
+        super(grobidModelStreamFactory.Create(GrobidModels.FULLTEXT));
         this.parsers = parsers;
+        // FIXME(chrboum): why is this here?
         tmpPath = GrobidProperties.getTempPath();
     }
 

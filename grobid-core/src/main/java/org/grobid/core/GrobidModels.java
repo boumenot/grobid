@@ -43,24 +43,11 @@ public enum GrobidModels implements GrobidModel {
 
     GrobidModels(String folderName) {
         this.folderName = folderName;
-        File path = GrobidProperties.getModelPath(this);
-        if (!path.exists()) {
-            // to be reviewed
-            /*System.err.println("Warning: The file path to the "
-					+ this.name() + " CRF model is invalid: "
-					+ path.getAbsolutePath());*/
-        }
-        modelPath = path.getAbsolutePath();
     }
 
     @Override
     public String getFolderName() {
         return folderName;
-    }
-
-    @Override
-    public String getModelPath() {
-        return modelPath;
     }
 
     @Override

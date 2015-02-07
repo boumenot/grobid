@@ -1,5 +1,6 @@
 package org.grobid.core.engines;
 
+import org.grobid.core.GrobidModelStreamFactory;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.document.BasicStructureBuilder;
 import org.grobid.core.document.Document;
@@ -60,9 +61,10 @@ public class Segmentation extends AbstractParser {
 
     public Segmentation(
             PdfToXmlConverter pdfToXmlConverter,
-            DocumentFactory documentFactory) {
+            DocumentFactory documentFactory,
+            GrobidModelStreamFactory grobidModelStreamFactory) {
 
-        super(GrobidModels.SEGMENTATION);
+        super(grobidModelStreamFactory.Create(GrobidModels.SEGMENTATION));
 
         this.pdfToXmlConverter = pdfToXmlConverter;
         this.documentFactory = documentFactory;

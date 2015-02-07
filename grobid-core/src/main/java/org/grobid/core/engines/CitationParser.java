@@ -1,6 +1,7 @@
 package org.grobid.core.engines;
 
 import org.apache.commons.lang3.StringUtils;
+import org.grobid.core.GrobidModelStreamFactory;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.data.BibDataSet;
 import org.grobid.core.data.BiblioItem;
@@ -31,15 +32,14 @@ public class CitationParser extends AbstractParser {
     public Lexicon lexicon = Lexicon.getInstance();
     private EngineParsers parsers;
 
-    public CitationParser(EngineParsers parsers, CntManager cntManager) {
-        super(GrobidModels.CITATION, cntManager);
+    public CitationParser(EngineParsers parsers, GrobidModelStreamFactory grobidModelStreamFactory, CntManager cntManager) {
+        super(grobidModelStreamFactory.Create(GrobidModels.CITATION), cntManager);
         this.parsers = parsers;
     }
 
-    public CitationParser(EngineParsers parsers) {
-        super(GrobidModels.CITATION);
+    public CitationParser(EngineParsers parsers, GrobidModelStreamFactory grobidModelStreamFactory) {
+        super(grobidModelStreamFactory.Create(GrobidModels.CITATION));
         this.parsers = parsers;
-//        tmpPath = GrobidProperties.getTempPath();
     }
 
     public BiblioItem processing(String input, boolean consolidate) {

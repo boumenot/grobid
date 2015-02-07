@@ -44,13 +44,16 @@ public class ModelMap {
 		Tagger tagger;
 		try {
 			LOGGER.debug("Creating tagger");
-			Model model = getModel(grobidModel.getModelPath());
-			tagger = model.createTagger();
+            // FIXME(chrboum): this needs to be fixed, or deleted.
+//			Model model = getModel(grobidModel.getModelPath());
+//			tagger = model.createTagger();
 		} catch (Throwable thb) {
 			throw new GrobidException("Cannot instantiate a tagger", thb);
 		}
 		LOGGER.debug("end getTagger");
-		return tagger;
+        // FIXME(chrboum):
+//		return tagger;
+        return null;
 	}
 
 	/**
@@ -58,21 +61,24 @@ public class ModelMap {
 	 */
 	public static synchronized void initModels() {
 		LOGGER.info("Loading models");
-		GrobidModel[] models = GrobidModels.values();
-		for (GrobidModel model : models) {
-			if (new File(model.getModelPath()).exists()) {
-				getModel(model.getModelPath());
-			}
-			else {
-				LOGGER.info("Loading model " + model.getModelPath() + " failed because the path is not valid.");
-			}
-		}
+        // FIXME(chrboum): This needs to be fixed or deleted.
+//		GrobidModel[] models = GrobidModels.values();
+//		for (GrobidModel model : models) {
+//			if (new File(model.getModelPath()).exists()) {
+//				getModel(model.getModelPath());
+//			}
+//			else {
+//				LOGGER.info("Loading model " + model.getModelPath() + " failed because the path is not valid.");
+//			}
+//		}
 		LOGGER.info("Models loaded");
 	}
 
 
     public static Model getModel(GrobidModel grobidModel) {
-        return getModel(grobidModel.getModelPath());
+        // FIXME(chrboum): either fix or delete.
+        return null;
+//        return getModel(grobidModel.getModelPath());
     }
 
 

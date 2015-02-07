@@ -1,6 +1,7 @@
 package org.grobid.trainer.evaluation;
 
 import org.chasen.crfpp.Tagger;
+import org.grobid.core.GrobidModelStreamFactory;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.engines.tagging.GenericTagger;
 import org.grobid.core.engines.tagging.TaggerFactory;
@@ -32,15 +33,12 @@ public class PatentEvaluation {
     //where a test file would be put
     private String outputPath;
 
-    public PatentEvaluation() {
+    public PatentEvaluation(GrobidModelStreamFactory grobidModelStreamFactory) {
         evaluationPath = AbstractTrainer.getEvalCorpusBasePath().getAbsolutePath();
         outputPath = GrobidProperties.getInstance().getTempPath().getAbsolutePath();
-        taggerNPL = TaggerFactory.getTagger(GrobidModels.PATENT_NPL);
-//                new Tagger("-m " + GrobidProperties.getInstance().getModelPath(GrobidModels.PATENT_NPL).getAbsolutePath() + " ");
-        taggerPatent = TaggerFactory.getTagger(GrobidModels.PATENT_PATENT);
-                //new Tagger("-m " + GrobidProperties.getInstance().getModelPath(GrobidModels.PATENT_PATENT).getAbsolutePath() + " ");
-        taggerAll = TaggerFactory.getTagger(GrobidModels.PATENT_ALL);
-                //new Tagger("-m " + GrobidProperties.getInstance().getModelPath(GrobidModels.PATENT_ALL).getAbsolutePath() + " ");
+        taggerNPL = TaggerFactory.getTagger(grobidModelStreamFactory.Create(GrobidModels.PATENT_NPL));
+        taggerPatent = TaggerFactory.getTagger(grobidModelStreamFactory.Create(GrobidModels.PATENT_PATENT));
+        taggerAll = TaggerFactory.getTagger(grobidModelStreamFactory.Create(GrobidModels.PATENT_ALL));
     }
 
     /**

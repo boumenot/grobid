@@ -1,6 +1,8 @@
 package org.grobid.core.engines;
 
 import org.chasen.crfpp.Tagger;
+import org.grobid.core.GrobidModelStream;
+import org.grobid.core.GrobidModelStreamFactory;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.data.Affiliation;
 import org.grobid.core.exceptions.GrobidException;
@@ -19,8 +21,8 @@ import java.util.StringTokenizer;
 public class AffiliationAddressParser extends AbstractParser {
     public Lexicon lexicon = Lexicon.getInstance();
 
-    public AffiliationAddressParser() {
-        super(GrobidModels.AFFIILIATON_ADDRESS);
+    public AffiliationAddressParser(GrobidModelStreamFactory grobidModelStreamFactory) {
+        super(grobidModelStreamFactory.Create(GrobidModels.AFFIILIATON_ADDRESS));
     }
 
     public ArrayList<Affiliation> processing(String input) {

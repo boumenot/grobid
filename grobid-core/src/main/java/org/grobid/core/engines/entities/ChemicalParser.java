@@ -1,5 +1,6 @@
 package org.grobid.core.engines.entities;
 
+import org.grobid.core.GrobidModelStreamFactory;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.data.ChemicalEntity;
 import org.grobid.core.engines.AbstractParser;
@@ -18,11 +19,8 @@ import java.util.StringTokenizer;
  */
 public class ChemicalParser extends AbstractParser {
 
-//    private FeatureFactory featureFactory = null;
-
-    public ChemicalParser() {
-        super(GrobidModels.ENTITIES_CHEMISTRY);
-//        featureFactory = FeatureFactory.getInstance();
+    public ChemicalParser(GrobidModelStreamFactory grobidModelStreamFactory) {
+        super(grobidModelStreamFactory.Create(GrobidModels.ENTITIES_CHEMISTRY));
     }
 
     /**

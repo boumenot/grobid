@@ -72,7 +72,8 @@ public class Evaluation {
 
         try {
             if (citationParser == null) {
-                citationParser = new CitationParser(EngineParsers.Create());
+                // FIXME(chrboum): broken code!
+                citationParser = new CitationParser(EngineParsers.Create(), null);
             }
 
             // dis.available() returns 0 if the file does not have more lines.

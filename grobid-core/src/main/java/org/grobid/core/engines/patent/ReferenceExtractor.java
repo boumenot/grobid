@@ -1,6 +1,7 @@
 package org.grobid.core.engines.patent;
 
 import org.chasen.crfpp.Tagger;
+import org.grobid.core.GrobidModelStreamFactory;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.data.BibDataSet;
 import org.grobid.core.data.BiblioItem;
@@ -96,14 +97,15 @@ public class ReferenceExtractor implements Closeable {
     public ReferenceExtractor(
             EngineParsers parsers,
             PdfToXmlConverter pdfToXmlConverter,
-            DocumentFactory documentFactory) {
+            DocumentFactory documentFactory,
+            GrobidModelStreamFactory grobidModelStreamFactory) {
         this.parsers = parsers;
         this.pdfToXmlConverter = pdfToXmlConverter;
         this.documentFactory = documentFactory;
 
-        taggerNPL = TaggerFactory.getTagger(GrobidModels.PATENT_NPL);
-    	taggerAll = TaggerFactory.getTagger(GrobidModels.PATENT_ALL);
-    	taggerPatent = TaggerFactory.getTagger(GrobidModels.PATENT_PATENT);
+        taggerNPL = TaggerFactory.getTagger(grobidModelStreamFactory.Create(GrobidModels.PATENT_NPL));
+    	taggerAll = TaggerFactory.getTagger(grobidModelStreamFactory.Create(GrobidModels.PATENT_ALL));
+    	taggerPatent = TaggerFactory.getTagger(grobidModelStreamFactory.Create(GrobidModels.PATENT_PATENT));
     }
 
     /**

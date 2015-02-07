@@ -12,6 +12,7 @@ import java.util.StringTokenizer;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.grobid.core.GrobidModelStreamFactory;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.features.FeaturesVectorReference;
@@ -564,7 +565,7 @@ public class PatentParserTrainer extends AbstractTrainer{
     @Override
     public String evaluate() {
         //parameter 2 was in the former main() method of ParentEvaluation
-        return new PatentEvaluation().evaluate();
+        return new PatentEvaluation(new GrobidModelStreamFactory()).evaluate();
     }
 
     /**

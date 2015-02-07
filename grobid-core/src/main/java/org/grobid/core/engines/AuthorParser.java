@@ -1,5 +1,6 @@
 package org.grobid.core.engines;
 
+import org.grobid.core.GrobidModelStreamFactory;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.data.Person;
 import org.grobid.core.engines.tagging.GenericTagger;
@@ -21,17 +22,12 @@ import java.util.StringTokenizer;
  */
 public class AuthorParser implements Closeable {
 	private static Logger LOGGER = LoggerFactory.getLogger(AuthorParser.class);
-//    private final Model namesHeaderModel;
-//    private final Model namesCitationModel;
     private final GenericTagger namesHeaderParser;
     private final GenericTagger namesCitationParser;
 
-    public AuthorParser() {
-
-//        namesHeaderModel = ModelMap.getModel(GrobidModels.NAMES_HEADER);
-//        namesCitationModel = ModelMap.getModel(GrobidModels.NAMES_CITATION);
-        namesHeaderParser = TaggerFactory.getTagger(GrobidModels.NAMES_HEADER);
-        namesCitationParser = TaggerFactory.getTagger(GrobidModels.NAMES_CITATION);
+    public AuthorParser(GrobidModelStreamFactory grobidModelStreamFactory) {
+        namesHeaderParser = TaggerFactory.getTagger(grobidModelStreamFactory.Create(GrobidModels.NAMES_HEADER));
+        namesCitationParser = TaggerFactory.getTagger(grobidModelStreamFactory.Create(GrobidModels.NAMES_CITATION));
     }
 
     /**

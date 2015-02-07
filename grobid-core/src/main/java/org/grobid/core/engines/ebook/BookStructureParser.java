@@ -1,5 +1,6 @@
 package org.grobid.core.engines.ebook;
 
+import org.grobid.core.GrobidModelStreamFactory;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.document.Document;
 import org.grobid.core.document.DocumentFactory;
@@ -35,8 +36,9 @@ public class BookStructureParser extends AbstractParser {
     public BookStructureParser(
             PdfToXmlConverter pdfToXmlConverter,
             DocumentFactory documentFactory,
+            GrobidModelStreamFactory grobidModelStreamFactory,
             String fileEndingTeiFullText) {
-        super(GrobidModels.EBOOK);
+        super(grobidModelStreamFactory.Create(GrobidModels.EBOOK));
 
         this.pdfToXmlConverter = pdfToXmlConverter;
         this.documentFactory = documentFactory;

@@ -102,7 +102,8 @@ public abstract class AbstractTrainer implements Trainer {
 
 	protected GenericTagger getTagger() {
 		if (tagger == null) {
-			tagger = TaggerFactory.getTagger(model);
+            // FIXME(chrboum): broken code!
+//			tagger = TaggerFactory.getTagger(model);
 		}
 
 		return tagger;

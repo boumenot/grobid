@@ -2,6 +2,7 @@ package org.grobid.core.engines;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.grobid.core.GrobidModelStreamFactory;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.data.BiblioItem;
 import org.grobid.core.data.Date;
@@ -48,8 +49,9 @@ public class HeaderParser extends AbstractParser {
 	public HeaderParser(
 			EngineParsers parsers,
 			PdfToXmlConverter pdfToXmlConverter,
-			DocumentFactory documentFactory) {
-		super(GrobidModels.HEADER);
+			DocumentFactory documentFactory,
+            GrobidModelStreamFactory grobidModelStreamFactory) {
+		super(grobidModelStreamFactory.Create(GrobidModels.HEADER));
 		this.parsers = parsers;
 		this.pdfToXmlConverter = pdfToXmlConverter;
 		this.documentFactory = documentFactory;

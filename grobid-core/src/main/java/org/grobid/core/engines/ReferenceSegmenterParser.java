@@ -1,5 +1,7 @@
 package org.grobid.core.engines;
 
+import org.grobid.core.GrobidModel;
+import org.grobid.core.GrobidModelStreamFactory;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.engines.citations.LabeledReferenceResult;
 import org.grobid.core.engines.citations.ReferenceSegmenter;
@@ -22,8 +24,8 @@ import java.util.StringTokenizer;
 public class ReferenceSegmenterParser extends AbstractParser implements ReferenceSegmenter{
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReferenceSegmenterParser.class);
 	
-    protected ReferenceSegmenterParser() {
-        super(GrobidModels.REFERENCE_SEGMENTER);
+    protected ReferenceSegmenterParser(GrobidModelStreamFactory grobidModelStreamFactory) {
+        super(grobidModelStreamFactory.Create(GrobidModels.REFERENCE_SEGMENTER));
     }
 
     /**

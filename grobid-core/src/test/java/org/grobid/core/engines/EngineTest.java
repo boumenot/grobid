@@ -631,9 +631,9 @@ public class EngineTest {
 
     @Test
     public void testDateParser() throws Exception {
-
+        // FIXME(chrboum): broken test case
         String d = "12 August, 1985";
-        List<Date> processing = new DateParser().processing(d);
+        List<Date> processing = new DateParser(null).processing(d);
         System.out.println(processing);
     }
 
@@ -824,7 +824,8 @@ public class EngineTest {
 
 //        block = "Jacobsen, S., \n2013. Serum amyloid A and haptoglobin ";
         Engine engine = GrobidFactory.getInstance().getEngine();
-        ReferenceSegmenterParser p = new ReferenceSegmenterParser();
+        // FIXME(chrboum): broken test case
+        ReferenceSegmenterParser p = new ReferenceSegmenterParser(null);
 
         System.out.println("Testing block: " + block);
 

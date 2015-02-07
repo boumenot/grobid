@@ -1,5 +1,6 @@
 package org.grobid.core.engines;
 
+import org.grobid.core.GrobidModelStreamFactory;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.data.Date;
 import org.grobid.core.exceptions.GrobidException;
@@ -17,8 +18,8 @@ import java.util.regex.Pattern;
  */
 public class DateParser extends AbstractParser {
 
-    public DateParser() {
-        super(GrobidModels.DATE);
+    public DateParser(GrobidModelStreamFactory grobidModelStreamFactory) {
+        super(grobidModelStreamFactory.Create(GrobidModels.DATE));
     }
 
     /**

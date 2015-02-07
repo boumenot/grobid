@@ -6,8 +6,6 @@ package org.grobid.core;
 public interface GrobidModel {
     String getFolderName();
 
-    String getModelPath();
-
     String getModelName();
 
     String getTemplateName();

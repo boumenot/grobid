@@ -3,6 +3,7 @@ package org.grobid.core.jni;
 import fr.limsi.wapiti.SWIGTYPE_p_mdl_t;
 import fr.limsi.wapiti.Wapiti;
 import org.grobid.core.GrobidModel;
+import org.grobid.core.GrobidModelStream;
 import org.grobid.core.exceptions.GrobidException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +25,8 @@ public class WapitiModel {
         init();
     }
 
-    public WapitiModel(GrobidModel grobidModel) {
-        modelFile = new File(grobidModel.getModelPath());
+    public WapitiModel(GrobidModelStream grobidModelStream) {
+        this(new File(grobidModelStream.getModelPath()));
         init();
     }
 
