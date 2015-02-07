@@ -813,7 +813,7 @@ public class GrobidProperties {
                 get_GROBID_HOME_PATH().getAbsolutePath(),
                 FOLDER_NAME_MODELS,
                 model.getFolderName(),
-                FILE_NAME_MODEL + "." + grobidCRFEngine.getExt());
+                grobidCRFEngine.getFileName(FILE_NAME_MODEL));
 
         return p.toFile();
     }

@@ -20,6 +20,10 @@ public enum GrobidCRFEngine {
         return ext;
     }
 
+    public String getFileName(String modelName) {
+        return String.format("%s.%s", modelName, this.getExt());
+    }
+
     public static GrobidCRFEngine get(String name) {
         if (name == null) {
             throw new IllegalArgumentException("Name of a Grobid CRF engine must not be null");
