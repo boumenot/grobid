@@ -28,16 +28,12 @@ import java.util.StringTokenizer;
 public class CitationParser extends AbstractParser {
     private Consolidation consolidator = null;
 
-//    private File tmpPath = null;
-//	private String pathXML = null;
-
     public Lexicon lexicon = Lexicon.getInstance();
     private EngineParsers parsers;
 
     public CitationParser(EngineParsers parsers, CntManager cntManager) {
         super(GrobidModels.CITATION, cntManager);
         this.parsers = parsers;
-//        tmpPath = GrobidProperties.getTempPath();
     }
 
     public CitationParser(EngineParsers parsers) {
@@ -147,36 +143,34 @@ public class CitationParser extends AbstractParser {
         }
     }
 
-    public List<BibDataSet> processingReferenceSection(Document doc, ReferenceSegmenter referenceSegmenter, boolean consolidate) throws Exception {
-        ArrayList<BibDataSet> results = new ArrayList<BibDataSet>();
-        try {
+    public List<BibDataSet> processingReferenceSection(Document doc, ReferenceSegmenter referenceSegmenter, boolean consolidate) {
+        List<BibDataSet> results = new ArrayList<BibDataSet>();
 
-            String referencesStr = doc.getDocumentPartText(SegmentationLabel.REFERENCES);
-            if (!referencesStr.isEmpty()) {
-                cntManager.i(CitationParserCounters.NOT_EMPTY_REFERENCES_BLOCKS);
-            }
-//			List<String> tokenizations = doc.getTokenizationsReferences();
+        String referencesStr = doc.getDocumentPartText(SegmentationLabel.REFERENCES);
 
-            List<LabeledReferenceResult> references = referenceSegmenter.extract(referencesStr);
+        if (StringUtils.isEmpty(referencesStr)) {
+            cntManager.i(CitationParserCounters.EMPTY_REFERENCES_BLOCKS);
+            return results;
+        }
 
-            if (references == null) {
-                cntManager.i(CitationParserCounters.NULL_SEGMENTED_REFERENCES_LIST);
-                return results;
-            } else {
-                cntManager.i(CitationParserCounters.SEGMENTED_REFERENCES, references.size());
-            }
+        cntManager.i(CitationParserCounters.NOT_EMPTY_REFERENCES_BLOCKS);
 
-            for (LabeledReferenceResult ref: references) {
-                BiblioItem bib = processing(ref.getReferenceText(), consolidate);
-                BibDataSet bds = new BibDataSet();
+        List<LabeledReferenceResult> references = referenceSegmenter.extract(referencesStr);
 
-                bds.setRefSymbol(ref.getLabel());
-                bds.setResBib(bib);
-                bds.setRawBib(ref.getReferenceText());
-                results.add(bds);
-            }
-        } catch (Exception e) {
-            throw new GrobidException("An exception occurred while running Grobid.", e);
+        if (references == null) {
+            cntManager.i(CitationParserCounters.NULL_SEGMENTED_REFERENCES_LIST);
+            return results;
+        } else {
+            cntManager.i(CitationParserCounters.SEGMENTED_REFERENCES, references.size());
+        }
+
+        for (LabeledReferenceResult ref : references) {
+            BiblioItem bib = processing(ref.getReferenceText(), consolidate);
+            BibDataSet bds = new BibDataSet();
+            bds.setRefSymbol(ref.getLabel());
+            bds.setResBib(bib);
+            bds.setRawBib(ref.getReferenceText());
+            results.add(bds);
         }
         return results;
     }
@@ -184,35 +178,14 @@ public class CitationParser extends AbstractParser {
 
     public List<BibDataSet> processingReferenceSection(String input,
                                                        ReferenceSegmenter referenceSegmenter,
-                                                       boolean consolidate) throws Exception {
-        List<BibDataSet> results = new ArrayList<BibDataSet>();
+                                                       boolean consolidate) {
+        List<BibDataSet> results;
         try {
 
             Document doc = parsers.getSegmentationParser().processing(input);
-
-            String referencesStr = doc.getDocumentPartText(SegmentationLabel.REFERENCES);
-            if ((referencesStr != null) && (!referencesStr.isEmpty())) {
-                cntManager.i(CitationParserCounters.NOT_EMPTY_REFERENCES_BLOCKS);
-            }
-//			List<String> tokenizations = doc.getTokenizationsReferences();
-
-            List<LabeledReferenceResult> references = referenceSegmenter.extract(referencesStr);
-
-            if (references == null) {
-                cntManager.i(CitationParserCounters.NULL_SEGMENTED_REFERENCES_LIST);
-                return results;
-            } else {
-                cntManager.i(CitationParserCounters.SEGMENTED_REFERENCES, references.size());
-            }
-
-            for (LabeledReferenceResult ref : references) {
-                BiblioItem bib = processing(ref.getReferenceText(), consolidate);
-                BibDataSet bds = new BibDataSet();
-                bds.setResBib(bib);
-                bds.setRefSymbol(ref.getLabel());
-                bds.setRawBib(ref.getReferenceText());
-                results.add(bds);
-            }
+			results = processingReferenceSection(doc, referenceSegmenter, consolidate); 
+        } catch (GrobidException e) {
+            throw e;
         } catch (Exception e) {
             throw new GrobidException("An exception occurred while running Grobid.", e);
         }
@@ -230,8 +203,8 @@ public class CitationParser extends AbstractParser {
      * @return bibilio item
      */
     public BiblioItem resultExtraction(String result,
-                                       boolean volumePostProcess, 
-									   List<String> tokenizations) {
+                                       boolean volumePostProcess,
+                                       List<String> tokenizations) {
         BiblioItem biblio = new BiblioItem();
 
         StringTokenizer st = new StringTokenizer(result, "\n");
@@ -391,14 +364,14 @@ public class CitationParser extends AbstractParser {
                 } else
                     biblio.setVolumeBlock(s2, volumePostProcess);
             } else if ((s1.equals("<issue>")) || (s1.equals("I-<issue>"))) {
-	            if (biblio.getIssue() != null) {
+                if (biblio.getIssue() != null) {
                     if (addSpace)
                         biblio.setIssue(biblio.getIssue() + " " + s2);
                     else
                         biblio.setIssue(biblio.getIssue() + s2);
                 } else
                     biblio.setIssue(s2);
-	        } else if ((s1.equals("<editor>")) || (s1.equals("I-<editor>"))) {
+            } else if ((s1.equals("<editor>")) || (s1.equals("I-<editor>"))) {
                 if (biblio.getEditors() != null) {
                     if (addSpace)
                         biblio.setEditors(biblio.getEditors() + " " + s2);

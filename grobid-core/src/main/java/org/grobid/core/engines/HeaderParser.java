@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.StringTokenizer;
-import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 
 /**
@@ -53,15 +52,14 @@ public class HeaderParser extends AbstractParser {
 		this.documentFactory = documentFactory;
 	}
 
-	/**
-	 * Processing with application of the segmentation model
-	 */ 
-	public Pair<String, Document> processing(String input, boolean consolidate, BiblioItem resHeader) throws TimeoutException {
-        try {
-
-            Document doc = parsers.getSegmentationParser().processing(input, true);
-
-			String tei = processingHeaderSection(doc, consolidate, resHeader);
+    /**
+     * Processing with application of the segmentation model
+     */ 
+    public Pair<String, Document> processing(String input, boolean consolidate, BiblioItem resHeader) {
+        Document doc = parsers.getSegmentationParser().processing(input);
+        
+        try{
+            String tei = processingHeaderSection(doc, consolidate, resHeader);
             return new ImmutablePair<String, Document>(tei, doc);
         } catch (TimeoutException timeoutExp) {
             throw new TimeoutException("A time out occurred");
@@ -69,36 +67,35 @@ public class HeaderParser extends AbstractParser {
             throw new GrobidException("An exception occurred while running Grobid: " + exp);
         } 
     }
-	
+    
 	/**
 	 *  Processing without application of the segmentation model, regex are used to identify the header
 	 *  zone.  
 	 */ 
 	public Pair<String, Document> processing2(String input, boolean consolidate, BiblioItem resHeader) throws TimeoutException {
-        File pathXML = null;
-        try {
-			pathXML = this.pdfToXmlConverter.convertHeaderOnly(new File(input));
-			Document doc = this.documentFactory.fromXmlPdf(
-					new FileInputStream(pathXML));
-
-            String tei = processingHeaderBlock(consolidate, doc, resHeader);
-            return new ImmutablePair<String, Document>(tei, doc);
-        } catch (TimeoutException timeoutExp) {
-            throw new TimeoutException("A time out occurred");
-        } catch (final Exception exp) {
-            throw new GrobidException("An exception occurred while running Grobid on file " + input + ": " + exp);
-        } finally {
-            Document.cleanLxmlFile(pathXML, true);
+            File pathXML = null;
+            try {
+                pathXML = this.pdfToXmlConverter.convertHeaderOnly(new File(input));
+                Document doc = this.documentFactory.fromXmlPdf(
+                    new FileInputStream(pathXML));
+                
+                String tei = processingHeaderBlock(consolidate, doc, resHeader);
+                return new ImmutablePair<String, Document>(tei, doc);
+            } catch (TimeoutException timeoutExp) {
+                throw new TimeoutException("A time out occurred");
+            } catch (final Exception exp) {
+                throw new GrobidException("An exception occurred while running Grobid on file " + input + ": " + exp);
+            } finally {
+                Document.cleanLxmlFile(pathXML, true);
+            }
         }
-    }
 
 	public String processingHeaderBlock(boolean consolidate, Document doc, BiblioItem resHeader) {
-		try {
 			String header;
 			if (doc.getBlockDocumentHeaders() == null) {
-				header = doc.getHeaderFeatured(true, true, true);
+				header = doc.getHeaderFeatured(true, true);
 			} else {
-				header = doc.getHeaderFeatured(true, false, true);
+				header = doc.getHeaderFeatured(false, true);
 			}
 			List<String> tokenizations = doc.getTokenizationsHeader();
  		   	
@@ -119,8 +116,8 @@ public class HeaderParser extends AbstractParser {
 					// correct
 					contentSample += doc.getBody();
 				}
-				Language langu = languageUtilities.runLanguageId(contentSample);
-				if (langu != null) {
+                Language langu = languageUtilities.runLanguageId(contentSample);
+                if (langu != null) {
 					String lang = langu.getLangId();
 					doc.setLanguage(lang);
 					resHeader.setLanguage(lang);
@@ -128,8 +125,8 @@ public class HeaderParser extends AbstractParser {
 
 				if (resHeader != null) {
 					if (resHeader.getAbstract() != null) {
-						// resHeader.setAbstract(utilities.dehyphenizeHard(resHeader.getAbstract()));
-						resHeader.setAbstract(TextUtilities.dehyphenize(resHeader.getAbstract()));
+						resHeader.setAbstract(TextUtilities.dehyphenizeHard(resHeader.getAbstract()));
+						//resHeader.setAbstract(TextUtilities.dehyphenize(resHeader.getAbstract()));
 					}
 					BiblioItem.cleanTitles(resHeader);
 					if (resHeader.getTitle() != null) {
@@ -152,7 +149,7 @@ public class HeaderParser extends AbstractParser {
 					boolean fragmentedAuthors = false;
 					boolean hasMarker = false;
 					List<Integer> authorsBlocks = new ArrayList<Integer>();
-					String[] authorSegments = null;
+					String[] authorSegments;
 					if (resHeader.getAuthors() != null) {
 						ArrayList<String> auts;
 						authorSegments = resHeader.getAuthors().split("\n");
@@ -258,20 +255,17 @@ public class HeaderParser extends AbstractParser {
 			}
 			
 			TEIFormater teiFormater = new TEIFormater(doc);
-			StringBuffer tei = teiFormater.toTEIHeader(resHeader, true, false, null);
+			StringBuffer tei = teiFormater.toTEIHeader(resHeader, false, null, false);
             tei.append("\t</text>\n");
             tei.append("</TEI>\n");
 			//LOGGER.debug(tei.toString());
 			return tei.toString();
-		} catch (Exception e) {
-			throw new GrobidException("An exception occured while running Grobid.", e);
-		}
 	}
 
 	/**
 	 *  Header processing after application of the segmentation model
 	 */
-	public String processingHeaderSection(Document doc, boolean consolidate, BiblioItem resHeader) throws Exception {
+	public String processingHeaderSection(Document doc, boolean consolidate, BiblioItem resHeader) {
         try {
             SortedSet<DocumentPiece> documentHeaderParts = doc.getDocumentPart(SegmentationLabel.HEADER);
 			List<String> tokenizations = doc.getTokenizations();
@@ -307,7 +301,7 @@ public class HeaderParser extends AbstractParser {
 					// we need more textual content to ensure that the language identification will be
 					// correct
 					SortedSet<DocumentPiece> documentBodyParts = doc.getDocumentPart(SegmentationLabel.BODY);
-					StringBuffer contentBuffer = new StringBuffer();
+					StringBuilder contentBuffer = new StringBuilder();
 					for(DocumentPiece docPiece : documentBodyParts) {
 						DocumentPointer dp1 = docPiece.a;
 						DocumentPointer dp2 = docPiece.b;
@@ -455,7 +449,7 @@ public class HeaderParser extends AbstractParser {
 				}
 
 				TEIFormater teiFormater = new TEIFormater(doc);
-				StringBuffer tei = teiFormater.toTEIHeader(resHeader, true, false, null);
+				StringBuffer tei = teiFormater.toTEIHeader(resHeader, false, null, false);
 	            tei.append("\t</text>\n");
 	            tei.append("</TEI>\n");
 				//LOGGER.debug(tei);
@@ -766,7 +760,7 @@ public class HeaderParser extends AbstractParser {
 			Document doc = this.documentFactory.fromXmlPdf(
 					new FileInputStream(pathXML));
 
-            String header = doc.getHeaderFeatured(true, true, true);
+            String header = doc.getHeaderFeatured(true, true);
             List<String> tokenizations = doc.getTokenizationsHeader();
 
             // we write the header untagged

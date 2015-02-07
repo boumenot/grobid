@@ -50,16 +50,16 @@ public class LanguageUtilities {
 			} catch (ClassCastException e) {
 				throw new GrobidException("Class " + className
 						+ " must implement "
-						+ LanguageDetectorFactory.class.getName());
+						+ LanguageDetectorFactory.class.getName(), e);
 			} catch (ClassNotFoundException e) {
 				throw new GrobidException(
 						"Class "
 								+ className
 								+ " were not found in the classpath. "
-								+ "Make sure that it is provided correctly is in the classpath");
+								+ "Make sure that it is provided correctly is in the classpath", e);
 			} catch (InstantiationException e) {
 				throw new GrobidException("Class " + className
-						+ " should have a default constructor");
+						+ " should have a default constructor", e);
 			} catch (IllegalAccessException e) {
 				throw new GrobidException(e);
 			}
@@ -78,7 +78,12 @@ public class LanguageUtilities {
 		if (!useLanguageId) {
 			return null;
 		}
-		return ldf.getInstance().detect(text);
-	}
+        try {
+            return ldf.getInstance().detect(text);
+        } catch (Exception e) {
+            LOGGER.warn("Cannot detect language because of: " + e.getClass().getName() + ": " + e.getMessage());
+            return null;
+        }
+    }
 
 }

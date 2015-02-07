@@ -87,7 +87,8 @@ public class TextUtilities {
     }
 
     /**
-     * Text extracted from a PDF is usually hyphenized, which is not desirable.
+     * Text extracted from a PDF is usually hyphenized, which is not desirable. This 
+	 * version supposes that the ends of line are preserved in the input text. 
      *
      * @param text the string to be processed with preserved end of lines.
      * @return Returns the dehyphenized string.
@@ -166,7 +167,8 @@ public class TextUtilities {
     /**
      * Text extracted from a PDF is usually hyphenized, which is not desirable.
      * This version supposes that the end of line are lost and than hyphenation
-     * could appear everywhere.
+     * could appear everywhere. So a dictionary is used to control the recognition
+     * of hyphen. 
      *
      * @param text the string to be processed without preserved end of lines.
      * @return Returns the dehyphenized string.
@@ -564,7 +566,7 @@ public class TextUtilities {
      * @param input the characters creating a segment (typically space and punctuations).
      * @return Returns the string without accent.
      */
-    public final static ArrayList<String> segment(String input, String segments) {
+    public final static List<String> segment(String input, String segments) {
         if (input == null)
             return null;
         ArrayList<String> result = new ArrayList<String>();
@@ -1118,4 +1120,69 @@ public class TextUtilities {
         return middle.toString();
 
     }
+	
+	/**
+	 * Give the punctuation profile of a line, i.e. the concatenation of all the punctuations 
+	 * occuring in the line. 
+	 * 
+	 * @param line
+	 *            the string corresponding to a line
+	 * @return the punctuation profile as a string, empty string is no punctuation
+	 * @throws Exception
+	 */
+	public static String punctuationProfile(String line) {
+		String profile = "";
+		if ((line == null) || (line.length() == 0)) {
+			return profile;
+		}
+		for (int i = 0; i < line.length(); i++) {
+			char c = line.charAt(i);
+			if (c == ' ') {
+				continue;
+			}
+			if (fullPunctuations.indexOf(c) != -1)
+				profile += c;
+		}
+		return profile;
+	}
+	
+	/**
+	 * Return the number of token in a line given an existing global tokenization and a current 
+	 * start position of the line in this global tokenization. 
+	 * 
+	 * @param line
+	 *            the string corresponding to a line
+ 	 * @param currentLinePos
+	 *            position of the line in the tokenization	
+ 	 * @param tokenization
+	 *            the global tokenization where the line appears			
+	 * @return the punctuation profile as a string, empty string is no punctuation
+	 * @throws Exception
+	 */
+	public static int getNbTokens(String line, int currentLinePos, List<String> tokenization) 
+	throws Exception {
+		if ( (line == null) || (line.length() == 0) )
+			return 0;
+		String currentToken = tokenization.get(currentLinePos);
+		while ( (currentLinePos <tokenization.size()) && 
+				(currentToken.equals(" ") || currentToken.equals("\n") ) ) {
+			currentLinePos++;
+			currentToken = tokenization.get(currentLinePos);
+		}
+		if (!line.trim().startsWith(currentToken)) {
+			System.out.println("out of sync. : " + currentToken);
+			throw new IllegalArgumentException("line start does not match given tokenization start");
+		}
+		int nbTokens = 0;
+		int posMatch = 0; // current position in line
+		for(int p = currentLinePos; p < tokenization.size(); p++) {
+			currentToken = tokenization.get(p);
+			posMatch = line.indexOf(currentToken, posMatch);
+			if (posMatch == -1)
+				break;
+			nbTokens++;
+		}
+		return nbTokens;
+	}
+	
 }

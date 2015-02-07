@@ -42,7 +42,7 @@ public class PDF2XMLSaxParser extends DefaultHandler {
 	private List<String> images = null;
 
 	private StringBuffer blabla = null;
-	private ArrayList<String> tokenizations = null;
+	private List<String> tokenizations = null;
 
 	private int currentPage = -1;
 
@@ -59,7 +59,7 @@ public class PDF2XMLSaxParser extends DefaultHandler {
 		tokenizations = new ArrayList<String>();
 	}
 
-	public ArrayList<String> getTokenization() {
+	public List<String> getTokenization() {
 		return tokenizations;
 	}
 
@@ -387,9 +387,12 @@ public class PDF2XMLSaxParser extends DefaultHandler {
 
 						LayoutToken token = new LayoutToken();
 
-						if ((previousToken != null) && (tok != null)
+						if ( (previousToken != null) && (tok != null)
 								&& (previousToken.length() > 0)
-								&& (tok.length() > 0) && blabla.length() > 0) {
+								&& (tok.length() > 0) 
+								&& (blabla.length() > 0)
+						        && (previousTok.getText() != null)
+								&& (previousTok.getText().length() > 1)	) {
 
 							Character leftChar = previousTok.getText().charAt(
 									previousTok.getText().length() - 1);

@@ -8,6 +8,7 @@ import org.grobid.core.lang.Language;
 import org.grobid.core.lexicon.Lexicon;
 import org.grobid.core.utilities.LanguageUtilities;
 import org.grobid.core.utilities.TextUtilities;
+import org.grobid.core.utilities.KeyGen;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -1461,22 +1462,29 @@ public class BiblioItem {
      * Export to BibTeX format
      */
     public String toBibTeX() {
+		return toBibTeX("id");
+	}
+
+    /**
+     * Export to BibTeX format
+     */
+    public String toBibTeX(String id) {
         String bibtex = "";
         try {
 
             if (journal != null) {
-                bibtex += "@article{" + "id,\n";
+                bibtex += "@article{" + id + ",\n";
             } else if (book_type != null) {
-                bibtex += "@techreport{" + "id,\n";
+                bibtex += "@techreport{" + id + ",\n";
             } else if (bookTitle != null) {
                 if ((bookTitle.startsWith("proc")) || (bookTitle.startsWith("Proc")) ||
                         (bookTitle.startsWith("In Proc")) || (bookTitle.startsWith("In proc"))) {
-                    bibtex += "@inproceedings{" + "id,\n";
+                    bibtex += "@inproceedings{" + id + ",\n";
                 } else {
-                    bibtex += "@article{" + "id,\n"; // ???
+                    bibtex += "@article{" + id + ",\n"; // ???
                 }
             } else {
-                bibtex += "@misc{" + "id,\n"; // ???
+                bibtex += "@misc{" + id + ",\n"; // ???
             }
 
             // author 
@@ -1557,6 +1565,16 @@ public class BiblioItem {
                 bibtex += ",\npages\t=\t\"" + pageRange + "\"";
             }
 
+			// volume
+			if (volumeBlock != null) {
+				bibtex += ",\nvolume\t=\t\"" + volumeBlock + "\"";
+			}
+
+			// issue (named number in BibTeX)
+			if (issue != null) {
+				bibtex += ",\nnumber\t=\t\"" + issue + "\"";
+			}
+			
             // abstract
             if (abstract_ != null) {
                 if (abstract_.length() > 0) {
@@ -1591,8 +1609,13 @@ public class BiblioItem {
      * @param n - the index of the bibliographical record, the corresponding id will be b+n
      */
     public String toTEI(int n) {
-        return toTEI(n, 0);
+        return toTEI(n, 0, false);
     }
+
+    public String toTEI(int n, boolean generateIDs) {
+        return toTEI(n, 0, generateIDs);
+    }
+
 
     /**
      * Export the bibliographical item into a TEI BiblStruct string
@@ -1600,7 +1623,7 @@ public class BiblioItem {
      * @param n      - the index of the bibliographical record, the corresponding id will be b+n
      * @param indent - the tabulation indentation for the output of the xml elements
      */
-    public String toTEI(int n, int indent) {
+    public String toTEI(int n, int indent, boolean generateIDs) {
         StringBuilder tei = new StringBuilder();
         try {
             // we just produce here xml strings
@@ -1650,11 +1673,16 @@ public class BiblioItem {
                     tei.append(" level=\"m\" type=\"main\"");
                 } else
                     tei.append(" level=\"a\" type=\"main\"");
+				if (generateIDs) {
+					String divID = KeyGen.getKey().substring(0,7);
+					tei.append(" id=\"_" + divID + "\"");
+				}
                 // here check the language ?
                 if (english_title == null) {
                     tei.append(">").append(TextUtilities.HTMLEncode(title)).append("</title>\n");
                 } else {
-                    tei.append(" xml:lang=\"").append(language).append("\">").append(TextUtilities.HTMLEncode(title)).append("</title>\n");
+                    tei.append(" xml:lang=\"").append(language)
+						.append("\">").append(TextUtilities.HTMLEncode(title)).append("</title>\n");
                 }
             }
 
@@ -1676,14 +1704,18 @@ public class BiblioItem {
                         } else {
                             tei.append(" level=\"a\"");
                         }
-
-                        tei.append(" xml:lang=\"en\">").append(TextUtilities.HTMLEncode(english_title)).append("</title>\n");
+						if (generateIDs) {
+							String divID = KeyGen.getKey().substring(0,7);
+							tei.append(" id=\"_" + divID + "\"");
+						}
+                        tei.append(" xml:lang=\"en\">")
+							.append(TextUtilities.HTMLEncode(english_title)).append("</title>\n");
                     }
                 }
                 // if it's not something in English, we will write it anyway as note without type at the end
             }
 
-            tei.append(toTEIAuthorBlock(2, false));
+            tei.append(toTEIAuthorBlock(2));
 
             if ((bookTitle != null) || (journal != null)) {
                 for (int i = 0; i < indent + 1; i++) {
@@ -1700,7 +1732,12 @@ public class BiblioItem {
                 for (int i = 0; i < indent + 2; i++) {
                     tei.append("\t");
                 }
-                tei.append("<title level=\"m\">" + TextUtilities.HTMLEncode(bookTitle) + "</title>\n");
+                tei.append("<title level=\"m\"");
+				if (generateIDs) {
+					String divID = KeyGen.getKey().substring(0,7);
+					tei.append(" id=\"_" + divID + "\"");
+				}
+				tei.append(">" + TextUtilities.HTMLEncode(bookTitle) + "</title>\n");
 
                 if (editors != null) {
                     //postProcessingEditors();
@@ -1890,7 +1927,12 @@ public class BiblioItem {
                 for (int i = 0; i < indent + 2; i++) {
                     tei.append("\t");
                 }
-                tei.append("<title level=\"j\">" + TextUtilities.HTMLEncode(journal) + "</title>\n");
+                tei.append("<title level=\"j\"");
+				if (generateIDs) {
+					String divID = KeyGen.getKey().substring(0,7);
+					tei.append(" id=\"_" + divID + "\"");
+				}	
+				tei.append(">" + TextUtilities.HTMLEncode(journal) + "</title>\n");
 
                 if (getJournalAbbrev() != null) {
                     for (int i = 0; i < indent + 2; i++) {
@@ -3081,10 +3123,6 @@ public class BiblioItem {
      * Create the TEI encoding for the author+affiliation block for the current biblio object.
      */
     public String toTEIAuthorBlock(int nbTag) {
-        return toTEIAuthorBlock(nbTag, true);
-    }
-
-    public String toTEIAuthorBlock(int nbTag, boolean peer) {
         StringBuffer tei = new StringBuffer();
         int nbAuthors = 0;
         int nbAffiliations = 0;
@@ -3138,42 +3176,36 @@ public class BiblioItem {
                     tei.append("<author");
 
                     if (autRank == contactAut) {
-                        tei.append(" role=\"corresp\"");
-                        if (peer) {
-                            tei.append(" type=\"corresp\">\n");
-                        } else
-                            tei.append(">\n");
+                        tei.append(" role=\"corresp\">\n");
                     } else
                         tei.append(">\n");
 
-                    {
-                        TextUtilities.appendN(tei, '\t', nbTag + 1);
-                        tei.append("<persName>\n");
-                        if (author.getFirstName() != null) {
-                            TextUtilities.appendN(tei, '\t', nbTag + 2);
-                            tei.append("<forename type=\"first\">" +
-                                    TextUtilities.HTMLEncode(author.getFirstName()) + "</forename>\n");
-                        }
-                        if (author.getMiddleName() != null) {
-                            TextUtilities.appendN(tei, '\t', nbTag + 2);
-                            tei.append("<forename type=\"middle\">" +
-                                    TextUtilities.HTMLEncode(author.getMiddleName()) + "</forename>\n");
-                        }
-                        if (author.getLastName() != null) {
-                            TextUtilities.appendN(tei, '\t', nbTag + 2);
-                            tei.append("<surname>" +
-                                    TextUtilities.HTMLEncode(author.getLastName()) + "</surname>\n");
-                            //author.getLastName() + "</surname>\n");
-                        }
-                        if (author.getTitle() != null) {
-                            TextUtilities.appendN(tei, '\t', nbTag + 2);
-                            tei.append("<roleName>" +
-                                    TextUtilities.HTMLEncode(author.getTitle()) + "</roleName>\n");
-                        }
-
-                        TextUtilities.appendN(tei, '\t', nbTag + 1);
-                        tei.append("</persName>\n");
+                    TextUtilities.appendN(tei, '\t', nbTag + 1);
+                    tei.append("<persName>\n");
+                    if (author.getFirstName() != null) {
+                        TextUtilities.appendN(tei, '\t', nbTag + 2);
+                        tei.append("<forename type=\"first\">" +
+                                TextUtilities.HTMLEncode(author.getFirstName()) + "</forename>\n");
                     }
+                    if (author.getMiddleName() != null) {
+                        TextUtilities.appendN(tei, '\t', nbTag + 2);
+                        tei.append("<forename type=\"middle\">" +
+                                TextUtilities.HTMLEncode(author.getMiddleName()) + "</forename>\n");
+                    }
+                    if (author.getLastName() != null) {
+                        TextUtilities.appendN(tei, '\t', nbTag + 2);
+                        tei.append("<surname>" +
+                                TextUtilities.HTMLEncode(author.getLastName()) + "</surname>\n");
+                        //author.getLastName() + "</surname>\n");
+                    }
+                    if (author.getTitle() != null) {
+                        TextUtilities.appendN(tei, '\t', nbTag + 2);
+                        tei.append("<roleName>" +
+                                TextUtilities.HTMLEncode(author.getTitle()) + "</roleName>\n");
+                    }
+
+                    TextUtilities.appendN(tei, '\t', nbTag + 1);
+                    tei.append("</persName>\n");
 
                     if (author.getEmail() != null) {
                         TextUtilities.appendN(tei, '\t', nbTag + 1);

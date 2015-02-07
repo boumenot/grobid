@@ -17,6 +17,7 @@ import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.core.utilities.LanguageUtilities;
 import org.grobid.core.utilities.Pair;
 import org.grobid.core.utilities.TextUtilities;
+import org.grobid.core.utilities.KeyGen;
 import org.grobid.core.engines.citations.LabeledReferenceResult;
 import org.grobid.core.engines.citations.ReferenceSegmenter;
 import org.grobid.core.engines.counters.CitationParserCounters;
@@ -62,68 +63,30 @@ public class FullTextParser extends AbstractParser {
     }
 
     /**
-     * TODO some documentation...
-     *
-     *
+     * Machine-learning recognition of the complete full text structures.
      *
      * @param input filename of pdf file
      * @param consolidateHeader if consolidate header
      * @param consolidateCitations if consolidate citations
-     * @return a pair consisting of TEI string representation and a document itseld
+	 * @param mode, 0 for light re-structuring (more robust), 1 for full re-structuring
+     * @param assetPath if not null, the PDF assets (embedded images) will be extracted 
+	 * and saved under the indicated repository path
+	 * @param startPage give the starting page to consider in case of segmentation of the 
+	 * PDF, -1 for the first page (default) 
+	 * @param endPage give the end page to consider in case of segmentation of the 
+	 * PDF, -1 for the last page (default) 
+	 * @param generateIDs if true, generate random attribute id on the textual elements of 
+	 * the resulting TEI 
+     * @return the document object with built TEI
      */
-    
-    /*public Document processing(String input, boolean consolidateHeader, boolean consolidateCitations) {
-        if (input == null) {
-            throw new GrobidResourceException("Cannot process pdf file, because input file was null.");
-        }
-        File inputFile = new File(input);
-        if (!inputFile.exists()) {
-            throw new GrobidResourceException("Cannot process pdf file, because input file '" +
-                    inputFile.getAbsolutePath() + "' does not exists.");
-        }
-        if (tmpPath == null) {
-            throw new GrobidResourceException("Cannot process pdf file, because temp path is null.");
-        }
-        if (!tmpPath.exists()) {
-            throw new GrobidResourceException("Cannot process pdf file, because temp path '" +
-                    tmpPath.getAbsolutePath() + "' does not exists.");
-        }
-        Document doc = new Document(input, tmpPath.getAbsolutePath());
-        String pathXML = null;
-        try {
-            int startPage = -1;
-            int endPage = -1;
-            pathXML = doc.pdf2xml(true, false, startPage, endPage, input, tmpPath.getAbsolutePath(), false);
-            //with timeout,
-            //no force pdf reloading
-            // input is the pdf absolute path, tmpPath is the temp. directory for the temp. lxml file,
-            // path is the resource path
-            // and we don't extract images in the PDF file
-            if (pathXML == null) {
-                throw new GrobidResourceException("PDF parsing fails, " +
-                        "because path of where to store xml file is null.");
-            }
-            doc.setPathXML(pathXML);
-            //doc.addFeaturesDocument();
-
-            doc.toTEI(parsers.getHeaderParser(), parsers.getReferenceSegmenterParser(),
-                    parsers.getCitationParser(), consolidateHeader, consolidateCitations,
-                    false, null, false, false);
-            LOGGER.debug(doc.getTei());
-
-            return doc;
-        } catch (Exception e) {
-            throw new GrobidException("An exception occurred while running Grobid.", e);
-        } finally {
-            // keep it clean when leaving...
-            doc.cleanLxmlFile(pathXML, false);
-        }
-    }
-	*/
-    
-    public Document processing(String input,
-                                boolean consolidateHeader,
-                                boolean consolidateCitations) throws Exception {
+    public Document processing(String input, 
+							boolean consolidateHeader, 
+							boolean consolidateCitations,
+							int mode,
+							String assetPath,
+							int startPage,
+							int endPage,
+							boolean generateIDs) throws Exception {
         if (input == null) {
             throw new GrobidResourceException("Cannot process pdf file, because input file was null.");
         }
@@ -141,26 +104,32 @@ public class FullTextParser extends AbstractParser {
         }
         try {
             // general segmentation
-            Document doc = parsers.getSegmentationParser().processing(input);
- 
-            //String fulltext = doc.getFulltextFeatured(true, true);
+            Document doc = parsers.getSegmentationParser().processing(input, assetPath, startPage, endPage); 
 			SortedSet<DocumentPiece> documentBodyParts = doc.getDocumentPart(SegmentationLabel.BODY);
-			//List<String> tokenizations = doc.getTokenizations();
-			 
 			Pair<String,List<String>> featSeg = getBodyTextFeatured(doc, documentBodyParts);
-			String bodytext = featSeg.getA();
-			List<String> tokenizationsBody = featSeg.getB();
-            String rese = label(bodytext);
-//System.out.println(rese);
-            // set the different sections of the Document object
-            //doc = BasicStructureBuilder.resultSegmentation(doc, rese, tokenizations);
+			String rese = null;
+			List<String> tokenizationsBody = null;
+			if (featSeg != null) {
+				// if featSeg is null, it usually means that no body segment is found in the 
+				// document segmentation
+				String bodytext = featSeg.getA();
+				tokenizationsBody = featSeg.getB();
+	            rese = label(bodytext);
+				//System.out.println(rese);
+			}
 
             // header processing
-            BiblioItem resHeader = new BiblioItem();
-            parsers.getHeaderParser().processingHeaderSection(doc, consolidateHeader, resHeader);
-
+			BiblioItem resHeader = new BiblioItem();
+			//if (mode == 0) 
+			{
+            	parsers.getHeaderParser().processingHeaderBlock(consolidateHeader, doc, resHeader);
+			}
+			/*else {
+				parsers.getHeaderParser().processingHeaderSection(doc, consolidateHeader, resHeader);
+			}*/
             // citation processing
-            List<BibDataSet> resCitations = parsers.getCitationParser().processingReferenceSection(doc, parsers.getReferenceSegmenterParser(), consolidateCitations);
+            List<BibDataSet> resCitations = parsers.getCitationParser().
+				processingReferenceSection(doc, parsers.getReferenceSegmenterParser(), consolidateCitations);
 
             if (resCitations != null) {
                 for (BibDataSet bds : resCitations) {
@@ -175,8 +144,27 @@ public class FullTextParser extends AbstractParser {
                 }
             }
 
+			// possible annexes (view as a piece of full text similar to the body)
+			documentBodyParts = doc.getDocumentPart(SegmentationLabel.ANNEX);
+			featSeg = getBodyTextFeatured(doc, documentBodyParts);
+			String rese2 = null;
+			List<String> tokenizationsBody2 = null;
+			if (featSeg != null) {
+				// if featSeg is null, it usually means that no body segment is found in the 
+				// document segmentation
+				String bodytext = featSeg.getA();
+				tokenizationsBody2 = featSeg.getB();
+	            rese2 = label(bodytext);
+				//System.out.println(rese);
+			}
+
             // final combination
-            toTEI(doc, rese, tokenizationsBody, resHeader, resCitations, false, null, false);
+            toTEI(doc, // document
+				rese, rese2, // labeled data for body and annex  
+				tokenizationsBody, tokenizationsBody2, // tokenization for body and annex 
+				resHeader, resCitations, // header and bibliographical citations
+				null, false, mode,
+				generateIDs);
             return doc;
         } catch (Exception e) {
             throw new GrobidException("An exception occurred while running Grobid.", e);
@@ -870,14 +858,17 @@ public class FullTextParser extends AbstractParser {
 
                 //output = writeField(buffer, s1, lastTag0, s2, "<header>", "<front>", addSpace, 3);
                 //if (!output) {
-                    output = writeField(buffer, s1, lastTag0, s2, "<other>", "<note type=\"other\">", addSpace, 3);
+                    output = writeField(buffer, s1, lastTag0, s2, "<other>", 
+						"<note type=\"other\">", addSpace, 3, false);
                 //}
                 // for paragraph we must distinguish starting and closing tags
                 if (!output) {
                     if (closeParagraph) {
-                        output = writeFieldBeginEnd(buffer, s1, "", s2, "<paragraph>", "<p>", addSpace, 3);
+                        output = writeFieldBeginEnd(buffer, s1, "", s2, "<paragraph>", 
+							"<p>", addSpace, 3, false);
                     } else {
-                        output = writeFieldBeginEnd(buffer, s1, lastTag, s2, "<paragraph>", "<p>", addSpace, 3);
+                        output = writeFieldBeginEnd(buffer, s1, lastTag, s2, "<paragraph>", 
+							"<p>", addSpace, 3, false);
                     }
                 }
                 /*if (!output) {
@@ -902,53 +893,57 @@ public class FullTextParser extends AbstractParser {
                 }*/
                 if (!output) {
                     output = writeField(buffer, s1, lastTag0, s2, "<citation_marker>", "<ref type=\"biblio\">",
-                            addSpace, 3);
+                            addSpace, 3, false);
                 }
                 if (!output) {
-                    output = writeField(buffer, s1, lastTag0, s2, "<section>", "<head>", addSpace, 3);
+                    output = writeField(buffer, s1, lastTag0, s2, "<section>", 
+						"<head>", addSpace, 3, false);
                 }
                 if (!output) {
-                    output = writeField(buffer, s1, lastTag0, s2, "<subsection>", "<head>", addSpace, 3);
+                    output = writeField(buffer, s1, lastTag0, s2, "<subsection>", 
+						"<head>", addSpace, 3, false);
                 }
                 if (!output) {
                     if (openFigure) {
-                        output = writeField(buffer, s1, lastTag0, s2, "<trash>", "<trash>", addSpace, 4);
+                        output = writeField(buffer, s1, lastTag0, s2, "<trash>", "<trash>", addSpace, 4, false);
                     } else {
                         //output = writeField(buffer, s1, lastTag0, s2, "<trash>", "<figure>\n\t\t\t\t<trash>",
                         output = writeField(buffer, s1, lastTag0, s2, "<trash>", "<trash>",
-                                addSpace, 3);
+                                addSpace, 3, false);
                         if (output) {
                             openFigure = true;
                         }
                     }
                 }
                 if (!output) {
-                    output = writeField(buffer, s1, lastTag0, s2, "<equation>", "<formula>", addSpace, 3);
+                    output = writeField(buffer, s1, lastTag0, s2, "<equation>", 
+						"<formula>", addSpace, 3, false);
                 }
                 if (!output) {
-                    output = writeField(buffer, s1, lastTag0, s2, "<figure_marker>", "<ref type=\"figure\">",
-                            addSpace, 3);
+                    output = writeField(buffer, s1, lastTag0, s2, "<figure_marker>", 
+						"<ref type=\"figure\">", addSpace, 3, false);
                 }
                 if (!output) {
                     if (openFigure) {
                         if (tableBlock && (!lastTag0.equals("<table>")) && (currentTag0.equals("<table>"))) {
                             buffer.append("\n\t\t\t</figure>\n\n");
                             output = writeField(buffer, s1, lastTag0, s2, "<figure>\n\t\t\t\t<table>", "<figure>",
-                                    addSpace, 3);
+                                    addSpace, 3, false);
                             if (output) {
                                 tableBlock = true;
                                 descFigure = false;
                                 headFigure = false;
                             }
                         } else {
-                            output = writeField(buffer, s1, lastTag0, s2, "<table>", "<table>", addSpace, 4);
+                            output = writeField(buffer, s1, lastTag0, s2, "<table>", 
+								"<table>", addSpace, 4, false);
                             if (output) {
                                 tableBlock = true;
                             }
                         }
                     } else {
-                        output = writeField(buffer, s1, lastTag0, s2, "<table>", "<figure>\n\t\t\t\t<table>",
-                                addSpace, 3);
+                        output = writeField(buffer, s1, lastTag0, s2, "<table>", 
+							"<figure>\n\t\t\t\t<table>", addSpace, 3, false);
                         if (output) {
                             openFigure = true;
                             tableBlock = true;
@@ -960,21 +955,22 @@ public class FullTextParser extends AbstractParser {
                         if (descFigure && (!lastTag0.equals("<label>")) && (currentTag0.equals("<label>"))) {
                             buffer.append("\n\t\t\t</figure>\n\n");
                             output = writeField(buffer, s1, lastTag0, s2, "<label>", "<figure>\n\t\t\t\t<figDesc>",
-                                    addSpace, 3);
+                                    addSpace, 3, false);
                             if (output) {
                                 descFigure = true;
                                 tableBlock = false;
                                 headFigure = false;
                             }
                         } else {
-                            output = writeField(buffer, s1, lastTag0, s2, "<label>", "<figDesc>", addSpace, 4);
+                            output = writeField(buffer, s1, lastTag0, s2, "<label>", 
+								"<figDesc>", addSpace, 4, false);
                             if (output) {
                                 descFigure = true;
                             }
                         }
                     } else {
-                        output = writeField(buffer, s1, lastTag0, s2, "<label>", "<figure>\n\t\t\t\t<figDesc>",
-                                addSpace, 3);
+                        output = writeField(buffer, s1, lastTag0, s2, "<label>", 
+							"<figure>\n\t\t\t\t<figDesc>", addSpace, 3, false);
                         if (output) {
                             openFigure = true;
                             descFigure = true;
@@ -986,22 +982,23 @@ public class FullTextParser extends AbstractParser {
                         if (headFigure && (!lastTag0.equals("<figure_head>")) &&
                                 (currentTag0.equals("<figure_head>"))) {
                             buffer.append("\n\t\t\t</figure>\n\n");
-                            output = writeField(buffer, s1, lastTag0, s2, "<figure_head>", "<figure>\n\t\t\t\t<head>",
-                                    addSpace, 3);
+                            output = writeField(buffer, s1, lastTag0, s2, "<figure_head>", 
+								"<figure>\n\t\t\t\t<head>", addSpace, 3, false);
                             if (output) {
                                 descFigure = false;
                                 tableBlock = false;
                                 headFigure = true;
                             }
                         } else {
-                            output = writeField(buffer, s1, lastTag0, s2, "<figure_head>", "<head>", addSpace, 4);
+                            output = writeField(buffer, s1, lastTag0, s2, "<figure_head>", 
+								"<head>", addSpace, 4, false);
                             if (output) {
                                 headFigure = true;
                             }
                         }
                     } else {
                         output = writeField(buffer, s1, lastTag0, s2, "<figure_head>", "<figure>\n\t\t\t\t<head>",
-                                addSpace, 3);
+                                addSpace, 3, false);
                         if (output) {
                             openFigure = true;
                             headFigure = true;
@@ -1010,7 +1007,8 @@ public class FullTextParser extends AbstractParser {
                 }
                 // for item we must distinguish starting and closing tags
                 if (!output) {
-                    output = writeFieldBeginEnd(buffer, s1, lastTag, s2, "<item>", "<item>", addSpace, 3);
+                    output = writeFieldBeginEnd(buffer, s1, lastTag, s2, "<item>", 
+						"<item>", addSpace, 3, false);
                 }
 
                 lastTag = s1;
@@ -1048,17 +1046,26 @@ public class FullTextParser extends AbstractParser {
      * @param nbIndent
      * @return
      */
-    private boolean writeField(StringBuffer buffer,
+    public static boolean writeField(StringBuffer buffer,
                                String s1,
                                String lastTag0,
                                String s2,
                                String field,
                                String outField,
                                boolean addSpace,
-                               int nbIndent) {
+                               int nbIndent,
+					 	  	   boolean generateIDs) {
         boolean result = false;
+		if (s1 == null) {
+			return result;
+		}
         if ((s1.equals(field)) || (s1.equals("I-" + field))) {
             result = true;
+			String divID = null;
+			if (generateIDs) {
+				divID = KeyGen.getKey().substring(0,7);
+				outField = outField.replace(">" , " id=\"_"+ divID + "\">");
+			}
             if (s1.equals(lastTag0) || s1.equals("I-" + lastTag0)) {
                 if (addSpace)
                     buffer.append(" ").append(s2);
@@ -1126,19 +1133,28 @@ public class FullTextParser extends AbstractParser {
      * @param nbIndent
      * @return
      */
-    private boolean writeFieldBeginEnd(StringBuffer buffer,
+    public static boolean writeFieldBeginEnd(StringBuffer buffer,
                                        String s1,
                                        String lastTag0,
                                        String s2,
                                        String field,
                                        String outField,
                                        boolean addSpace,
-                                       int nbIndent) {
+                                       int nbIndent, 
+									   boolean generateIDs) {
         boolean result = false;
+		if (s1 == null) {
+			return false;
+		}
         if ((s1.equals(field)) || (s1.equals("I-" + field))) {
             result = true;
 			if (lastTag0 == null) {
 				lastTag0 = "";
+			}
+			String divID = null;
+			if (generateIDs) {
+				divID = KeyGen.getKey().substring(0,7);
+				outField = outField.replace(">" , " id=\"_"+ divID + "\">");
 			}
             if (lastTag0.equals("I-" + field)) {
                 if (addSpace)
@@ -1175,7 +1191,7 @@ public class FullTextParser extends AbstractParser {
      * @param currentTag
      * @return
      */
-    private boolean testClosingTag(StringBuffer buffer,
+    private static boolean testClosingTag(StringBuffer buffer,
                                    String currentTag0,
                                    String lastTag0,
                                    String currentTag) {
@@ -1259,27 +1275,46 @@ public class FullTextParser extends AbstractParser {
      * and body sections.
      */
     private void toTEI(Document doc,
-                       String rese,
-                       List<String> tokenizations,
+                       String reseBody,
+					   String reseAnnex,
+                       List<String> tokenizationsBody,
+					   List<String> tokenizationsAnnex,
                        BiblioItem resHeader,
 					   List<BibDataSet> resCitations,
-                       boolean peer,
                        BiblioItem catalogue,
-                       boolean withStyleSheet) {
+                       boolean withStyleSheet,
+					   int mode,
+					   boolean generateIDs) {
         if (doc.getBlocks() == null) {
             return;
         }
         TEIFormater teiFormater = new TEIFormater(doc);
         StringBuffer tei;
         try {
-            tei = teiFormater.toTEIHeader(resHeader, peer, withStyleSheet, null);
+            tei = teiFormater.toTEIHeader(resHeader, withStyleSheet, null, generateIDs);
 			
 			//System.out.println(rese);
-           	tei = teiFormater.toTEIBodyML(tei, rese, resHeader, resCitations, tokenizations, doc);
-			//tei.append(teiFormater.toTEIBody(resCitations));
-            tei = teiFormater.toTEIReferences(tei, resCitations);
+			if (mode == 0) {
+				tei = teiFormater.toTEIBodyLight(tei, reseBody, resHeader, resCitations, 
+					tokenizationsBody, doc, generateIDs);
+			}
+			else if (mode == 1) {
+           		tei = teiFormater.toTEIBodyML(tei, reseBody, resHeader, resCitations, 
+					tokenizationsBody, doc);
+			}
 
+			tei.append("\t\t<back>\n");
+			if (mode == 0) {
+				tei = teiFormater.toTEIAnnexLight(tei, reseAnnex, resHeader, resCitations, 
+					tokenizationsAnnex, doc, generateIDs);
+			}
+			else if (mode == 1) {
+				tei = teiFormater.toTEIAnnexML(tei, reseAnnex, resHeader, resCitations, 
+					tokenizationsAnnex, doc);
+			}
+			tei = teiFormater.toTEIReferences(tei, resCitations, generateIDs);
             tei.append("\t\t</back>\n");
+			
             tei.append("\t</text>\n");
             tei.append("</TEI>\n");
         } catch (Exception e) {

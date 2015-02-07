@@ -3,11 +3,15 @@ package org.grobid.core.document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.commons.io.FileUtils;
+import java.io.File;
+
 import com.google.common.collect.Iterables;
 import com.google.common.collect.SortedSetMultimap;
 import com.google.common.collect.TreeMultimap;
 import org.grobid.core.data.BibDataSet;
 import org.grobid.core.engines.tagging.GenericTaggerUtils;
+import org.grobid.core.engines.Segmentation;
 import org.grobid.core.layout.Block;
 import org.grobid.core.layout.Cluster;
 import org.grobid.core.layout.LayoutToken;
@@ -37,8 +41,6 @@ public class BasicStructureBuilder {
     static public Pattern introductionStrict =
             Pattern.compile("^\\b*(1\\.\\sPROBLEMS?|1\\.(\\n)?\\sIntroduction?|1\\.(\\n)?\\sContent?|1\\.\\sINTRODUCTION|I\\.(\\s)+Introduction|1\\.\\sProblems?|I\\.\\sEinleitung?|1\\.\\sEinleitung?|1\\sEinleitung?|1\\sIntroduction?)",
                     Pattern.CASE_INSENSITIVE);
-
-    //public Pattern introductionZFN2 = Pattern.compile("\\b(Introduction?|Einleitung|EINLEITUNG|INTRODUCTION|INTRODUCTION?|Acknowledge?ments?|Acknowledge?ment?|Background?|BACKGROUND?|Content?|Contents?|CONTENT?|CONTENTS?|Motivations?|MOTIVATIONS?|1\\. PROBLEMS?|1\\. Introduction?|I\\. Introduction|1\\. Problems?|I\\. Einleitung|I\\. EINLEITUNG|1\\. Einleitung|1\\. EINLEITUNG)");
 
     static public Pattern abstract_ = Pattern.compile("^\\b*\\.?(abstract?|résumé?|summary?|zusammenfassung?)",
             Pattern.CASE_INSENSITIVE);
@@ -197,19 +199,17 @@ public class BasicStructureBuilder {
         }
 
         int i = 0;
-//        boolean first = true;
-        ArrayList<Integer> blockHeaders = new ArrayList<Integer>();
-        ArrayList<Integer> blockFooters = new ArrayList<Integer>();
-        ArrayList<Integer> blockSectionTitles = new ArrayList<Integer>();
-        ArrayList<Integer> acknowledgementBlocks = new ArrayList<Integer>();
-        ArrayList<Integer> blockTables = new ArrayList<Integer>();
-        ArrayList<Integer> blockFigures = new ArrayList<Integer>();
-        ArrayList<Integer> blockHeadTables = new ArrayList<Integer>();
-        ArrayList<Integer> blockHeadFigures = new ArrayList<Integer>();
-        ArrayList<Integer> blockDocumentHeaders = new ArrayList<Integer>();
+        List<Integer> blockHeaders = new ArrayList<Integer>();
+        List<Integer> blockFooters = new ArrayList<Integer>();
+        List<Integer> blockSectionTitles = new ArrayList<Integer>();
+        List<Integer> acknowledgementBlocks = new ArrayList<Integer>();
+        List<Integer> blockTables = new ArrayList<Integer>();
+        List<Integer> blockFigures = new ArrayList<Integer>();
+        List<Integer> blockHeadTables = new ArrayList<Integer>();
+        List<Integer> blockHeadFigures = new ArrayList<Integer>();
+        List<Integer> blockDocumentHeaders = new ArrayList<Integer>();
 
         doc.setTitleMatchNum(false);
-
         try {
             for (Block block : doc.getBlocks()) {
                 String localText = block.getText().trim();
@@ -332,7 +332,7 @@ public class BasicStructureBuilder {
                 }
             }
             if (candidateCluster != null) {
-                ArrayList<Integer> newBlockSectionTitles = new ArrayList<Integer>();
+                List<Integer> newBlockSectionTitles = new ArrayList<Integer>();
                 for (Integer bl : blockSectionTitles) {
                     if (!newBlockSectionTitles.contains(bl))
                         newBlockSectionTitles.add(bl);
@@ -677,28 +677,38 @@ public class BasicStructureBuilder {
             doc.getClusters().add(cluster);
         }
 
-    }
-
-
+    }	
+	
     static public Document generalResultSegmentation(Document doc, String labeledResult, List<String> documentTokens) {
         List<Pair<String, String>> labeledTokens = GenericTaggerUtils.getTokensAndLabels(labeledResult);
 
         SortedSetMultimap<String, DocumentPiece> labeledBlocks = TreeMultimap.create();
         doc.setLabeledBlocks(labeledBlocks);
 
+		/*try {
+        	FileUtils.writeStringToFile(new File("/tmp/x1.txt"), labeledResult);
+			FileUtils.writeStringToFile(new File("/tmp/x2.txt"), documentTokens.toString());
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}*/
+
         List<Block> docBlocks = doc.getBlocks();
-
+		int indexLine = 0;		
         int blockIndex = 0;
-        int p = 0;
-
+        int p = 0; // position in the labeled result 
+		int currentLineEndPos = 0; // position in the global doc. tokenization of the last 
+								// token of the current line
+		int currentLineStartPos = 0; // position in the global doc. 
+									 // tokenization of the first token of the current line
+		String line = null;
+		
         DocumentPointer pointerA = DocumentPointer.START_DOCUMENT_POINTER;
         DocumentPointer currentPointer = null;
         DocumentPointer lastPointer = null;
 
         String curLabel;
         String curPlainLabel = null;
-
-//        String lastLabel = null;
         String lastPlainLabel = null;
 
         int lastTokenInd = -1;
@@ -710,95 +720,143 @@ public class BasicStructureBuilder {
             }
         }
 
-        //we do this concatenation trick so that we don't have to process stuff after the main loop
+        // we do this concatenation trick so that we don't have to process stuff after the main loop
         // no copying of lists happens because of this, so it's ok to concatenate
         String ignoredLabel = "@IGNORED_LABEL@";
         for (Pair<String, String> labeledTokenPair :
-                Iterables.concat(labeledTokens, Collections.singleton(new Pair<String, String>("IgnoredToken", ignoredLabel)))) {
+                Iterables.concat(labeledTokens, 
+					Collections.singleton(new Pair<String, String>("IgnoredToken", ignoredLabel)))) {
             if (labeledTokenPair == null) {
                 p++;
                 continue;
             }
-
-            String token = documentTokens.get(p);
-            while (token.equals("\n") || token.equals("\r") || token.equals("\t") || token.trim().isEmpty()) {
-                if (p == lastTokenInd) {
-                    break;
-                }
-                p++;
-                token = documentTokens.get(p);
-            }
 			
-            if (p != lastTokenInd && !labeledTokenPair.a.equals(token)) {
-				if (!labeledTokenPair.a.startsWith(documentTokens.get(p))) {
-					// this is a very exceptional case due to a sequence of accent/diacresis, in this case we skip 
-					// a shift in the tokenizations list and continue on the basis of the labeled token
-					//LOGGER.error("Implementation error: tokens out of sync: '" + token + "' at position " + p + " vs. '" + labeledTokenPair.a + "'");
-					//throw new IllegalStateException("Implementation error: tokens out of sync: '" + token + "' at position " + p + " vs. '" + labeledTokenPair.a + "'");
-					// we check one ahead
-	                p++;
-	                token = documentTokens.get(p);
-					if (!labeledTokenPair.a.equals(token)) {
-						// we try another position forward (second hope!)
-		                p++;
-		                token = documentTokens.get(p);
-						if (!labeledTokenPair.a.equals(token)) {
-							// we try another position forward (last hope!)
-			                p++;
-			                token = documentTokens.get(p);
-							if (!labeledTokenPair.a.equals(token)) {
-								// we return to the initial position
-								p = p-3;
-								token = documentTokens.get(p);
-								LOGGER.debug("Implementation error: tokens out of sync: '" + token + "' at position " + p + " vs. '" + labeledTokenPair.a + "'");
-							}
+			// as we process the document segmentation line by line, we don't use the usual 
+			// tokenization to rebuild the text flow, but we get each line again from the 
+			// text stored in the document blocks (similarly as when generating the features) 
+			line = null;
+			while( (line == null) && (blockIndex < docBlocks.size()) ) {
+				Block block = docBlocks.get(blockIndex);
+		        List<LayoutToken> tokens = block.getTokens();
+				String localText = block.getText();
+		        if ( (tokens == null) || (localText == null) || (localText.trim().length() == 0) ) {
+					blockIndex++;
+					indexLine = 0;
+					if (blockIndex < docBlocks.size()) {
+						block = docBlocks.get(blockIndex);
+						currentLineStartPos = block.getStartToken();
+					}
+		            continue;
+		        }
+				String[] lines = localText.split("[\\n\\r]");
+				if ( (lines.length == 0) || (indexLine >= lines.length)) {
+					blockIndex++;
+					indexLine = 0;
+					if (blockIndex < docBlocks.size()) {
+						block = docBlocks.get(blockIndex);
+						currentLineStartPos = block.getStartToken();
+					}
+					continue;
+				}
+				else {
+					line = lines[indexLine];
+					indexLine++;
+					if ( (line.trim().length() == 0) || (Segmentation.filterLine(line)) ) {
+						line = null;
+						continue;
+					}
+
+					if (currentLineStartPos > lastTokenInd)
+						continue;
+					
+					// adjust the start token position in documentTokens to this non trivial line
+					// first skip possible space characters and tabs at the beginning of the line
+					while( (documentTokens.get(currentLineStartPos).equals(" ") ||
+							documentTokens.get(currentLineStartPos).equals("\t") )
+					 	&& (currentLineStartPos != lastTokenInd)) {
+					 	currentLineStartPos++;
+					}
+					if (!labeledTokenPair.a.startsWith(documentTokens.get(currentLineStartPos))) {
+						while(currentLineStartPos < block.getEndToken()) {
+							if (documentTokens.get(currentLineStartPos).equals("\n") 
+							 || documentTokens.get(currentLineStartPos).equals("\r")) {
+								 // move to the start of the next line, but ignore space characters and tabs
+								 currentLineStartPos++;
+								 while( (documentTokens.get(currentLineStartPos).equals(" ") ||
+									 	documentTokens.get(currentLineStartPos).equals("\t") )
+								 	&& (currentLineStartPos != lastTokenInd)) {
+								 	currentLineStartPos++;
+								 }
+								 if ((currentLineStartPos != lastTokenInd) && 
+								 	labeledTokenPair.a.startsWith(documentTokens.get(currentLineStartPos))) {
+									 break;
+								 }
+							 }
+							 currentLineStartPos++;
 						}
 					}
-				}
-				// if the above condition is true, this is an exceptional case due to a sequence of accent/diacresis
-				// and we can go on as a full string match
-            }
 
+					// what is then the position of the last token of this line?
+					currentLineEndPos = currentLineStartPos;
+					while(currentLineEndPos < block.getEndToken()) {
+						if (documentTokens.get(currentLineEndPos).equals("\n") 
+						 || documentTokens.get(currentLineEndPos).equals("\r")) {
+							currentLineEndPos--;
+							break;
+						}
+						currentLineEndPos++;
+					}
+				}
+			}
             curLabel = labeledTokenPair.b;
             curPlainLabel = GenericTaggerUtils.getPlainLabel(curLabel);
-
-            //updating block index
-            while (!curLabel.equals(ignoredLabel) && 
-				(blockIndex < docBlocks.size()) &&
-				docBlocks.get(blockIndex).getEndToken() <= p) {
-                blockIndex++;
-            }
+			
+			/*System.out.println("-------------------------------");
+			System.out.println("block: " + blockIndex);
+			System.out.println("line: " + line);
+			System.out.println("token: " + labeledTokenPair.a);
+			System.out.println("curPlainLabel: " + curPlainLabel);
+			System.out.println("lastPlainLabel: " + lastPlainLabel);
+			if ((currentLineStartPos < lastTokenInd) && (currentLineStartPos != -1))
+				System.out.println("currentLineStartPos: " + currentLineStartPos + 
+											" (" + documentTokens.get(currentLineStartPos) + ")");
+			if ((currentLineEndPos < lastTokenInd) && (currentLineEndPos != -1))
+				System.out.println("currentLineEndPos: " + currentLineEndPos + 
+											" (" + documentTokens.get(currentLineEndPos) + ")");*/
 			
 			if (blockIndex == docBlocks.size()) {
-				LOGGER.debug("Position error: blockIndex at " + blockIndex + ", size of docBlocks.");
 				break;
 			}
 
-            //defensive check
-            Block curBlock = docBlocks.get(blockIndex);
-            if (!curLabel.equals(ignoredLabel) && !(curBlock.getStartToken() <= p && p < curBlock.getEndToken())) {
-                //throw new IllegalStateException("Implementation error: token at position " + p +
-                //        " is out of sync with the current block: " + curBlock);
-				LOGGER.debug("Implementation error: token at position " + p +
-                        " is out of sync with the current block: " + curBlock);
-				//blockIndex++;
-				//curBlock = docBlocks.get(blockIndex);
-            }
-
-            currentPointer = new DocumentPointer(doc, blockIndex, p);
+            currentPointer = new DocumentPointer(doc, blockIndex, currentLineEndPos);
 
             // either a new entity starts or a new beginning of the same type of entity
-            if ((!curPlainLabel.equals(lastPlainLabel) || GenericTaggerUtils.isBeginningOfEntity(curPlainLabel)) && lastPlainLabel != null) {
-                labeledBlocks.put(lastPlainLabel, new DocumentPiece(pointerA, lastPointer));
-                pointerA = new DocumentPointer(doc, blockIndex, p);
+			if ((!curPlainLabel.equals(lastPlainLabel)) && (lastPlainLabel != null)) {	
+				if ( (pointerA.getTokenDocPos() <= lastPointer.getTokenDocPos()) &&
+				   	(pointerA.getTokenDocPos() != -1) ) {
+					labeledBlocks.put(lastPlainLabel, new DocumentPiece(pointerA, lastPointer));
+				}
+                pointerA = new DocumentPointer(doc, blockIndex, currentLineStartPos);
+				//System.out.println("add segment for: " + lastPlainLabel + ", until " + (currentLineStartPos-2));
             }
 
             //updating stuff for next iteration
             lastPlainLabel = curPlainLabel;
             lastPointer = currentPointer;
+			currentLineStartPos = currentLineEndPos+2; // one shift for the EOL, one for the next line
             p++;
-
         }
+		
+		if (blockIndex == docBlocks.size()) {
+			// the last labelled piece has still to be added
+			if ((!curPlainLabel.equals(lastPlainLabel)) && (lastPlainLabel != null)) {	
+				if ( (pointerA.getTokenDocPos() <= lastPointer.getTokenDocPos()) && 
+					(pointerA.getTokenDocPos() != -1) ) {
+					labeledBlocks.put(lastPlainLabel, new DocumentPiece(pointerA, lastPointer));
+					//System.out.println("add segment for: " + lastPlainLabel + ", until " + (currentLineStartPos-2));
+				}
+			}
+		}
 
         return doc;
     }

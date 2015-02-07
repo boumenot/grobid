@@ -274,7 +274,7 @@ public class Engine implements Closeable {
      * @return the list of parsed references as bibliographical objects enriched
      *         with citation contexts
      */
-    public List<BibDataSet> processReferences(String inputFile, boolean consolidate) throws Exception {
+    public List<BibDataSet> processReferences(String inputFile, boolean consolidate) {
         return parsers.getCitationParser().processingReferenceSection(inputFile, parsers.getReferenceSegmenterParser(), consolidate);
     }
 
@@ -411,7 +411,7 @@ public class Engine implements Closeable {
 
     /**
      * Apply a parsing model for the header of a PDF file based on CRF, using
-     * dynamic range of pages as header
+     * first three pages of the PDF
      *
      * @param inputFile   : the path of the PDF file to be processed
      * @param consolidate - the consolidation option allows GROBID to exploit Crossref
@@ -419,7 +419,6 @@ public class Engine implements Closeable {
      * @param result      bib result
      * @return the TEI representation of the extracted bibliographical
      *         information
-     * @throws Exception if sth went wrong
      */
     public String processHeader(String inputFile, boolean consolidate, BiblioItem result) throws Exception {
         // normally the BiblioItem reference must not be null, but if it is the
@@ -446,7 +445,7 @@ public class Engine implements Closeable {
      *         information
      * @throws Exception if sth went wrong
      */
-    public String segmentAndProcessHeader(String inputFile, boolean consolidate, BiblioItem result) throws Exception {
+    public String segmentAndProcessHeader(String inputFile, boolean consolidate, BiblioItem result) {
         // normally the BiblioItem reference must not be null, but if it is the
         // case, we still continue
         // with a new instance, so that the resulting TEI string is still
@@ -516,18 +515,72 @@ public class Engine implements Closeable {
      *                             web services for improving header information
      * @param consolidateCitations - the consolidation option allows GROBID to exploit Crossref
      *                             web services for improving citations information
+	 * @return the resulting structured document as a TEI string.
      */
-    public String fullTextToTEI(String inputFile, boolean consolidateHeader, boolean consolidateCitations) throws Exception {
+    public String fullTextToTEI(String inputFile, 
+								boolean consolidateHeader, 
+								boolean consolidateCitations) throws Exception {
+		return fullTextToTEI(inputFile, consolidateHeader, consolidateCitations, null, -1, -1, false);
+	}
 
+    /**
+     * Parse and convert the current article into TEI, this method performs the
+     * whole parsing and conversion process. If onlyHeader is true, than only
+     * the tei header data will be created.
+     *
+     * @param inputFile            - absolute path to the pdf to be processed
+     * @param consolidateHeader    - the consolidation option allows GROBID to exploit Crossref
+     *                             web services for improving header information
+     * @param consolidateCitations - the consolidation option allows GROBID to exploit Crossref
+     *                             web services for improving citations information
+     * @param assetPath if not null, the PDF assets (embedded images) will be extracted and 
+	 * saved under the indicated repository path		
+	 * @return the resulting structured document as a TEI string.
+     */
+    public String fullTextToTEI(String inputFile, 
+								boolean consolidateHeader, 
+								boolean consolidateCitations,
+								String assetPath) throws Exception {
+		return fullTextToTEI(inputFile, consolidateHeader, consolidateCitations, assetPath, -1, -1, false);
+	}
+
+    /**
+     * Parse and convert the current article into TEI, this method performs the
+     * whole parsing and conversion process. If onlyHeader is true, than only
+     * the tei header data will be created.
+     *
+     * @param inputFile            - absolute path to the pdf to be processed
+     * @param consolidateHeader    - the consolidation option allows GROBID to exploit Crossref
+     *                             web services for improving header information
+     * @param consolidateCitations - the consolidation option allows GROBID to exploit Crossref
+     *                             web services for improving citations information
+     * @param assetPath if not null, the PDF assets (embedded images) will be extracted and 
+	 * saved under the indicated repository path			
+   	 * @param startPage give the starting page to consider in case of segmentation of the 
+   	 * PDF, -1 for the first page (default) 
+   	 * @param endPage give the end page to consider in case of segmentation of the 
+   	 * PDF, -1 for the last page (default)
+	 * @param generateIDs if true, generate random attribute id on the textual elements of 
+	 * the resulting TEI 	
+	 * @return the resulting structured document as a TEI string.
+     */
+    public String fullTextToTEI(String inputFile, 
+								boolean consolidateHeader, 
+								boolean consolidateCitations,
+								String assetPath,
+								int startPage,
+								int endPage,
+								boolean generateIDs) throws Exception {
         FullTextParser fullTextParser = parsers.getFullTextParser();
 
         // replace by the commented version for the new full ML text parser
-        Document resultTEI;
+        Document resultDoc;
         LOGGER.debug("Starting processing fullTextToTEI on " + inputFile);
         long time = System.currentTimeMillis();
-        resultTEI = fullTextParser.processing(inputFile, consolidateHeader, consolidateCitations);
+        resultDoc = fullTextParser.processing(inputFile, consolidateHeader, 
+				consolidateCitations, 0, assetPath, startPage, endPage, generateIDs);
         LOGGER.debug("Ending processing fullTextToTEI on " + inputFile + ". Time to process: " + (System.currentTimeMillis() - time) + "ms");
-        return resultTEI.getTei();
+        return resultDoc.getTei();
     }
 
     /**

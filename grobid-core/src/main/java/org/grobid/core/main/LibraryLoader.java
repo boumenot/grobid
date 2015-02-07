@@ -106,7 +106,6 @@ public class LibraryLoader {
                 LOGGER.info("Loading Wapiti native library...");
                 System.load(wapitiLibFiles[0].getAbsolutePath());
             }
-
         } else {
             throw new IllegalStateException("Unsupported CRF engine: " + GrobidProperties.getGrobidCRFEngine());
         }
@@ -142,7 +141,7 @@ public class LibraryLoader {
                 isContextMocked = true;
             } catch (Exception mexp) {
                 LOGGER.error("Could not mock the context." + mexp);
-                new GrobidException("Could not mock the context." + mexp);
+                throw new GrobidException("Could not mock the context.",  mexp);
             }
         }
     }
