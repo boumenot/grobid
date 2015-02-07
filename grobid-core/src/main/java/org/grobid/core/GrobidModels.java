@@ -10,7 +10,7 @@ import java.io.File;
  *
  * @author Patrice Lopez
  */
-public enum GrobidModels {
+public enum GrobidModels implements GrobidModel {
     AFFIILIATON_ADDRESS("affiliation-address"),
     SEGMENTATION("segmentation"),
     CITATION("citation"),
@@ -53,18 +53,22 @@ public enum GrobidModels {
         modelPath = path.getAbsolutePath();
     }
 
+    @Override
     public String getFolderName() {
         return folderName;
     }
 
+    @Override
     public String getModelPath() {
         return modelPath;
     }
 
+    @Override
     public String getModelName() {
         return folderName.replaceAll("/", "-");
     }
 
+    @Override
     public String getTemplateName() {
         return StringUtils.substringBefore(folderName, "/") + ".template";
     }

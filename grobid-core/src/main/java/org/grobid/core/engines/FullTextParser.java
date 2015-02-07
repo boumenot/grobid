@@ -104,7 +104,7 @@ public class FullTextParser extends AbstractParser {
         }
         try {
             // general segmentation
-            Document doc = parsers.getSegmentationParser().processing(input, assetPath, startPage, endPage); 
+            Document doc = parsers.getSegmentationParser().processing(input, assetPath);
 			SortedSet<DocumentPiece> documentBodyParts = doc.getDocumentPart(SegmentationLabel.BODY);
 			Pair<String,List<String>> featSeg = getBodyTextFeatured(doc, documentBodyParts);
 			String rese = null;

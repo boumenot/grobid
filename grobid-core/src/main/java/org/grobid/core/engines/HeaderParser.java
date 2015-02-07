@@ -20,12 +20,15 @@ import org.grobid.core.utilities.LanguageUtilities;
 import org.grobid.core.utilities.TextUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.StringTokenizer;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 
 /**
@@ -61,8 +64,6 @@ public class HeaderParser extends AbstractParser {
         try{
             String tei = processingHeaderSection(doc, consolidate, resHeader);
             return new ImmutablePair<String, Document>(tei, doc);
-        } catch (TimeoutException timeoutExp) {
-            throw new TimeoutException("A time out occurred");
         } catch (final Exception exp) {
             throw new GrobidException("An exception occurred while running Grobid: " + exp);
         } 
@@ -72,7 +73,7 @@ public class HeaderParser extends AbstractParser {
 	 *  Processing without application of the segmentation model, regex are used to identify the header
 	 *  zone.  
 	 */ 
-	public Pair<String, Document> processing2(String input, boolean consolidate, BiblioItem resHeader) throws TimeoutException {
+	public Pair<String, Document> processing2(String input, boolean consolidate, BiblioItem resHeader) {
             File pathXML = null;
             try {
                 pathXML = this.pdfToXmlConverter.convertHeaderOnly(new File(input));
@@ -81,10 +82,8 @@ public class HeaderParser extends AbstractParser {
                 
                 String tei = processingHeaderBlock(consolidate, doc, resHeader);
                 return new ImmutablePair<String, Document>(tei, doc);
-            } catch (TimeoutException timeoutExp) {
-                throw new TimeoutException("A time out occurred");
             } catch (final Exception exp) {
-                throw new GrobidException("An exception occurred while running Grobid on file " + input + ": " + exp);
+                throw new GrobidException("An exception occurred while running Grobid: " + exp);
             } finally {
                 Document.cleanLxmlFile(pathXML, true);
             }

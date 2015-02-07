@@ -14,7 +14,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.grobid.core.GrobidModels;
+import org.grobid.core.GrobidModel;
 import org.grobid.core.engines.tagging.GrobidCRFEngine;
 import org.grobid.core.exceptions.GrobidPropertyException;
 import org.grobid.core.exceptions.GrobidResourceException;
@@ -806,12 +806,12 @@ public class GrobidProperties {
         return grobidCRFEngine;
     }
 
-    public static File getModelPath(final GrobidModels model) {
+    public static File getModelPath(final GrobidModel model) {
         return new File(get_GROBID_HOME_PATH(), FOLDER_NAME_MODELS + File.separator + model.getFolderName() + File.separator
                 + FILE_NAME_MODEL + "." + grobidCRFEngine.getExt());
     }
 
-    public static File getTemplatePath(final File resourcesDir, final GrobidModels model) {
+    public static File getTemplatePath(final File resourcesDir, final GrobidModel model) {
 		File theFile = new File(resourcesDir, "dataset/" + model.getFolderName() + "/crfpp-templates/" + model.getTemplateName());
 		if (!theFile.exists()) {
 			theFile = new File("resources/dataset/" + model.getFolderName() + "/crfpp-templates/" + model.getTemplateName());
@@ -819,7 +819,7 @@ public class GrobidProperties {
 		return theFile;
 	}
 
-	public static File getEvalCorpusPath(final File resourcesDir, final GrobidModels model) {
+	public static File getEvalCorpusPath(final File resourcesDir, final GrobidModel model) {
 		File theFile = new File(resourcesDir, "dataset/" + model.getFolderName() + "/evaluation/");
 		if (!theFile.exists()) {
 			theFile = new File("resources/dataset/" + model.getFolderName() + "/evaluation/");
@@ -827,7 +827,7 @@ public class GrobidProperties {
 		return theFile;
 	}
 
-	public static File getCorpusPath(final File resourcesDir, final GrobidModels model) {
+	public static File getCorpusPath(final File resourcesDir, final GrobidModel model) {
 		File theFile = new File(resourcesDir, "dataset/" + model.getFolderName() + "/corpus");
 		if (!theFile.exists()) {
 			theFile = new File("resources/dataset/" + model.getFolderName() + "/corpus");

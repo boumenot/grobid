@@ -12,6 +12,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.grobid.core.GrobidModel;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.exceptions.GrobidPropertyException;
 import org.grobid.core.mock.MockContext;
@@ -267,7 +268,7 @@ public class GrobidPropertiesTest {
 
 	//@Test
 	public void testGetModelPath() {
-		GrobidModels value = GrobidModels.DATE;
+		GrobidModel value = GrobidModels.DATE;
 		assertEquals("The property has not the value expected",
 				new File(GrobidProperties.get_GROBID_HOME_PATH(),
 						GrobidProperties.FOLDER_NAME_MODELS + File.separator
@@ -278,7 +279,7 @@ public class GrobidPropertiesTest {
 
 	//@Test
 	public void testgetTemplatePath() {
-		GrobidModels value = GrobidModels.DATE;
+		GrobidModel value = GrobidModels.DATE;
 		assertEquals(
 				"The property has not the value expected",
 				new File(GrobidProperties.get_GROBID_HOME_PATH(), "dataset/"
@@ -290,7 +291,7 @@ public class GrobidPropertiesTest {
 
 	//@Test
 	public void testgetEvalCorpusPath() {
-		GrobidModels value = GrobidModels.DATE;
+		GrobidModel value = GrobidModels.DATE;
 		assertEquals(
 				"The property has not the value expected",
 				new File(GrobidProperties.get_GROBID_HOME_PATH(), "dataset/"
@@ -301,7 +302,7 @@ public class GrobidPropertiesTest {
 
 	//@Test
 	public void testgetCorpusPath() {
-		GrobidModels value = GrobidModels.DATE;
+		GrobidModel value = GrobidModels.DATE;
 		assertEquals(
 				"The property has not the value expected",
 				new File(GrobidProperties.get_GROBID_HOME_PATH(), "dataset/"

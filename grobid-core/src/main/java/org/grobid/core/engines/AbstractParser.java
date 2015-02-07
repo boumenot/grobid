@@ -1,6 +1,6 @@
 package org.grobid.core.engines;
 
-import org.grobid.core.GrobidModels;
+import org.grobid.core.GrobidModel;
 import org.grobid.core.engines.tagging.GenericTagger;
 import org.grobid.core.engines.tagging.TaggerFactory;
 import org.grobid.core.utilities.counters.CntManager;
@@ -17,11 +17,11 @@ public abstract class AbstractParser implements GenericTagger, Closeable {
 
     protected CntManager cntManager = CntManagerFactory.getNoOpCntManager();
 
-    protected AbstractParser(GrobidModels model) {
+    protected AbstractParser(GrobidModel model) {
         this(model, CntManagerFactory.getNoOpCntManager());
     }
 
-    protected AbstractParser(GrobidModels model, CntManager cntManager) {
+    protected AbstractParser(GrobidModel model, CntManager cntManager) {
         this.cntManager = cntManager;
         genericTagger = TaggerFactory.getTagger(model);
     }
