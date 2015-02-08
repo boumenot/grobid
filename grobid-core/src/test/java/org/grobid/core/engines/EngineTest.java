@@ -1,23 +1,15 @@
 package org.grobid.core.engines;
 
 
-import com.google.common.collect.Lists;
-import fr.limsi.wapiti.SWIGTYPE_p_mdl_t;
 import fr.limsi.wapiti.Wapiti;
-import org.apache.commons.lang3.tuple.Pair;
-import org.grobid.core.GrobidModels;
 import org.grobid.core.data.BibDataSet;
 import org.grobid.core.data.BiblioItem;
 import org.grobid.core.data.Date;
 import org.grobid.core.data.Person;
 import org.grobid.core.document.Document;
 import org.grobid.core.engines.citations.LabeledReferenceResult;
-import org.grobid.core.engines.counters.CitationParserCounters;
-import org.grobid.core.engines.tagging.WapitiTagger;
-import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.factory.GrobidFactory;
 import org.grobid.core.features.FeaturesVectorDate;
-import org.grobid.core.jni.WapitiModel;
 import org.grobid.core.main.LibraryLoader;
 import org.grobid.core.utilities.TextUtilities;
 import org.junit.BeforeClass;
@@ -571,14 +563,15 @@ public class EngineTest {
 //        Engine engine = GrobidFactory.getInstance().getEngine();
 //        WapitiTagger t = new WapitiTagger(GrobidModels.REFERENCE_SEGMENTER);
 
-        SWIGTYPE_p_mdl_t mod = Wapiti.loadModel("label -m /Work/workspace/grobid-rg/grobid-home/models/reference-segmenter/model.wapiti");
-
-        for (int i = 0; i < 1000000; i++) {
-            if (i % 100 == 0) {
-                System.out.println("Processed: " + i);
-            }
-            Wapiti.labelFromModel(mod, s);
-        }
+        // FIXME(chrboum): broken test!
+//        SWIGTYPE_p_mdl_t mod = Wapiti.loadModel("label -m /Work/workspace/grobid-rg/grobid-home/models/reference-segmenter/model.wapiti");
+//
+//        for (int i = 0; i < 1000000; i++) {
+//            if (i % 100 == 0) {
+//                System.out.println("Processed: " + i);
+//            }
+//            Wapiti.labelFromModel(mod, s);
+//        }
     }
 
     private static String getDateStr(String input) throws Exception {
@@ -604,29 +597,30 @@ public class EngineTest {
 
 
     private void testWap(final String forTest, File modelFile) throws InterruptedException {
-        final WapitiModel wm = new WapitiModel(modelFile);
-        String res;
-
-        Thread[] threads = new Thread[10];
-        for (int i = 0; i < threads.length; i++) {
-            threads[i] = new Thread() {
-                @Override
-                public void run() {
-                    for (int i = 0; i < 100; i++) {
-                        String res = wm.label(forTest);
-                        System.out.println("RES: " + res.trim());
-                    }
-                }
-            };
-            threads[i].start();
-        }
-
-        for (int i = 0; i < threads.length; i++) {
-            threads[i].join();
-        }
-
-
-        wm.close();
+        // FIXME(chrboum): broken test!
+//        final WapitiModel wm = new WapitiModel(modelFile);
+//        String res;
+//
+//        Thread[] threads = new Thread[10];
+//        for (int i = 0; i < threads.length; i++) {
+//            threads[i] = new Thread() {
+//                @Override
+//                public void run() {
+//                    for (int i = 0; i < 100; i++) {
+//                        String res = wm.label(forTest);
+//                        System.out.println("RES: " + res.trim());
+//                    }
+//                }
+//            };
+//            threads[i].start();
+//        }
+//
+//        for (int i = 0; i < threads.length; i++) {
+//            threads[i].join();
+//        }
+//
+//
+//        wm.close();
     }
 
     @Test

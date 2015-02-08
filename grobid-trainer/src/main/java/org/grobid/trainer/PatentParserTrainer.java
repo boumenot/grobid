@@ -90,7 +90,7 @@ public class PatentParserTrainer extends AbstractTrainer{
 
 
     /**
-     * Create the set of training and evaluation sets from the annotated examples
+     * create the set of training and evaluation sets from the annotated examples
      * Extraction of citations in the description body.
      */
     public void createDataSet(String setName, String rank, String corpusPath, String outputPath) {

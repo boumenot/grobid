@@ -26,8 +26,8 @@ public class AuthorParser implements Closeable {
     private final GenericTagger namesCitationParser;
 
     public AuthorParser(GrobidModelStreamFactory grobidModelStreamFactory) {
-        namesHeaderParser = TaggerFactory.getTagger(grobidModelStreamFactory.Create(GrobidModels.NAMES_HEADER));
-        namesCitationParser = TaggerFactory.getTagger(grobidModelStreamFactory.Create(GrobidModels.NAMES_CITATION));
+        namesHeaderParser = TaggerFactory.getTagger(grobidModelStreamFactory.create(GrobidModels.NAMES_HEADER));
+        namesCitationParser = TaggerFactory.getTagger(grobidModelStreamFactory.create(GrobidModels.NAMES_CITATION));
     }
 
     /**

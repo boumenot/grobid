@@ -33,12 +33,12 @@ public class CitationParser extends AbstractParser {
     private EngineParsers parsers;
 
     public CitationParser(EngineParsers parsers, GrobidModelStreamFactory grobidModelStreamFactory, CntManager cntManager) {
-        super(grobidModelStreamFactory.Create(GrobidModels.CITATION), cntManager);
+        super(grobidModelStreamFactory.create(GrobidModels.CITATION), cntManager);
         this.parsers = parsers;
     }
 
     public CitationParser(EngineParsers parsers, GrobidModelStreamFactory grobidModelStreamFactory) {
-        super(grobidModelStreamFactory.Create(GrobidModels.CITATION));
+        super(grobidModelStreamFactory.create(GrobidModels.CITATION));
         this.parsers = parsers;
     }
 

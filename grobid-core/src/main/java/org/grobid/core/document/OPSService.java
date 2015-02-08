@@ -77,7 +77,7 @@ import org.grobid.core.sax.TextSaxParser;
 			envelope += "</soapenv:Body>\n";
 			envelope += "</soapenv:Envelope>\n"; 		
 			
-	    	//Create socket
+	    	//create socket
       		InetAddress  addr = InetAddress.getByName(OPS_HOST);
       		Socket sock = new Socket(addr, OPS_PORT);
     			

@@ -1,6 +1,5 @@
 package org.grobid.trainer.evaluation;
 
-import org.chasen.crfpp.Tagger;
 import org.grobid.core.GrobidModelStreamFactory;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.engines.tagging.GenericTagger;
@@ -36,9 +35,9 @@ public class PatentEvaluation {
     public PatentEvaluation(GrobidModelStreamFactory grobidModelStreamFactory) {
         evaluationPath = AbstractTrainer.getEvalCorpusBasePath().getAbsolutePath();
         outputPath = GrobidProperties.getInstance().getTempPath().getAbsolutePath();
-        taggerNPL = TaggerFactory.getTagger(grobidModelStreamFactory.Create(GrobidModels.PATENT_NPL));
-        taggerPatent = TaggerFactory.getTagger(grobidModelStreamFactory.Create(GrobidModels.PATENT_PATENT));
-        taggerAll = TaggerFactory.getTagger(grobidModelStreamFactory.Create(GrobidModels.PATENT_ALL));
+        taggerNPL = TaggerFactory.getTagger(grobidModelStreamFactory.create(GrobidModels.PATENT_NPL));
+        taggerPatent = TaggerFactory.getTagger(grobidModelStreamFactory.create(GrobidModels.PATENT_PATENT));
+        taggerAll = TaggerFactory.getTagger(grobidModelStreamFactory.create(GrobidModels.PATENT_ALL));
     }
 
     /**

@@ -1,7 +1,6 @@
 package org.grobid.trainer;
 
 import org.grobid.core.GrobidModel;
-import org.grobid.core.jni.WapitiModel;
 
 import java.io.File;
 
@@ -23,12 +22,13 @@ public class WapitiTrainer implements GenericTrainer {
 			eta = SegmentationTrainer.eta;
 			window = SegmentationTrainer.window;
 		}
-        WapitiModel.train(template, trainingData, outputModel, "--nthread " + numThreads +
-//       		" --algo sgd-l1"
-			" -e " + eta +
-			" -w " + window +
-			""
-        );
+        // FIXME(chrboum): implement support for .train();
+//        WapitiModel.train(template, trainingData, outputModel, "--nthread " + numThreads +
+////       		" --algo sgd-l1"
+//			" -e " + eta +
+//			" -w " + window +
+//			""
+//        );
     }
 
     @Override

@@ -12,7 +12,6 @@ import org.grobid.core.features.FeaturesVectorSegmentation;
 import org.grobid.core.layout.Block;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.process.PdfToXmlConverter;
-import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.core.utilities.LanguageUtilities;
 import org.grobid.core.utilities.TextUtilities;
 import org.slf4j.Logger;
@@ -64,7 +63,7 @@ public class Segmentation extends AbstractParser {
             DocumentFactory documentFactory,
             GrobidModelStreamFactory grobidModelStreamFactory) {
 
-        super(grobidModelStreamFactory.Create(GrobidModels.SEGMENTATION));
+        super(grobidModelStreamFactory.create(GrobidModels.SEGMENTATION));
 
         this.pdfToXmlConverter = pdfToXmlConverter;
         this.documentFactory = documentFactory;

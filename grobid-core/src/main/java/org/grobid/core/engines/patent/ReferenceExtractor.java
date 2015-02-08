@@ -10,8 +10,6 @@ import org.grobid.core.data.PatentItem;
 import org.grobid.core.document.Document;
 import org.grobid.core.document.DocumentFactory;
 import org.grobid.core.document.OPSService;
-import org.grobid.core.document.PatentDocument;
-import org.grobid.core.engines.CitationParser;
 import org.grobid.core.engines.EngineParsers;
 import org.grobid.core.engines.tagging.GenericTagger;
 import org.grobid.core.engines.tagging.TaggerFactory;
@@ -103,9 +101,9 @@ public class ReferenceExtractor implements Closeable {
         this.pdfToXmlConverter = pdfToXmlConverter;
         this.documentFactory = documentFactory;
 
-        taggerNPL = TaggerFactory.getTagger(grobidModelStreamFactory.Create(GrobidModels.PATENT_NPL));
-    	taggerAll = TaggerFactory.getTagger(grobidModelStreamFactory.Create(GrobidModels.PATENT_ALL));
-    	taggerPatent = TaggerFactory.getTagger(grobidModelStreamFactory.Create(GrobidModels.PATENT_PATENT));
+        taggerNPL = TaggerFactory.getTagger(grobidModelStreamFactory.create(GrobidModels.PATENT_NPL));
+    	taggerAll = TaggerFactory.getTagger(grobidModelStreamFactory.create(GrobidModels.PATENT_ALL));
+    	taggerPatent = TaggerFactory.getTagger(grobidModelStreamFactory.create(GrobidModels.PATENT_PATENT));
     }
 
     /**

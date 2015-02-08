@@ -21,15 +21,12 @@ import org.grobid.core.utilities.LanguageUtilities;
 import org.grobid.core.utilities.TextUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.StringTokenizer;
-import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 
 /**
@@ -51,7 +48,7 @@ public class HeaderParser extends AbstractParser {
 			PdfToXmlConverter pdfToXmlConverter,
 			DocumentFactory documentFactory,
             GrobidModelStreamFactory grobidModelStreamFactory) {
-		super(grobidModelStreamFactory.Create(GrobidModels.HEADER));
+		super(grobidModelStreamFactory.create(GrobidModels.HEADER));
 		this.parsers = parsers;
 		this.pdfToXmlConverter = pdfToXmlConverter;
 		this.documentFactory = documentFactory;

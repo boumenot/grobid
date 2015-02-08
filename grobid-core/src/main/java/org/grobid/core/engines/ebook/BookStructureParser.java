@@ -38,7 +38,7 @@ public class BookStructureParser extends AbstractParser {
             DocumentFactory documentFactory,
             GrobidModelStreamFactory grobidModelStreamFactory,
             String fileEndingTeiFullText) {
-        super(grobidModelStreamFactory.Create(GrobidModels.EBOOK));
+        super(grobidModelStreamFactory.create(GrobidModels.EBOOK));
 
         this.pdfToXmlConverter = pdfToXmlConverter;
         this.documentFactory = documentFactory;

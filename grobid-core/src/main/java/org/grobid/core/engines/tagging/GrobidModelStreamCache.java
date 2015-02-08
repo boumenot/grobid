@@ -23,7 +23,7 @@ public class GrobidModelStreamCache {
             return this.models.get(grobidModels);
         }
 
-        GrobidModelStream grobidModelStream = this.grobidModelStreamFactory.Create(grobidModels);
+        GrobidModelStream grobidModelStream = this.grobidModelStreamFactory.create(grobidModels);
         this.models.put(grobidModels, grobidModelStream);
 
         return grobidModelStream;

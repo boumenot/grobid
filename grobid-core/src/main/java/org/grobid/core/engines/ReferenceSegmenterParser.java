@@ -1,6 +1,5 @@
 package org.grobid.core.engines;
 
-import org.grobid.core.GrobidModel;
 import org.grobid.core.GrobidModelStreamFactory;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.engines.citations.LabeledReferenceResult;
@@ -25,7 +24,7 @@ public class ReferenceSegmenterParser extends AbstractParser implements Referenc
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReferenceSegmenterParser.class);
 	
     protected ReferenceSegmenterParser(GrobidModelStreamFactory grobidModelStreamFactory) {
-        super(grobidModelStreamFactory.Create(GrobidModels.REFERENCE_SEGMENTER));
+        super(grobidModelStreamFactory.create(GrobidModels.REFERENCE_SEGMENTER));
     }
 
     /**

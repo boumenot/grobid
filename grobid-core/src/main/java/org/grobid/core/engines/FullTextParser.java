@@ -58,7 +58,7 @@ public class FullTextParser extends AbstractParser {
      * TODO some documentation...
      */
     public FullTextParser(EngineParsers parsers, GrobidModelStreamFactory grobidModelStreamFactory) {
-        super(grobidModelStreamFactory.Create(GrobidModels.FULLTEXT));
+        super(grobidModelStreamFactory.create(GrobidModels.FULLTEXT));
         this.parsers = parsers;
         // FIXME(chrboum): why is this here?
         tmpPath = GrobidProperties.getTempPath();
@@ -1273,7 +1273,7 @@ public class FullTextParser extends AbstractParser {
     }
 
     /**
-     * Create the TEI representation for a document based on the parsed header, references
+     * create the TEI representation for a document based on the parsed header, references
      * and body sections.
      */
     private void toTEI(Document doc,

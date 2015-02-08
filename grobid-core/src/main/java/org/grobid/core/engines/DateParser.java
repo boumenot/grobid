@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 public class DateParser extends AbstractParser {
 
     public DateParser(GrobidModelStreamFactory grobidModelStreamFactory) {
-        super(grobidModelStreamFactory.Create(GrobidModels.DATE));
+        super(grobidModelStreamFactory.create(GrobidModels.DATE));
     }
 
     /**

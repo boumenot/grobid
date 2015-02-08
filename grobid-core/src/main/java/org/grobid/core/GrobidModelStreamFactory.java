@@ -8,7 +8,7 @@ import java.io.File;
  * Created by Christopher Boumenot on 2/6/2015.
  */
 public class GrobidModelStreamFactory {
-    public GrobidModelStream Create(GrobidModels grobidModels) {
+    public GrobidModelStream create(GrobidModels grobidModels) {
         File grobidModelFile = GrobidProperties.getModelPath(grobidModels);
         GrobidModelStream grobidModelStream = new GrobidModelStream(grobidModels, grobidModelFile);
 

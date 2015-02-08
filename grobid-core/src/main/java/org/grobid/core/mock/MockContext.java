@@ -29,7 +29,7 @@ public class MockContext {
 	 * @throws Exception
 	 */
 	public static void setInitialContext() throws Exception {
-		// Create initial context
+		// create initial context
 		System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
 				"org.apache.naming.java.javaURLContextFactory");
 		System.setProperty(Context.URL_PKG_PREFIXES, "org.apache.naming");

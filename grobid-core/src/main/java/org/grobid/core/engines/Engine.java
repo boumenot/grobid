@@ -279,7 +279,7 @@ public class Engine implements Closeable {
     }
 
     /**
-     * Create training data for the segmentation of a reference block based on a PDF file containing
+     * create training data for the segmentation of a reference block based on a PDF file containing
      * a reference section and the current reference segmentation model 
      *
      * @param input   : the path of the PDF file to be processed
@@ -323,7 +323,7 @@ public class Engine implements Closeable {
     }
 
 	/**
-     * Create training data for the segmentation of a reference block based on a repository of PDF files 
+     * create training data for the segmentation of a reference block based on a repository of PDF files
 	 * containing a reference section and the current reference segmentation model 
      *
      * @param directoryPath   : the path of the repository of PDF files to be processed
@@ -461,7 +461,7 @@ public class Engine implements Closeable {
     }
 
     /**
-     * Create training data for the header model based on the application of the
+     * create training data for the header model based on the application of the
      * current header model on a new PDF
      *
      * @param inputFile  : the path of the PDF file to be processed
@@ -476,7 +476,7 @@ public class Engine implements Closeable {
     }
 
     /**
-     * Create training data for the full text model based on the application of
+     * create training data for the full text model based on the application of
      * the current full text model on a new PDF
      *
      * @param inputFile    : the path of the PDF file to be processed
@@ -491,7 +491,7 @@ public class Engine implements Closeable {
     }
 
     /**
-     * Create training data for the segmenation model based on the application of
+     * create training data for the segmenation model based on the application of
      * the current segmentation model on a new PDF
      *
      * @param inputFile        : the path of the PDF file to be processed

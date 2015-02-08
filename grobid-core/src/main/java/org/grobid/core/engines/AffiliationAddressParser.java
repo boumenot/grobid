@@ -1,7 +1,5 @@
 package org.grobid.core.engines;
 
-import org.chasen.crfpp.Tagger;
-import org.grobid.core.GrobidModelStream;
 import org.grobid.core.GrobidModelStreamFactory;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.data.Affiliation;
@@ -22,7 +20,7 @@ public class AffiliationAddressParser extends AbstractParser {
     public Lexicon lexicon = Lexicon.getInstance();
 
     public AffiliationAddressParser(GrobidModelStreamFactory grobidModelStreamFactory) {
-        super(grobidModelStreamFactory.Create(GrobidModels.AFFIILIATON_ADDRESS));
+        super(grobidModelStreamFactory.create(GrobidModels.AFFIILIATON_ADDRESS));
     }
 
     public ArrayList<Affiliation> processing(String input) {

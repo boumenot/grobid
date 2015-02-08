@@ -2894,7 +2894,7 @@ public class BiblioItem {
     public static String punctuationsSub = "([,;])";
 
     /**
-     * Create author set
+     * create author set
      */
     /*public void createAuthorSet() {
       	  if (authors == null)
@@ -3120,7 +3120,7 @@ public class BiblioItem {
 
 
     /**
-     * Create the TEI encoding for the author+affiliation block for the current biblio object.
+     * create the TEI encoding for the author+affiliation block for the current biblio object.
      */
     public String toTEIAuthorBlock(int nbTag) {
         StringBuffer tei = new StringBuffer();

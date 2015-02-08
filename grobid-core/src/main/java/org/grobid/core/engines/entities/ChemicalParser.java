@@ -20,7 +20,7 @@ import java.util.StringTokenizer;
 public class ChemicalParser extends AbstractParser {
 
     public ChemicalParser(GrobidModelStreamFactory grobidModelStreamFactory) {
-        super(grobidModelStreamFactory.Create(GrobidModels.ENTITIES_CHEMISTRY));
+        super(grobidModelStreamFactory.create(GrobidModels.ENTITIES_CHEMISTRY));
     }
 
     /**
