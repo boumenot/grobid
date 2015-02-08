@@ -849,8 +849,6 @@ public class EngineTest {
         System.out.println(x.getJournal());
         System.out.println(x.getPublicationDate());
         System.out.println(x);
-
-
     }
 
     @Test
