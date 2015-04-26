@@ -15,6 +15,8 @@ import java.io.UnsupportedEncodingException;
  * Created by Christopher Boumenot on 2/7/2015.
  */
 public class GrobidWapitiIO extends WapitiIO {
+    final static private String Latin1 = "ISO-8859-1";
+
     private BufferedReader reader;
     private BufferedWriter writer;
 
@@ -23,11 +25,11 @@ public class GrobidWapitiIO extends WapitiIO {
             OutputStream outputStream) throws UnsupportedEncodingException {
         super();
         this.reader = new BufferedReader(
-                new InputStreamReader(inputStream, "UTF-8"));
+                new InputStreamReader(inputStream, GrobidWapitiIO.Latin1));
 
         if (outputStream != null) {
             this.writer = new BufferedWriter(
-                    new OutputStreamWriter(outputStream, "UTF-8"));
+                    new OutputStreamWriter(outputStream, GrobidWapitiIO.Latin1));
         }
     }
 

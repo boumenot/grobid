@@ -12,7 +12,7 @@ import java.util.Map;
  * User: zholudev
  * Date: 3/20/14
  */
-public class TaggerFactory {
+public class TaggerFactoryOld {
     private static Map<GrobidModel, GenericTagger> cache = new HashMap<GrobidModel, GenericTagger>();
     private static WapitiModelFactory factory = new WapitiModelFactory();
 

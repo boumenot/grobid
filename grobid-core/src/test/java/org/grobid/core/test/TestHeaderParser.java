@@ -69,7 +69,6 @@ public class TestHeaderParser extends EngineTest{
 
 		assertNotNull(resHeader);
         //System.out.println(tei);
-
     }
 
 	@Test
