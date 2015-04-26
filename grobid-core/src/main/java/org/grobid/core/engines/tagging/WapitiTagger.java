@@ -29,15 +29,15 @@ public class WapitiTagger implements GenericTagger {
     @Override
     public String label(String data) {
         // FIXME(chrboum): don't swallow and convert to a RuntimeException.
-        // FIXME(chrboum): why are you hard coding UTF-8?
+        // FIXME(chrboum): why are you hard coding ISO-8859-1 - because ... so document the WHY!
         try {
-            InputStream in = IOUtils.toInputStream(data, "UTF-8");
+            InputStream in = IOUtils.toInputStream(data, "ISO-8859-1");
             ByteArrayOutputStream out = new ByteArrayOutputStream();
 
             GrobidWapitiIO io = new GrobidWapitiIO(in, out);
             wapitiModel.label(io);
 
-            return out.toString("UTF-8");
+            return out.toString("ISO-8859-1");
         } catch (Exception e) {
             throw new GrobidException("Failed to label!", e);
         }
