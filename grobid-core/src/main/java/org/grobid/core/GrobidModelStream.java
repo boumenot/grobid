@@ -20,16 +20,8 @@ public class GrobidModelStream implements GrobidModel {
     }
 
     public InputStream load() throws FileNotFoundException {
-        Boolean exists = this.grobidModelFile.exists();
-        Boolean canRead = this.grobidModelFile.canRead();
-        Boolean isFile = this.grobidModelFile.isFile();
-
         FileInputStream inputStream = new FileInputStream(this.grobidModelFile);
         return inputStream;
-    }
-
-    public String getModelPath() {
-        return this.grobidModelFile.getAbsolutePath();
     }
 
     @Override

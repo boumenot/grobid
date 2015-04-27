@@ -38,6 +38,4 @@ public enum GrobidCRFEngine {
         throw new IllegalArgumentException("No Grobid CRF engine with name '" + name +
                 "', possible values are: " + Arrays.toString(values()));
     }
-
-
 }

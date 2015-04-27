@@ -78,5 +78,4 @@ public interface GrobidPropertyKeys {
      * The defined paths to create.
      */
     public static final String[] PATHES_TO_CREATE = {PROP_TMP_PATH};
-
 }

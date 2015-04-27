@@ -381,7 +381,6 @@ public class GrobidProperties {
         grobidCRFEngine = GrobidCRFEngine.get(getPropertyValue(GrobidPropertyKeys.PROP_GROBID_CRF_ENGINE, GrobidCRFEngine.WAPITI.name()));
     }
 
-
     /**
 	 * Loads all properties given in property file {@link #GROBID_HOME_PATH}.
 	 */
