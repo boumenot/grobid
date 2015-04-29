@@ -1,7 +1,6 @@
 package org.grobid.core.engines.patent;
 
 import org.chasen.crfpp.Tagger;
-import org.grobid.core.GrobidModelStreamFactory;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.data.BibDataSet;
 import org.grobid.core.data.BiblioItem;
@@ -12,7 +11,7 @@ import org.grobid.core.document.DocumentFactory;
 import org.grobid.core.document.OPSService;
 import org.grobid.core.engines.EngineParsers;
 import org.grobid.core.engines.tagging.GenericTagger;
-import org.grobid.core.engines.tagging.TaggerFactoryOld;
+import org.grobid.core.engines.tagging.TaggerFactory;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.exceptions.GrobidResourceException;
 import org.grobid.core.features.FeaturesVectorReference;
@@ -20,11 +19,7 @@ import org.grobid.core.lexicon.Lexicon;
 import org.grobid.core.process.PdfToXmlConverter;
 import org.grobid.core.sax.PatentAnnotationSaxParser;
 import org.grobid.core.sax.TextSaxParser;
-import org.grobid.core.utilities.Consolidation;
-import org.grobid.core.utilities.GrobidProperties;
-import org.grobid.core.utilities.KeyGen;
-import org.grobid.core.utilities.OffsetPosition;
-import org.grobid.core.utilities.TextUtilities;
+import org.grobid.core.utilities.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.EntityResolver;
@@ -33,19 +28,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import javax.xml.parsers.SAXParserFactory;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.Closeable;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -96,14 +79,14 @@ public class ReferenceExtractor implements Closeable {
             EngineParsers parsers,
             PdfToXmlConverter pdfToXmlConverter,
             DocumentFactory documentFactory,
-            GrobidModelStreamFactory grobidModelStreamFactory) {
+            TaggerFactory taggerFactory) {
         this.parsers = parsers;
         this.pdfToXmlConverter = pdfToXmlConverter;
         this.documentFactory = documentFactory;
 
-        taggerNPL = TaggerFactoryOld.getTagger(grobidModelStreamFactory.create(GrobidModels.PATENT_NPL));
-    	taggerAll = TaggerFactoryOld.getTagger(grobidModelStreamFactory.create(GrobidModels.PATENT_ALL));
-    	taggerPatent = TaggerFactoryOld.getTagger(grobidModelStreamFactory.create(GrobidModels.PATENT_PATENT));
+    	taggerAll = taggerFactory.create(GrobidModels.PATENT_ALL);
+        taggerNPL = taggerFactory.create(GrobidModels.PATENT_NPL);
+    	taggerPatent = taggerFactory.create(GrobidModels.PATENT_PATENT);
     }
 
     /**

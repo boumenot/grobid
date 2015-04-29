@@ -37,7 +37,10 @@ public class WapitiTagger implements GenericTagger {
             GrobidWapitiIO io = new GrobidWapitiIO(in, out);
             wapitiModel.label(io);
 
-            return out.toString("ISO-8859-1");
+            String label = out.toString("ISO-8859-1");
+            //TODO: VZ: Grobid currently expects tabs as separators whereas wapiti uses spaces for separating features.
+            // for now it is safer to replace, although it does not look nice
+            return label.replaceAll(" ", "\t");
         } catch (Exception e) {
             throw new GrobidException("Failed to label!", e);
         }

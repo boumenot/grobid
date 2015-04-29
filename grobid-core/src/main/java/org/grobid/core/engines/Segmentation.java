@@ -1,10 +1,10 @@
 package org.grobid.core.engines;
 
-import org.grobid.core.GrobidModelStreamFactory;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.document.BasicStructureBuilder;
 import org.grobid.core.document.Document;
 import org.grobid.core.document.DocumentFactory;
+import org.grobid.core.engines.tagging.TaggerFactory;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.exceptions.GrobidResourceException;
 import org.grobid.core.features.FeatureFactory;
@@ -61,13 +61,13 @@ public class Segmentation extends AbstractParser {
     public Segmentation(
             PdfToXmlConverter pdfToXmlConverter,
             DocumentFactory documentFactory,
-            GrobidModelStreamFactory grobidModelStreamFactory) {
-
-        super(grobidModelStreamFactory.create(GrobidModels.SEGMENTATION));
+            TaggerFactory taggerFactory) {
+        super(taggerFactory.create(GrobidModels.SEGMENTATION));
 
         this.pdfToXmlConverter = pdfToXmlConverter;
         this.documentFactory = documentFactory;
     }
+
 
     /**
      *  Segment a PDF document into high level zones: cover page, document header, 

@@ -1,10 +1,16 @@
 package org.grobid.core.engines;
 
 import org.grobid.core.GrobidModelStreamFactory;
+import org.grobid.core.GrobidWapitiIOFactory;
+import org.grobid.core.GrobidWapitiIOFactoryImpl;
 import org.grobid.core.document.DocumentFactory;
 import org.grobid.core.document.PdfXmlParser;
 import org.grobid.core.engines.entities.ChemicalParser;
 import org.grobid.core.engines.patent.ReferenceExtractor;
+import org.grobid.core.engines.tagging.CrfppTaggerFactory;
+import org.grobid.core.engines.tagging.GrobidCRFEngine;
+import org.grobid.core.engines.tagging.TaggerFactory;
+import org.grobid.core.engines.tagging.WapitiTaggerFactory;
 import org.grobid.core.process.PdfToXmlCmdFactory;
 import org.grobid.core.process.PdfToXmlConverter;
 import org.grobid.core.process.PdfToXmlConverterImpl;
@@ -23,7 +29,7 @@ public class EngineParsers implements Closeable {
     public static final Logger LOGGER = LoggerFactory.getLogger(EngineParsers.class);
     private final PdfToXmlConverter pdfToXmlConverter;
     private final DocumentFactory documentFactory;
-    private final GrobidModelStreamFactory grobidModelStreamFactory;
+    private final TaggerFactory taggerFactory;
 
     private AuthorParser authorParser = null;
     private AffiliationAddressParser affiliationAddressParser = null;
@@ -46,30 +52,48 @@ public class EngineParsers implements Closeable {
                         GrobidProperties.getTempPath()),
                 new DocumentFactory(
                         new PdfXmlParser()),
-                new GrobidModelStreamFactory());
+                EngineParsers.createGenericFactory(
+                        GrobidProperties.getGrobidCRFEngine(),
+                        new GrobidModelStreamFactory()
+                ));
     }
 
     public static EngineParsers Create(
             PdfToXmlConverter pdfToXmlConverter,
             DocumentFactory documentFactory,
+            TaggerFactory taggerFactory) {
+        return new EngineParsers(pdfToXmlConverter, documentFactory, taggerFactory);
+    }
+
+    private static TaggerFactory createGenericFactory(
+            GrobidCRFEngine grobidCRFEngine,
             GrobidModelStreamFactory grobidModelStreamFactory) {
-        return new EngineParsers(pdfToXmlConverter, documentFactory, grobidModelStreamFactory);
+
+        switch (grobidCRFEngine) {
+            case CRFPP:
+                return new CrfppTaggerFactory(grobidModelStreamFactory);
+            case WAPITI:
+                GrobidWapitiIOFactory factory = new GrobidWapitiIOFactoryImpl(grobidModelStreamFactory);
+                return new WapitiTaggerFactory(factory);
+            default:
+                throw new IllegalStateException("Unsupported Grobid CRF engine: " + GrobidProperties.getGrobidCRFEngine());
+        }
     }
 
     private EngineParsers(
             PdfToXmlConverter pdfToXmlConverter,
             DocumentFactory documentFactory,
-            GrobidModelStreamFactory grobidModelStreamFactory) {
+            TaggerFactory taggerFactory) {
         this.pdfToXmlConverter = pdfToXmlConverter;
         this.documentFactory = documentFactory;
-        this.grobidModelStreamFactory = grobidModelStreamFactory;
+        this.taggerFactory = taggerFactory;
     }
 
     public AffiliationAddressParser getAffiliationAddressParser() {
         if (affiliationAddressParser == null) {
             synchronized (this) {
                 if (affiliationAddressParser == null) {
-                    affiliationAddressParser = new AffiliationAddressParser(this.grobidModelStreamFactory);
+                    affiliationAddressParser = new AffiliationAddressParser(this.taggerFactory);
                 }
             }
         }
@@ -80,7 +104,7 @@ public class EngineParsers implements Closeable {
         if (authorParser == null) {
             synchronized (this) {
                 if (authorParser == null) {
-                    authorParser = new AuthorParser(this.grobidModelStreamFactory);
+                    authorParser = new AuthorParser(this.taggerFactory);
                 }
             }
         }
@@ -95,7 +119,7 @@ public class EngineParsers implements Closeable {
                             this,
                             this.pdfToXmlConverter,
                             this.documentFactory,
-                            this.grobidModelStreamFactory);
+                            this.taggerFactory);
                 }
             }
         }
@@ -106,7 +130,7 @@ public class EngineParsers implements Closeable {
         if (dateParser == null) {
             synchronized (this) {
                 if (dateParser == null) {
-                    dateParser = new DateParser(this.grobidModelStreamFactory);
+                    dateParser = new DateParser(this.taggerFactory);
                 }
             }
         }
@@ -117,7 +141,7 @@ public class EngineParsers implements Closeable {
         if (citationParser == null) {
             synchronized (this) {
                 if (citationParser == null) {
-                    citationParser = new CitationParser(this, this.grobidModelStreamFactory);
+                    citationParser = new CitationParser(this, this.taggerFactory);
                 }
             }
         }
@@ -129,7 +153,7 @@ public class EngineParsers implements Closeable {
         if (fullTextParser == null) {
             synchronized (this) {
                 if (fullTextParser == null) {
-                    fullTextParser = new FullTextParser(this, this.grobidModelStreamFactory);
+                    fullTextParser = new FullTextParser(this, this.taggerFactory);
                 }
             }
         }
@@ -144,7 +168,7 @@ public class EngineParsers implements Closeable {
                     segmentationParser = new Segmentation(
                             this.pdfToXmlConverter,
                             this.documentFactory,
-                            this.grobidModelStreamFactory);
+                            this.taggerFactory);
                 }
             }
         }
@@ -159,7 +183,7 @@ public class EngineParsers implements Closeable {
                             this,
                             this.pdfToXmlConverter,
                             this.documentFactory,
-                            this.grobidModelStreamFactory);
+                            this.taggerFactory);
                 }
             }
         }
@@ -170,7 +194,7 @@ public class EngineParsers implements Closeable {
         if (referenceSegmenterParser == null) {
             synchronized (this) {
                 if (referenceSegmenterParser == null) {
-                    referenceSegmenterParser = new ReferenceSegmenterParser(this.grobidModelStreamFactory);
+                    referenceSegmenterParser = new ReferenceSegmenterParser(this.taggerFactory);
                 }
             }
         }
@@ -181,7 +205,7 @@ public class EngineParsers implements Closeable {
         if (chemicalParser == null) {
             synchronized (this) {
                 if (chemicalParser == null) {
-                    chemicalParser = new ChemicalParser(this.grobidModelStreamFactory);
+                    chemicalParser = new ChemicalParser(this.taggerFactory);
                 }
             }
         }

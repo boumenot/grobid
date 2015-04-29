@@ -1,24 +1,19 @@
 package org.grobid.trainer.evaluation;
 
 import com.google.common.base.Function;
-import com.google.common.base.Joiner;
 import org.chasen.crfpp.Tagger;
 import org.grobid.core.engines.tagging.GenericTagger;
-import org.grobid.core.exceptions.GrobidException;
-import org.grobid.core.jni.WapitiModel;
-import org.grobid.core.utilities.TextUtilities;
-import org.grobid.core.utilities.GrobidProperties;
 import org.grobid.core.engines.tagging.GrobidCRFEngine;
+import org.grobid.core.exceptions.GrobidException;
+import org.grobid.core.utilities.GrobidProperties;
+import org.grobid.core.utilities.TextUtilities;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
-
-import org.apache.commons.io.FileUtils;
 
 /**
  * Evaluation of the parsing of citation.

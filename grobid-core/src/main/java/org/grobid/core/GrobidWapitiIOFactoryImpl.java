@@ -1,6 +1,7 @@
 package org.grobid.core;
 
 import org.grobid.core.jni.GrobidWapitiIO;
+import org.grobid.core.utilities.GrobidProperties;
 
 import java.io.*;
 
@@ -17,10 +18,9 @@ public class GrobidWapitiIOFactoryImpl implements GrobidWapitiIOFactory {
     @Override
     public GrobidWapitiIO openModel(GrobidModels grobidModels) throws FileNotFoundException, UnsupportedEncodingException {
         GrobidModelStream grobidModelStream = this.factory.create(grobidModels);
+        String modelPath = GrobidProperties.getInstance().getModelPath(grobidModelStream).getAbsolutePath();
 
-        InputStream inputStream = new FileInputStream(
-                grobidModelStream.getModelName());
-
+        InputStream inputStream = new FileInputStream(modelPath);
         return this.create(inputStream, null);
     }
 

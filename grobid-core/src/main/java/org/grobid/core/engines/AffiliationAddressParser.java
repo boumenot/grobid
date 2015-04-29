@@ -3,6 +3,7 @@ package org.grobid.core.engines;
 import org.grobid.core.GrobidModelStreamFactory;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.data.Affiliation;
+import org.grobid.core.engines.tagging.TaggerFactory;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.features.FeaturesVectorAffiliationAddress;
 import org.grobid.core.lexicon.Lexicon;
@@ -19,8 +20,8 @@ import java.util.StringTokenizer;
 public class AffiliationAddressParser extends AbstractParser {
     public Lexicon lexicon = Lexicon.getInstance();
 
-    public AffiliationAddressParser(GrobidModelStreamFactory grobidModelStreamFactory) {
-        super(grobidModelStreamFactory.create(GrobidModels.AFFIILIATON_ADDRESS));
+    public AffiliationAddressParser(TaggerFactory taggerFactory) {
+        super(taggerFactory.create(GrobidModels.AFFIILIATON_ADDRESS));
     }
 
     public ArrayList<Affiliation> processing(String input) {

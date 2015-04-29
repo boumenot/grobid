@@ -2,12 +2,12 @@ package org.grobid.core.engines;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.grobid.core.GrobidModelStreamFactory;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.data.BiblioItem;
 import org.grobid.core.data.Date;
 import org.grobid.core.data.Person;
 import org.grobid.core.document.*;
+import org.grobid.core.engines.tagging.TaggerFactory;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.features.FeatureFactory;
 import org.grobid.core.features.FeaturesVectorHeader;
@@ -47,14 +47,15 @@ public class HeaderParser extends AbstractParser {
 			EngineParsers parsers,
 			PdfToXmlConverter pdfToXmlConverter,
 			DocumentFactory documentFactory,
-            GrobidModelStreamFactory grobidModelStreamFactory) {
-		super(grobidModelStreamFactory.create(GrobidModels.HEADER));
+			TaggerFactory taggerFactory) {
+		super(taggerFactory.create(GrobidModels.HEADER));
+
 		this.parsers = parsers;
 		this.pdfToXmlConverter = pdfToXmlConverter;
 		this.documentFactory = documentFactory;
 	}
 
-    /**
+	/**
      * Processing with application of the segmentation model
      */ 
     public Pair<String, Document> processing(String input, boolean consolidate, BiblioItem resHeader) {

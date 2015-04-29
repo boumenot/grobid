@@ -1,10 +1,9 @@
 package org.grobid.core.engines;
 
-import org.grobid.core.GrobidModelStreamFactory;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.data.Person;
 import org.grobid.core.engines.tagging.GenericTagger;
-import org.grobid.core.engines.tagging.TaggerFactoryOld;
+import org.grobid.core.engines.tagging.TaggerFactory;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.features.FeaturesVectorName;
 import org.grobid.core.utilities.TextUtilities;
@@ -25,9 +24,9 @@ public class AuthorParser implements Closeable {
     private final GenericTagger namesHeaderParser;
     private final GenericTagger namesCitationParser;
 
-    public AuthorParser(GrobidModelStreamFactory grobidModelStreamFactory) {
-        namesHeaderParser = TaggerFactoryOld.getTagger(grobidModelStreamFactory.create(GrobidModels.NAMES_HEADER));
-        namesCitationParser = TaggerFactoryOld.getTagger(grobidModelStreamFactory.create(GrobidModels.NAMES_CITATION));
+    public AuthorParser(TaggerFactory taggerFactory) {
+        namesHeaderParser = taggerFactory.create(GrobidModels.NAMES_HEADER);
+        namesCitationParser = taggerFactory.create(GrobidModels.NAMES_CITATION);
     }
 
     /**

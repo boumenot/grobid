@@ -1,7 +1,6 @@
 package org.grobid.core.engines;
 
 import org.apache.commons.lang3.StringUtils;
-import org.grobid.core.GrobidModelStreamFactory;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.data.BibDataSet;
 import org.grobid.core.data.BiblioItem;
@@ -10,13 +9,13 @@ import org.grobid.core.document.Document;
 import org.grobid.core.engines.citations.LabeledReferenceResult;
 import org.grobid.core.engines.citations.ReferenceSegmenter;
 import org.grobid.core.engines.counters.CitationParserCounters;
+import org.grobid.core.engines.tagging.TaggerFactory;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.features.FeaturesVectorCitation;
 import org.grobid.core.lexicon.Lexicon;
 import org.grobid.core.utilities.Consolidation;
 import org.grobid.core.utilities.OffsetPosition;
 import org.grobid.core.utilities.TextUtilities;
-import org.grobid.core.utilities.counters.CntManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,13 +31,8 @@ public class CitationParser extends AbstractParser {
     public Lexicon lexicon = Lexicon.getInstance();
     private EngineParsers parsers;
 
-    public CitationParser(EngineParsers parsers, GrobidModelStreamFactory grobidModelStreamFactory, CntManager cntManager) {
-        super(grobidModelStreamFactory.create(GrobidModels.CITATION), cntManager);
-        this.parsers = parsers;
-    }
-
-    public CitationParser(EngineParsers parsers, GrobidModelStreamFactory grobidModelStreamFactory) {
-        super(grobidModelStreamFactory.create(GrobidModels.CITATION));
+    public CitationParser(EngineParsers parsers, TaggerFactory taggerFactory) {
+        super(taggerFactory.create(GrobidModels.CITATION));
         this.parsers = parsers;
     }
 

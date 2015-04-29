@@ -5,6 +5,7 @@ import org.grobid.core.GrobidModels;
 import org.grobid.core.document.Document;
 import org.grobid.core.document.DocumentFactory;
 import org.grobid.core.engines.AbstractParser;
+import org.grobid.core.engines.tagging.TaggerFactory;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.process.PdfToXmlConverter;
 import org.grobid.core.utilities.TextUtilities;
@@ -36,9 +37,9 @@ public class BookStructureParser extends AbstractParser {
     public BookStructureParser(
             PdfToXmlConverter pdfToXmlConverter,
             DocumentFactory documentFactory,
-            GrobidModelStreamFactory grobidModelStreamFactory,
+            TaggerFactory taggerFactory,
             String fileEndingTeiFullText) {
-        super(grobidModelStreamFactory.create(GrobidModels.EBOOK));
+        super(taggerFactory.create(GrobidModels.EBOOK));
 
         this.pdfToXmlConverter = pdfToXmlConverter;
         this.documentFactory = documentFactory;

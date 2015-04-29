@@ -1,9 +1,9 @@
 package org.grobid.core.engines.entities;
 
-import org.grobid.core.GrobidModelStreamFactory;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.data.ChemicalEntity;
 import org.grobid.core.engines.AbstractParser;
+import org.grobid.core.engines.tagging.TaggerFactory;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.features.FeaturesVectorChemicalEntity;
 import org.grobid.core.utilities.TextUtilities;
@@ -18,9 +18,8 @@ import java.util.StringTokenizer;
  * @author Patrice Lopez
  */
 public class ChemicalParser extends AbstractParser {
-
-    public ChemicalParser(GrobidModelStreamFactory grobidModelStreamFactory) {
-        super(grobidModelStreamFactory.create(GrobidModels.ENTITIES_CHEMISTRY));
+    public ChemicalParser(TaggerFactory taggerFactory) {
+        super(taggerFactory.create(GrobidModels.ENTITIES_CHEMISTRY));
     }
 
     /**

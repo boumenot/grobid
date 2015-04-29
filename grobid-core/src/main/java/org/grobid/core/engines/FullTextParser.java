@@ -1,6 +1,5 @@
 package org.grobid.core.engines;
 
-import org.grobid.core.GrobidModelStreamFactory;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.data.BibDataSet;
 import org.grobid.core.data.BiblioItem;
@@ -8,28 +7,21 @@ import org.grobid.core.document.Document;
 import org.grobid.core.document.DocumentPiece;
 import org.grobid.core.document.DocumentPointer;
 import org.grobid.core.document.TEIFormater;
+import org.grobid.core.engines.citations.LabeledReferenceResult;
+import org.grobid.core.engines.citations.ReferenceSegmenter;
+import org.grobid.core.engines.counters.CitationParserCounters;
+import org.grobid.core.engines.tagging.TaggerFactory;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.exceptions.GrobidResourceException;
 import org.grobid.core.features.FeatureFactory;
 import org.grobid.core.features.FeaturesVectorFulltext;
 import org.grobid.core.layout.Block;
 import org.grobid.core.layout.LayoutToken;
-import org.grobid.core.utilities.GrobidProperties;
-import org.grobid.core.utilities.LanguageUtilities;
-import org.grobid.core.utilities.Pair;
-import org.grobid.core.utilities.TextUtilities;
-import org.grobid.core.utilities.KeyGen;
-import org.grobid.core.engines.citations.LabeledReferenceResult;
-import org.grobid.core.engines.citations.ReferenceSegmenter;
-import org.grobid.core.engines.counters.CitationParserCounters;
+import org.grobid.core.utilities.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
@@ -57,14 +49,14 @@ public class FullTextParser extends AbstractParser {
     /**
      * TODO some documentation...
      */
-    public FullTextParser(EngineParsers parsers, GrobidModelStreamFactory grobidModelStreamFactory) {
-        super(grobidModelStreamFactory.create(GrobidModels.FULLTEXT));
-        this.parsers = parsers;
-        // FIXME(chrboum): why is this here?
-        tmpPath = GrobidProperties.getTempPath();
-    }
+	public FullTextParser(EngineParsers parsers, TaggerFactory taggerFactory) {
+		super(taggerFactory.create(GrobidModels.FULLTEXT));
+		this.parsers = parsers;
+		// FIXME(chrboum): why is this here?
+		tmpPath = GrobidProperties.getTempPath();
+	}
 
-    /**
+	/**
      * Machine-learning recognition of the complete full text structures.
      *
      * @param input filename of pdf file

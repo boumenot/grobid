@@ -2,6 +2,7 @@ package org.grobid.core.engines;
 
 import org.grobid.core.GrobidModelStream;
 import org.grobid.core.engines.tagging.GenericTagger;
+import org.grobid.core.engines.tagging.TaggerFactory;
 import org.grobid.core.engines.tagging.TaggerFactoryOld;
 import org.grobid.core.utilities.counters.CntManager;
 import org.grobid.core.utilities.counters.impl.CntManagerFactory;
@@ -15,15 +16,15 @@ public abstract class AbstractParser implements GenericTagger, Closeable {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractParser.class);
     private GenericTagger genericTagger;
 
-    protected CntManager cntManager = CntManagerFactory.getNoOpCntManager();
+    protected CntManager cntManager;
 
-    protected AbstractParser(GrobidModelStream grobidModelStream) {
-        this(grobidModelStream, CntManagerFactory.getNoOpCntManager());
+    protected AbstractParser(GenericTagger genericTagger) {
+        this(genericTagger, CntManagerFactory.getNoOpCntManager());
     }
 
-    protected AbstractParser(GrobidModelStream grobidModelStream, CntManager cntManager) {
+    protected AbstractParser(GenericTagger genericTagger, CntManager cntManager) {
+        this.genericTagger = genericTagger;
         this.cntManager = cntManager;
-        genericTagger = TaggerFactoryOld.getTagger(grobidModelStream);
     }
 
     @Override

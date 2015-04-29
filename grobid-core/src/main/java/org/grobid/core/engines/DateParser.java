@@ -1,8 +1,8 @@
 package org.grobid.core.engines;
 
-import org.grobid.core.GrobidModelStreamFactory;
 import org.grobid.core.GrobidModels;
 import org.grobid.core.data.Date;
+import org.grobid.core.engines.tagging.TaggerFactory;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.features.FeaturesVectorDate;
 import org.grobid.core.utilities.TextUtilities;
@@ -18,8 +18,8 @@ import java.util.regex.Pattern;
  */
 public class DateParser extends AbstractParser {
 
-    public DateParser(GrobidModelStreamFactory grobidModelStreamFactory) {
-        super(grobidModelStreamFactory.create(GrobidModels.DATE));
+    public DateParser(TaggerFactory taggerFactory) {
+        super(taggerFactory.create(GrobidModels.DATE));
     }
 
     /**
