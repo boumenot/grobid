@@ -64,7 +64,7 @@ public class TEIFormater {
                                     String defaultPublicationStatement,
 									boolean generateIDs) {
         StringBuffer tei = new StringBuffer();
-        tei.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+        tei.append("<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\n");
         if (withStyleSheet) {
             tei.append("<?xml-stylesheet type=\"text/xsl\" href=\"../jsp/xmlverbatimwrapper.xsl\"?> \n");
         }
