@@ -76,6 +76,7 @@ public class HeaderParser extends AbstractParser {
 	public Pair<String, Document> processing2(String input, boolean consolidate, BiblioItem resHeader) {
             File pathXML = null;
             try {
+				// TODO: throw if this file does not exist.
                 pathXML = this.pdfToXmlConverter.convertHeaderOnly(new File(input));
                 Document doc = this.documentFactory.fromXmlPdf(
                     new FileInputStream(pathXML));
@@ -755,6 +756,7 @@ public class HeaderParser extends AbstractParser {
             File file = new File(inputFile);
             String PDFFileName = file.getName();
 
+			// TODO: throw if this file does not exist
 			pathXML = this.pdfToXmlConverter.convertHeaderOnly(file);
 			Document doc = this.documentFactory.fromXmlPdf(
 					new FileInputStream(pathXML));

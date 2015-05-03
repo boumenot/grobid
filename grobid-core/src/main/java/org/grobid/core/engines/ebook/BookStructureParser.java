@@ -56,6 +56,7 @@ public class BookStructureParser extends AbstractParser {
         File pathXML = null;
         try {
             File pdfFile = new File(inputFile);
+            // TODO: throw if this file does not existing.
             pathXML = this.pdfToXmlConverter.convert(pdfFile);
             Document doc = this.documentFactory.fromXmlPdf(
                     new FileInputStream(pathXML));

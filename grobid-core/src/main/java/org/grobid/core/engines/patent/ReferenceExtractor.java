@@ -201,8 +201,7 @@ public class ReferenceExtractor implements Closeable {
 
         File pathXML = null;
         try {
-//            PatentDocument doc = new PatentDocument();
-
+            // TODO: throw if this file does not existing.
             pathXML = this.pdfToXmlConverter.convert(new File(inputFile));
             Document doc = this.documentFactory.fromXmlPdf(
                     new FileInputStream(pathXML));
