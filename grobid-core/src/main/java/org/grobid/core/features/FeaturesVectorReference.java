@@ -266,13 +266,11 @@ public class FeaturesVectorReference {
                 featuresVector.punctType = "QUOTE";
             }
 
-            Matcher m2 = featureFactory.YEAR.matcher(word);
-            if (m2.find()) {
+            if (featureFactory.test_year(word)) {
                 featuresVector.year = true;
             }
 
-            Matcher m4 = featureFactory.HTTP.matcher(word);
-            if (m4.find()) {
+            if (featureFactory.test_http(word)) {
                 featuresVector.http = true;
             }
 

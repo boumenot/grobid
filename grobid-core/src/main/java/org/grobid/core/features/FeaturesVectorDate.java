@@ -300,16 +300,14 @@ public class FeaturesVectorDate {
                 features.month = true;
             }
 
-            Matcher m = featureFactory.isDigit.matcher(text);
-            if (m.find()) {
+            if (featureFactory.test_number(text)) {
                 features.digit = "ALLDIGIT";
             }
 
             if (features.digit == null)
                 features.digit = "NODIGIT";
 
-            Matcher m2 = featureFactory.YEAR.matcher(text);
-            if (m2.find()) {
+            if (featureFactory.test_year(text)) {
                 features.year = true;
             }
 

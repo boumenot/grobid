@@ -23,12 +23,7 @@ public class FeatureFactory {
     public boolean newline = true;
     public Lexicon lexicon = Lexicon.getInstance();
 
-    public Pattern YEAR = Pattern.compile("[1,2][0-9][0-9][0-9]");
-    public Pattern HTTP = Pattern.compile("http");
-    public Pattern isDigit = Pattern.compile("^\\d+$");
-    public Pattern EMAIL2 = Pattern.compile("\\w+((\\.|\\-|_)\\w+)*@\\w+((\\.|\\-)\\w+)+");
-    public Pattern EMAIL = Pattern.compile("^(?:[a-zA-Z0-9_'^&amp;/+-])+(?:\\.(?:[a-zA-Z0-9_'^&amp;/+-])+)*@(?:(?:\\[?(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\\.){3}(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\]?)|(?:[a-zA-Z0-9-]+\\.)+(?:[a-zA-Z]){2,}\\.?)$");
-    public Pattern ACRONYM = Pattern.compile("[A-Z]\\.([A-Z]\\.)*");
+    private Pattern EMAIL = Pattern.compile("^(?:[a-zA-Z0-9_'^&amp;/+-])+(?:\\.(?:[a-zA-Z0-9_'^&amp;/+-])+)*@(?:(?:\\[?(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\\.){3}(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\]?)|(?:[a-zA-Z0-9-]+\\.)+(?:[a-zA-Z]){2,}\\.?)$");
     public Pattern isPunct = Pattern.compile("^[\\,\\:;\\?\\.]+$");
 
     static public List<String> KEYWORDSPUB = new ArrayList<String>() {{
@@ -218,6 +213,26 @@ public class FeatureFactory {
         return true;
     }
 
+    /**
+     * Test that the current string is a YEAR (1000 - 2999)
+     */
+    public boolean test_year(String tok) {
+        return (test_number(tok) && tok.length() == 4 && (tok.charAt(0) == '1' || tok.charAt(0) == '2'));
+    }
+
+    /**
+     * Test that current string is an email address.
+     */
+    public boolean test_email(String tok) {
+        return EMAIL.matcher(tok).find();
+    }
+
+    /**
+     * Test that current string contains http.
+     */
+    public boolean test_http(String tok) {
+        return tok != null && tok.contains("http");
+    }
 
     /**
      * Test for the current string is a number or a decimal number, i.e. containing only digits or ",", "."

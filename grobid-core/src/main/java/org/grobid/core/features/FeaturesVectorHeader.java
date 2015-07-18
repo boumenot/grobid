@@ -476,27 +476,22 @@ public class FeaturesVectorHeader {
                 features.containDash = true;
             }
 
-            Matcher m = featureFactory.isDigit.matcher(text);
-            if (m.find()) {
+            if (featureFactory.test_number(text)) {
                 features.digit = "ALLDIGIT";
             }
-
 
             if (features.digit == null)
                 features.digit = "NODIGIT";
 
-            Matcher m2 = featureFactory.YEAR.matcher(text);
-            if (m2.find()) {
+            if (featureFactory.test_year(text)) {
                 features.year = true;
             }
 
-            Matcher m3 = featureFactory.EMAIL.matcher(text);
-            if (m3.find()) {
+            if (featureFactory.test_email(text)) {
                 features.email = true;
             }
 
-            Matcher m4 = featureFactory.HTTP.matcher(text);
-            if (m4.find()) {
+            if (featureFactory.test_http(text)) {
                 features.http = true;
             }
 

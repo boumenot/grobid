@@ -315,8 +315,7 @@ public class FeaturesVectorName {
                 features.lastName = true;
             }
 
-            Matcher m = featureFactory.isDigit.matcher(text);
-            if (m.find()) {
+            if (featureFactory.test_number(text)) {
                 features.digit = "ALLDIGIT";
             }
 
