@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  *
  * @author Patrice Lopez
  */
-public class FeatureFactory {
+public class FeatureFactory implements FeatureTester {
 
     private static FeatureFactory instance;
 
@@ -149,6 +149,7 @@ public class FeatureFactory {
      * Test if all the letters of the string are capital letters
      * (characters can be also digits which are then ignored)
      */
+    @Override
     public boolean test_all_capital(String tok) {
         if (tok == null)
             return false;
@@ -181,6 +182,7 @@ public class FeatureFactory {
     /**
      * Test for the current string contains at least one digit
      */
+    @Override
     public boolean test_digit(String tok) {
         if (tok == null)
             return false;
@@ -199,6 +201,7 @@ public class FeatureFactory {
     /**
      * Test for the current string contains only digit
      */
+    @Override
     public boolean test_number(String tok) {
         if (tok == null)
             return false;
@@ -216,6 +219,7 @@ public class FeatureFactory {
     /**
      * Test that the current string is a YEAR (1000 - 2999)
      */
+    @Override
     public boolean test_year(String tok) {
         return (test_number(tok) && tok.length() == 4 && (tok.charAt(0) == '1' || tok.charAt(0) == '2'));
     }
@@ -223,6 +227,7 @@ public class FeatureFactory {
     /**
      * Test that current string is an email address.
      */
+    @Override
     public boolean test_email(String tok) {
         return EMAIL.matcher(tok).find();
     }
@@ -230,6 +235,7 @@ public class FeatureFactory {
     /**
      * Test that current string contains http.
      */
+    @Override
     public boolean test_http(String tok) {
         return tok != null && tok.contains("http");
     }
@@ -237,6 +243,7 @@ public class FeatureFactory {
     /**
      * Test that the current string is all punctuation.
      */
+    @Override
     public boolean test_punct(String tok) {
         return isPunct.matcher(tok).find();
     }
@@ -261,6 +268,7 @@ public class FeatureFactory {
     /**
      * Test if the current string is a common name
      */
+    @Override
     public boolean test_common(String tok) {
         if (tok == null)
             return false;
@@ -273,6 +281,7 @@ public class FeatureFactory {
     /**
      * Test if the current string is a first name or family name
      */
+    @Override
     public boolean test_names(String tok) {
         return (lexicon.inFirstNames(tok.toLowerCase()) || lexicon.inLastNames(tok.toLowerCase()));
     }
@@ -294,6 +303,7 @@ public class FeatureFactory {
     /**
      * Test if the current string refers to a month
      */
+    @Override
     public boolean test_month(String tok) {
         return MONTHS.contains(tok);
     }
