@@ -412,12 +412,14 @@ public class Document {
 
                 features.string = text;
 
-                if (newline)
+                if (newline) {
                     features.lineStatus = "LINESTART";
-                Matcher m0 = featureFactory.isPunct.matcher(text);
-                if (m0.find()) {
+                }
+
+                if (featureFactory.test_punct(text)) {
                     features.punctType = "PUNCT";
                 }
+
                 if (text.equals("(") || text.equals("[")) {
                     features.punctType = "OPENBRACKET";
 

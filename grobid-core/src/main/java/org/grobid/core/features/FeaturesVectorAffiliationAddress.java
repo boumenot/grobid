@@ -282,10 +282,10 @@ public class FeaturesVectorAffiliationAddress {
             if (featureFactory.test_names(word))
                 featuresVector.properName = true;
 
-            Matcher m0 = featureFactory.isPunct.matcher(word);
-            if (m0.find()) {
+            if (featureFactory.test_punct(word)) {
                 featuresVector.punctType = "PUNCT";
             }
+
             if ((word.equals("(")) | (word.equals("["))) {
                 featuresVector.punctType = "OPENBRACKET";
             } else if ((word.equals(")")) | (word.equals("]"))) {

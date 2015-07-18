@@ -211,8 +211,7 @@ public class FeaturesVectorName {
                 outputLineStatus = true;
             }
 
-            Matcher m0 = featureFactory.isPunct.matcher(text);
-            if (m0.find()) {
+            if (featureFactory.test_punct(text)) {
                 features.punctType = "PUNCT";
             }
 

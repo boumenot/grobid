@@ -342,12 +342,14 @@ public class FullTextParser extends AbstractParser {
 
 	                features.string = text;
 
-	                if (newline)
-	                    features.lineStatus = "LINESTART";
-	                Matcher m0 = featureFactory.isPunct.matcher(text);
-	                if (m0.find()) {
-	                    features.punctType = "PUNCT";
-	                }
+	                if (newline) {
+						features.lineStatus = "LINESTART";
+					}
+
+					if (featureFactory.test_punct(text)) {
+						features.punctType = "PUNCT";
+					}
+
                     if (text.equals("(") || text.equals("[")) {
                         features.punctType = "OPENBRACKET";
 

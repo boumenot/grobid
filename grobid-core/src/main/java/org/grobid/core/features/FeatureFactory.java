@@ -24,7 +24,7 @@ public class FeatureFactory {
     public Lexicon lexicon = Lexicon.getInstance();
 
     private Pattern EMAIL = Pattern.compile("^(?:[a-zA-Z0-9_'^&amp;/+-])+(?:\\.(?:[a-zA-Z0-9_'^&amp;/+-])+)*@(?:(?:\\[?(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\\.){3}(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\]?)|(?:[a-zA-Z0-9-]+\\.)+(?:[a-zA-Z]){2,}\\.?)$");
-    public Pattern isPunct = Pattern.compile("^[\\,\\:;\\?\\.]+$");
+    private Pattern isPunct = Pattern.compile("^[\\,\\:;\\?\\.]+$");
 
     static public List<String> KEYWORDSPUB = new ArrayList<String>() {{
         add("Journal");
@@ -232,6 +232,13 @@ public class FeatureFactory {
      */
     public boolean test_http(String tok) {
         return tok != null && tok.contains("http");
+    }
+
+    /**
+     * Test that the current string is all punctuation.
+     */
+    public boolean test_punct(String tok) {
+        return isPunct.matcher(tok).find();
     }
 
     /**
