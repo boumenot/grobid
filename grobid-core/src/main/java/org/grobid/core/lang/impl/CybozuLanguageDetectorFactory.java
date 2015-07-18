@@ -2,8 +2,6 @@ package org.grobid.core.lang.impl;
 
 import com.cybozu.labs.langdetect.DetectorFactory;
 import com.cybozu.labs.langdetect.LangDetectException;
-import org.grobid.core.engines.Engine;
-import org.grobid.core.factory.GrobidFactory;
 import org.grobid.core.lang.LanguageDetector;
 import org.grobid.core.lang.LanguageDetectorFactory;
 import org.grobid.core.utilities.GrobidProperties;

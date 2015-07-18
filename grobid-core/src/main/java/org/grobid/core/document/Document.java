@@ -4,40 +4,27 @@ import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.SortedSetMultimap;
-import org.apache.commons.lang3.StringUtils;
 import org.grobid.core.data.BibDataSet;
 import org.grobid.core.data.BiblioItem;
 import org.grobid.core.engines.Engine;
 import org.grobid.core.engines.SegmentationLabel;
-import org.grobid.core.exceptions.GrobidException;
-import org.grobid.core.exceptions.GrobidExceptionStatus;
 import org.grobid.core.exceptions.GrobidResourceException;
 import org.grobid.core.features.FeatureFactory;
 import org.grobid.core.features.FeaturesVectorHeader;
 import org.grobid.core.layout.Block;
 import org.grobid.core.layout.Cluster;
 import org.grobid.core.layout.LayoutToken;
-import org.grobid.core.process.ProcessRunner;
-import org.grobid.core.sax.PDF2XMLSaxParser;
-import org.grobid.core.utilities.GrobidProperties;
-import org.grobid.core.utilities.KeyGen;
 import org.grobid.core.utilities.TextUtilities;
 import org.grobid.core.utilities.Utilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
-import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,15 +35,7 @@ import java.util.regex.Pattern;
  */
 
 public class Document {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(Document.class);
-
-    /**
-     * Exit code got when pdf2xml took too much time and has been killed by pdf2xml_server.
-     */
-    private static final int KILLED_DUE_2_TIMEOUT = 143;
-    public static final int DEFAULT_TIMEOUT = 50000;
-    public static final int PDF2XML_MEM_LIMIT_KBYTES = GrobidProperties.getPdf2XMLMemoryLimitMb() * 1024 ;
 
     private int beginBody = -1;
     private int beginReferences = -1;
