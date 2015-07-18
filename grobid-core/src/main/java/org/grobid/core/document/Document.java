@@ -10,6 +10,7 @@ import org.grobid.core.engines.Engine;
 import org.grobid.core.engines.SegmentationLabel;
 import org.grobid.core.exceptions.GrobidResourceException;
 import org.grobid.core.features.FeatureFactory;
+import org.grobid.core.features.FeatureTester;
 import org.grobid.core.features.FeaturesVectorHeader;
 import org.grobid.core.layout.Block;
 import org.grobid.core.layout.Cluster;
@@ -58,7 +59,7 @@ public class Document {
     private List<Integer> blockHeadTables = null;
     private List<Integer> blockHeadFigures = null;
 
-    private FeatureFactory featureFactory = null;
+    private FeatureTester featureTester = null;
 
     // map of tokens (e.g. <reference> or <footnote>) to document pieces
     private SortedSetMultimap<String, DocumentPiece> labeledBlocks;
@@ -83,9 +84,20 @@ public class Document {
     public Document(
             List<Block> blocks,
             List<String> tokenizations) {
+        this.featureTester = FeatureFactory.getInstance();
         this.blocks = blocks;
         this.tokenizations = tokenizations;
     }
+
+    public Document(
+            FeatureTester featureTester,
+            List<Block> blocks,
+            List<String> tokenizations) {
+        this.featureTester = featureTester;
+        this.blocks = blocks;
+        this.tokenizations = tokenizations;
+    }
+
 
     public void setLanguage(String l) {
         lang = l;
@@ -349,7 +361,6 @@ public class Document {
                 getHeaderLastHope();
             }
         }
-        featureFactory = FeatureFactory.getInstance();
         StringBuilder header = new StringBuilder();
         String currentFont = null;
         int currentFontSize = -1;
@@ -416,7 +427,7 @@ public class Document {
                     features.lineStatus = "LINESTART";
                 }
 
-                if (featureFactory.test_punct(text)) {
+                if (featureTester.test_punct(text)) {
                     features.punctType = "PUNCT";
                 }
 
@@ -504,23 +515,23 @@ public class Document {
                     features.capitalisation = "INITCAP";
                 }
 
-                if (featureFactory.test_all_capital(text)) {
+                if (featureTester.test_all_capital(text)) {
                     features.capitalisation = "ALLCAP";
                 }
 
-                if (featureFactory.test_digit(text)) {
+                if (featureTester.test_digit(text)) {
                     features.digit = "CONTAINSDIGITS";
                 }
 
-                if (featureFactory.test_common(text)) {
+                if (featureTester.test_common(text)) {
                     features.commonName = true;
                 }
 
-                if (featureFactory.test_names(text)) {
+                if (featureTester.test_names(text)) {
                     features.properName = true;
                 }
 
-                if (featureFactory.test_month(text)) {
+                if (featureTester.test_month(text)) {
                     features.month = true;
                 }
 
@@ -528,19 +539,19 @@ public class Document {
                     features.containDash = true;
                 }
 
-                if (featureFactory.test_number(text)) {
+                if (featureTester.test_number(text)) {
                     features.digit = "ALLDIGIT";
                 }
 
-                if (featureFactory.test_year(text)) {
+                if (featureTester.test_year(text)) {
                     features.year = true;
                 }
 
-                if (featureFactory.test_email(text)) {
+                if (featureTester.test_email(text)) {
                     features.email = true;
                 }
 
-                if (featureFactory.test_http(text)) {
+                if (featureTester.test_http(text)) {
                     features.http = true;
                 }
 
@@ -865,10 +876,6 @@ public class Document {
                     }
 
                     if (localText.length() > 0) {
-                        if (featureFactory == null) {
-                            featureFactory = FeatureFactory.getInstance();
-                            // featureFactory = new FeatureFactory();
-                        }
                         localText = TextUtilities.dehyphenize(localText);
                         accumulated.append(localText).append("\n");
                     }
