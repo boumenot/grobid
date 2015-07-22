@@ -11,6 +11,7 @@ import org.grobid.core.engines.tagging.CrfppTaggerFactory;
 import org.grobid.core.engines.tagging.GrobidCRFEngine;
 import org.grobid.core.engines.tagging.TaggerFactory;
 import org.grobid.core.engines.tagging.WapitiTaggerFactory;
+import org.grobid.core.features.FeatureFactory;
 import org.grobid.core.process.PdfToXmlCmdFactory;
 import org.grobid.core.process.PdfToXmlConverter;
 import org.grobid.core.process.PdfToXmlConverterImpl;
@@ -51,7 +52,8 @@ public class EngineParsers implements Closeable {
                         new PdfToXmlCmdFactory(GrobidProperties.getPdf2XMLPath()),
                         GrobidProperties.getTempPath()),
                 new DocumentFactory(
-                        new PdfXmlParser()),
+                        new PdfXmlParser(),
+                        FeatureFactory.getInstance()),
                 EngineParsers.createGenericFactory(
                         GrobidProperties.getGrobidCRFEngine(),
                         new GrobidModelStreamFactory()

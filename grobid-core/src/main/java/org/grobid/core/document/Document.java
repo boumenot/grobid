@@ -90,14 +90,13 @@ public class Document {
     }
 
     public Document(
-            FeatureTester featureTester,
             List<Block> blocks,
-            List<String> tokenizations) {
-        this.featureTester = featureTester;
+            List<String> tokenizations,
+            FeatureTester featureTester) {
         this.blocks = blocks;
         this.tokenizations = tokenizations;
+        this.featureTester = featureTester;
     }
-
 
     public void setLanguage(String l) {
         lang = l;
