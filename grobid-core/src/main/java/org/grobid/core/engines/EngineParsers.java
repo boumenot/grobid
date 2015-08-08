@@ -112,7 +112,7 @@ public class EngineParsers implements Closeable {
         if (affiliationAddressParser == null) {
             synchronized (this) {
                 if (affiliationAddressParser == null) {
-                    affiliationAddressParser = new AffiliationAddressParser(this.taggerFactory);
+                    affiliationAddressParser = new AffiliationAddressParser(this.taggerFactory, this.lexicon);
                 }
             }
         }

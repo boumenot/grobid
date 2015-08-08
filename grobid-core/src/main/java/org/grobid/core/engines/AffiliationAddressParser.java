@@ -5,7 +5,7 @@ import org.grobid.core.data.Affiliation;
 import org.grobid.core.engines.tagging.TaggerFactory;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.features.FeaturesVectorAffiliationAddress;
-import org.grobid.core.lexicon.LexiconImpl;
+import org.grobid.core.lexicon.Lexicon;
 import org.grobid.core.utilities.OffsetPosition;
 import org.grobid.core.utilities.TextUtilities;
 
@@ -17,10 +17,11 @@ import java.util.StringTokenizer;
  * @author Patrice Lopez
  */
 public class AffiliationAddressParser extends AbstractParser {
-    public LexiconImpl lexicon = LexiconImpl.getInstance();
+    private final Lexicon lexicon;
 
-    public AffiliationAddressParser(TaggerFactory taggerFactory) {
+    public AffiliationAddressParser(TaggerFactory taggerFactory, Lexicon lexicon) {
         super(taggerFactory.create(GrobidModels.AFFIILIATON_ADDRESS));
+        this.lexicon = lexicon;
     }
 
     public ArrayList<Affiliation> processing(String input) {
@@ -53,7 +54,7 @@ public class AffiliationAddressParser extends AbstractParser {
             }
 
             List<List<OffsetPosition>> placesPositions = new ArrayList<List<OffsetPosition>>();
-            placesPositions.add(lexicon.inCityNames(input));
+            placesPositions.add(this.lexicon.inCityNames(input));
 
             String header = FeaturesVectorAffiliationAddress.addFeaturesAffiliationAddress(affiliationBlocks, placesPositions);
 
