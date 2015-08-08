@@ -5,6 +5,7 @@ import org.grobid.core.data.util.ClassicAuthorEmailAssigner;
 import org.grobid.core.data.util.EmailSanitizer;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.lang.Language;
+import org.grobid.core.lexicon.Lexicon;
 import org.grobid.core.lexicon.LexiconImpl;
 import org.grobid.core.utilities.LanguageUtilities;
 import org.grobid.core.utilities.TextUtilities;
@@ -301,7 +302,14 @@ public class BiblioItem {
             "In proc", "Proc", "proc", "Proc.", "proc.", "Acte de la", "Acte de", "Acte", "acte de la",
             "acte de", "acte");
 
+    private final Lexicon lexicon;
+
     public BiblioItem() {
+        this.lexicon = LexiconImpl.getInstance();
+    }
+
+    public BiblioItem(Lexicon lexicon) {
+        this.lexicon = lexicon;
     }
 
     public void setParentItem(BiblioItem bi) {
@@ -3133,8 +3141,6 @@ public class BiblioItem {
 
         List<Person> auts = fullAuthors;
 
-        LexiconImpl lexicon = LexiconImpl.getInstance();
-
         List<Affiliation> affs = fullAffiliations;
         if (affs == null)
             nbAffiliations = 0;
@@ -3304,7 +3310,7 @@ public class BiblioItem {
                                             "</region>\n");
                                 }
                                 if (aff.getCountry() != null) {
-                                    String code = lexicon.getcountryCode(aff.getCountry());
+                                    String code = this.lexicon.getcountryCode(aff.getCountry());
                                     TextUtilities.appendN(tei, '\t', nbTag + 3);
                                     tei.append("<country");
                                     if (code != null)

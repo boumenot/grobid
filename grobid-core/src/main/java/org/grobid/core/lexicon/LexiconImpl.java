@@ -236,8 +236,9 @@ public class LexiconImpl implements Lexicon {
         }
     }
 
+    @Override
     public String getcountryCode(String country) {
-        String code = (String) countryCodes.get(country.toLowerCase());
+        String code = countryCodes.get(country.toLowerCase());
         return code;
     }
 
