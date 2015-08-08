@@ -16,7 +16,7 @@ import org.grobid.core.layout.Block;
 import org.grobid.core.layout.Cluster;
 import org.grobid.core.layout.LayoutToken;
 import org.grobid.core.lexicon.LexiconImpl;
-import org.grobid.core.lexicon.LexiconDictionary;
+import org.grobid.core.lexicon.Lexicon;
 import org.grobid.core.utilities.TextUtilities;
 import org.grobid.core.utilities.Utilities;
 import org.slf4j.Logger;
@@ -62,7 +62,7 @@ public class Document {
     private List<Integer> blockHeadFigures = null;
 
     private FeatureTester featureTester = null;
-    private LexiconDictionary lexiconDictionary;
+    private Lexicon lexicon;
 
     // map of tokens (e.g. <reference> or <footnote>) to document pieces
     private SortedSetMultimap<String, DocumentPiece> labeledBlocks;
@@ -90,18 +90,18 @@ public class Document {
         this.featureTester = FeatureFactory.getInstance();
         this.blocks = blocks;
         this.tokenizations = tokenizations;
-        this.lexiconDictionary = LexiconImpl.getInstance();
+        this.lexicon = LexiconImpl.getInstance();
     }
 
     public Document(
             List<Block> blocks,
             List<String> tokenizations,
             FeatureTester featureTester,
-            LexiconDictionary lexiconDictionary) {
+            Lexicon lexicon) {
         this.blocks = blocks;
         this.tokenizations = tokenizations;
         this.featureTester = featureTester;
-        this.lexiconDictionary = lexiconDictionary;
+        this.lexicon = lexicon;
     }
 
     public void setLanguage(String l) {
@@ -960,7 +960,7 @@ public class Document {
                         if (blockSectionTitles.contains(ii)) {
                             // dehyphenization of section titles
                             localText = TextUtilities
-                                    .dehyphenizeHard(this.lexiconDictionary, localText);
+                                    .dehyphenizeHard(this.lexicon, localText);
                             accumulated.append(localText).append("\n");
                         } else if (blockHeadFigures.contains(ii)) {
                             int innd = localText.indexOf("@IMAGE");
@@ -1141,7 +1141,7 @@ public class Document {
                         continue;
                     }
 
-                    localText = TextUtilities.dehyphenizeHard(this.lexiconDictionary, localText);
+                    localText = TextUtilities.dehyphenizeHard(this.lexicon, localText);
                     titles.append(localText).append("\n");
                 }
             }

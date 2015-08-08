@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Patrice Lopez
  */
-public class LexiconImpl implements LexiconDictionary {
+public class LexiconImpl implements Lexicon {
 	private static final Logger LOGGER = LoggerFactory
 			.getLogger(LexiconImpl.class);
     // private static volatile Boolean instanceController = false;

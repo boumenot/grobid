@@ -14,7 +14,7 @@ import org.grobid.core.features.FeaturesVectorHeader;
 import org.grobid.core.lang.Language;
 import org.grobid.core.layout.Block;
 import org.grobid.core.layout.LayoutToken;
-import org.grobid.core.lexicon.LexiconDictionary;
+import org.grobid.core.lexicon.Lexicon;
 import org.grobid.core.process.PdfToXmlConverter;
 import org.grobid.core.utilities.*;
 import org.slf4j.Logger;
@@ -39,20 +39,20 @@ public class HeaderParser extends AbstractParser {
     private final EngineParsers parsers;
 	private final PdfToXmlConverter pdfToXmlConverter;
 	private final DocumentFactory documentFactory;
-	private final LexiconDictionary lexiconDictionary;
+	private final Lexicon lexicon;
 
 	public HeaderParser(
 			EngineParsers parsers,
 			PdfToXmlConverter pdfToXmlConverter,
 			DocumentFactory documentFactory,
 			TaggerFactory taggerFactory,
-			LexiconDictionary lexiconDictionary) {
+			Lexicon lexicon) {
 		super(taggerFactory.create(GrobidModels.HEADER));
 
 		this.parsers = parsers;
 		this.pdfToXmlConverter = pdfToXmlConverter;
 		this.documentFactory = documentFactory;
-		this.lexiconDictionary = lexiconDictionary;
+		this.lexicon = lexicon;
 	}
 
 	/**
@@ -125,7 +125,7 @@ public class HeaderParser extends AbstractParser {
 
 				if (resHeader != null) {
 					if (resHeader.getAbstract() != null) {
-						resHeader.setAbstract(TextUtilities.dehyphenizeHard(this.lexiconDictionary, resHeader.getAbstract()));
+						resHeader.setAbstract(TextUtilities.dehyphenizeHard(this.lexicon, resHeader.getAbstract()));
 					}
 					BiblioItem.cleanTitles(resHeader);
 					if (resHeader.getTitle() != null) {

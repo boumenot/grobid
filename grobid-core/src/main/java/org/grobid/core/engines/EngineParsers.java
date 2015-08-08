@@ -14,7 +14,7 @@ import org.grobid.core.engines.tagging.WapitiTaggerFactory;
 import org.grobid.core.features.FeatureFactory;
 import org.grobid.core.features.FeatureTester;
 import org.grobid.core.lexicon.LexiconImpl;
-import org.grobid.core.lexicon.LexiconDictionary;
+import org.grobid.core.lexicon.Lexicon;
 import org.grobid.core.process.PdfToXmlCmdFactory;
 import org.grobid.core.process.PdfToXmlConverter;
 import org.grobid.core.process.PdfToXmlConverterImpl;
@@ -35,7 +35,7 @@ public class EngineParsers implements Closeable {
     private final DocumentFactory documentFactory;
     private final TaggerFactory taggerFactory;
     private final FeatureTester featureTester;
-    private final LexiconDictionary lexiconDictionary;
+    private final Lexicon lexicon;
 
     private AuthorParser authorParser = null;
     private AffiliationAddressParser affiliationAddressParser = null;
@@ -53,7 +53,7 @@ public class EngineParsers implements Closeable {
         LOGGER.debug("EngineParsers::Create()");
         GrobidProperties.getInstance();
 
-        LexiconDictionary lexiconDictionary = LexiconImpl.getInstance();
+        Lexicon lexicon = LexiconImpl.getInstance();
 
         return EngineParsers.Create(
                 new PdfToXmlConverterImpl(
@@ -62,13 +62,13 @@ public class EngineParsers implements Closeable {
                 new DocumentFactory(
                         new PdfXmlParser(),
                         FeatureFactory.getInstance(),
-                        lexiconDictionary),
+                        lexicon),
                 EngineParsers.createGenericFactory(
                         GrobidProperties.getGrobidCRFEngine(),
                         new GrobidModelStreamFactory()
                 ),
                 FeatureFactory.getInstance(),
-                lexiconDictionary);
+                lexicon);
     }
 
     public static EngineParsers Create(
@@ -76,8 +76,8 @@ public class EngineParsers implements Closeable {
             DocumentFactory documentFactory,
             TaggerFactory taggerFactory,
             FeatureTester featureTester,
-            LexiconDictionary lexiconDictionary) {
-        return new EngineParsers(pdfToXmlConverter, documentFactory, taggerFactory, featureTester, lexiconDictionary);
+            Lexicon lexicon) {
+        return new EngineParsers(pdfToXmlConverter, documentFactory, taggerFactory, featureTester, lexicon);
     }
 
     private static TaggerFactory createGenericFactory(
@@ -100,12 +100,12 @@ public class EngineParsers implements Closeable {
             DocumentFactory documentFactory,
             TaggerFactory taggerFactory,
             FeatureTester featureTester,
-            LexiconDictionary lexiconDictionary) {
+            Lexicon lexicon) {
         this.pdfToXmlConverter = pdfToXmlConverter;
         this.documentFactory = documentFactory;
         this.taggerFactory = taggerFactory;
         this.featureTester = featureTester;
-        this.lexiconDictionary = lexiconDictionary;
+        this.lexicon = lexicon;
     }
 
     public AffiliationAddressParser getAffiliationAddressParser() {
@@ -139,7 +139,7 @@ public class EngineParsers implements Closeable {
                             this.pdfToXmlConverter,
                             this.documentFactory,
                             this.taggerFactory,
-                            this.lexiconDictionary);
+                            this.lexicon);
                 }
             }
         }
