@@ -3145,11 +3145,9 @@ public class BiblioItem {
             nbAuthors = 0;
         else
             nbAuthors = auts.size();
-        boolean failAffiliation = true;
 
         //if (getAuthors() != null) {
         if (auts != null) {
-            failAffiliation = false;
             if (nbAuthors > 0) {
                 int autRank = 0;
                 int contactAut = -1;
