@@ -3,7 +3,7 @@ package org.grobid.core.factory;
 import org.grobid.core.engines.Engine;
 import org.grobid.core.engines.ModelMap;
 import org.grobid.core.engines.tagging.GrobidCRFEngine;
-import org.grobid.core.lexicon.Lexicon;
+import org.grobid.core.lexicon.LexiconImpl;
 import org.grobid.core.main.LibraryLoader;
 import org.grobid.core.utilities.GrobidProperties;
 import org.slf4j.Logger;
@@ -63,6 +63,6 @@ public class AbstractEngineFactory {
         if (GrobidProperties.getGrobidCRFEngine() == GrobidCRFEngine.CRFPP) {
 		    ModelMap.initModels();
         }
-		Lexicon.getInstance();
+		LexiconImpl.getInstance();
 	}
 }

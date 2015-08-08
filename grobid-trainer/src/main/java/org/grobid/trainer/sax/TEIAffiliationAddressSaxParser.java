@@ -1,6 +1,6 @@
 package org.grobid.trainer.sax;
 
-import org.grobid.core.lexicon.Lexicon;
+import org.grobid.core.lexicon.LexiconImpl;
 import org.grobid.core.utilities.OffsetPosition;
 import org.grobid.core.utilities.TextUtilities;
 import org.xml.sax.Attributes;
@@ -34,7 +34,7 @@ public class TEIAffiliationAddressSaxParser extends DefaultHandler {
     private Writer writerCORA = null; // writer for conversion into TEI header model
 
     public int n = 0;
-    public Lexicon lexicon = Lexicon.getInstance();
+    public LexiconImpl lexicon = LexiconImpl.getInstance();
 
     public void setTEIHeaderOutput(Writer writ) {
         writerCORA = writ;

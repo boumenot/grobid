@@ -1,6 +1,6 @@
 package org.grobid.core.features;
 
-import org.grobid.core.lexicon.Lexicon;
+import org.grobid.core.lexicon.LexiconImpl;
 import org.grobid.core.utilities.OffsetPosition;
 
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ public class FeatureFactory implements FeatureTester {
     }
 
     public boolean newline = true;
-    public Lexicon lexicon = Lexicon.getInstance();
+    public LexiconImpl lexicon = LexiconImpl.getInstance();
 
     private Pattern EMAIL = Pattern.compile("^(?:[a-zA-Z0-9_'^&amp;/+-])+(?:\\.(?:[a-zA-Z0-9_'^&amp;/+-])+)*@(?:(?:\\[?(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\\.){3}(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\]?)|(?:[a-zA-Z0-9-]+\\.)+(?:[a-zA-Z]){2,}\\.?)$");
     private Pattern isPunct = Pattern.compile("^[\\,\\:;\\?\\.]+$");

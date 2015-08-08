@@ -1,8 +1,8 @@
 package org.grobid.core.sax;
 
 import org.grobid.core.exceptions.GrobidException;
+import org.grobid.core.lexicon.LexiconImpl;
 import org.grobid.core.utilities.TextUtilities;
-import org.grobid.core.lexicon.Lexicon;
 import org.grobid.core.utilities.OffsetPosition;
 
 import org.xml.sax.*;
@@ -57,7 +57,7 @@ public class MarecSaxParser extends DefaultHandler {
     public boolean nplReferences = false;
 
     private String currentFileName = null;
-    public Lexicon lexicon = Lexicon.getInstance();
+    public LexiconImpl lexicon = LexiconImpl.getInstance();
 
     public List<OffsetPosition> journalsPositions = null;
     public List<OffsetPosition> abbrevJournalsPositions = null;

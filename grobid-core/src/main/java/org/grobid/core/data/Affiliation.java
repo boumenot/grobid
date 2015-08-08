@@ -1,7 +1,7 @@
 package org.grobid.core.data;
 
+import org.grobid.core.lexicon.LexiconImpl;
 import org.grobid.core.utilities.TextUtilities;
-import org.grobid.core.lexicon.Lexicon;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -434,7 +434,7 @@ public class Affiliation {
                     tei.append("<region>").append(TextUtilities.HTMLEncode(getRegion())).append("</region>");
                 }
                 if (getCountry() != null) {
-                    Lexicon lexicon = Lexicon.getInstance();
+                    LexiconImpl lexicon = LexiconImpl.getInstance();
                     String code = lexicon.getcountryCode(getCountry());
                     tei.append("<country");
                     if (code != null)

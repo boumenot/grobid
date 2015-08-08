@@ -1,6 +1,6 @@
 package org.grobid.trainer.sax;
 
-import org.grobid.core.lexicon.Lexicon;
+import org.grobid.core.lexicon.LexiconImpl;
 import org.grobid.core.utilities.OffsetPosition;
 import org.grobid.core.utilities.TextUtilities;
 import org.xml.sax.Attributes;
@@ -29,7 +29,7 @@ public class TEICitationSaxParser extends DefaultHandler {
 
     private ArrayList<String> labeled = null; // store line by line the labeled data
     public int nbCitations = 0;
-    public Lexicon lexicon = Lexicon.getInstance();
+    public LexiconImpl lexicon = LexiconImpl.getInstance();
 
     public List<List<OffsetPosition>> journalsPositions = null;
     public List<List<OffsetPosition>> abbrevJournalsPositions = null;

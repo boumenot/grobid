@@ -15,7 +15,7 @@ import org.grobid.core.features.FeaturesVectorHeader;
 import org.grobid.core.layout.Block;
 import org.grobid.core.layout.Cluster;
 import org.grobid.core.layout.LayoutToken;
-import org.grobid.core.lexicon.Lexicon;
+import org.grobid.core.lexicon.LexiconImpl;
 import org.grobid.core.lexicon.LexiconDictionary;
 import org.grobid.core.utilities.TextUtilities;
 import org.grobid.core.utilities.Utilities;
@@ -90,7 +90,7 @@ public class Document {
         this.featureTester = FeatureFactory.getInstance();
         this.blocks = blocks;
         this.tokenizations = tokenizations;
-        this.lexiconDictionary = Lexicon.getInstance();
+        this.lexiconDictionary = LexiconImpl.getInstance();
     }
 
     public Document(

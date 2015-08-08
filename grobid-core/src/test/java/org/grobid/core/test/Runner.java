@@ -51,7 +51,7 @@ public class Runner {
 		
 		result = JUnitCore.runClasses(TestFastMatcher.class);
 		totalTestRuns++;
-		System.out.print("test Lexicon Fast Matcher: ");
+		System.out.print("test LexiconImpl Fast Matcher: ");
 		
 		if (result.getFailures().size() == 0) {
 			System.out.println("OK");

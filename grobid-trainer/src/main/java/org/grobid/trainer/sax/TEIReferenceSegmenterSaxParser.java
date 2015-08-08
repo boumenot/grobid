@@ -1,6 +1,6 @@
 package org.grobid.trainer.sax;
 
-import org.grobid.core.lexicon.Lexicon;
+import org.grobid.core.lexicon.LexiconImpl;
 import org.grobid.core.utilities.TextUtilities;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -32,7 +32,7 @@ public class TEIReferenceSegmenterSaxParser extends DefaultHandler {
 //    private Writer writerCORA = null; // writer for conversion into TEI header model
 
     //    public int n = 0;
-    public Lexicon lexicon = Lexicon.getInstance();
+    public LexiconImpl lexicon = LexiconImpl.getInstance();
     private int totalReferences = 0;
 
 //    public void setTEIHeaderOutput(Writer writer) {

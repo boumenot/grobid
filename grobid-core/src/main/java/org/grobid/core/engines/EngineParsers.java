@@ -13,7 +13,7 @@ import org.grobid.core.engines.tagging.TaggerFactory;
 import org.grobid.core.engines.tagging.WapitiTaggerFactory;
 import org.grobid.core.features.FeatureFactory;
 import org.grobid.core.features.FeatureTester;
-import org.grobid.core.lexicon.Lexicon;
+import org.grobid.core.lexicon.LexiconImpl;
 import org.grobid.core.lexicon.LexiconDictionary;
 import org.grobid.core.process.PdfToXmlCmdFactory;
 import org.grobid.core.process.PdfToXmlConverter;
@@ -53,7 +53,7 @@ public class EngineParsers implements Closeable {
         LOGGER.debug("EngineParsers::Create()");
         GrobidProperties.getInstance();
 
-        LexiconDictionary lexiconDictionary = Lexicon.getInstance();
+        LexiconDictionary lexiconDictionary = LexiconImpl.getInstance();
 
         return EngineParsers.Create(
                 new PdfToXmlConverterImpl(

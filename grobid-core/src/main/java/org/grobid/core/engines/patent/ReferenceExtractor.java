@@ -15,7 +15,7 @@ import org.grobid.core.engines.tagging.TaggerFactory;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.exceptions.GrobidResourceException;
 import org.grobid.core.features.FeaturesVectorReference;
-import org.grobid.core.lexicon.Lexicon;
+import org.grobid.core.lexicon.LexiconImpl;
 import org.grobid.core.process.PdfToXmlConverter;
 import org.grobid.core.sax.PatentAnnotationSaxParser;
 import org.grobid.core.sax.TextSaxParser;
@@ -57,7 +57,7 @@ public class ReferenceExtractor implements Closeable {
 
     public boolean debug = false;
 
-    public Lexicon lexicon = Lexicon.getInstance();
+    public LexiconImpl lexicon = LexiconImpl.getInstance();
     public String currentPatentNumber = null;
     public OPSService ops = null;
     private String description = null;

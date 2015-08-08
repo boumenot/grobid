@@ -18,7 +18,6 @@ import java.util.regex.PatternSyntaxException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.exceptions.GrobidResourceException;
 import org.grobid.core.lang.Language;
@@ -33,11 +32,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Patrice Lopez
  */
-public class Lexicon implements LexiconDictionary {
+public class LexiconImpl implements LexiconDictionary {
 	private static final Logger LOGGER = LoggerFactory
-			.getLogger(Lexicon.class);
+			.getLogger(LexiconImpl.class);
     // private static volatile Boolean instanceController = false;
-    private static volatile Lexicon instance;
+    private static volatile LexiconImpl instance;
 
     private Set<String> dictionary_en = null;
     private Set<String> dictionary_de = null;
@@ -56,7 +55,7 @@ public class Lexicon implements LexiconDictionary {
 	private FastMatcher personTitlePattern = null;
 	private FastMatcher orgFormPattern = null;
 	
-    public static Lexicon getInstance() {
+    public static LexiconImpl getInstance() {
         if (instance == null) {
             //double check idiom
             // synchronized (instanceController) {
@@ -74,15 +73,15 @@ public class Lexicon implements LexiconDictionary {
         for (StackTraceElement e : Thread.currentThread().getStackTrace())
             LOGGER.debug(e.toString());
 
-		LOGGER.debug("Get new instance of Lexicon");
+		LOGGER.debug("Get new instance of LexiconImpl");
 		GrobidProperties.getInstance();
-		instance = new Lexicon();
+		instance = new LexiconImpl();
 	}
 
     /**
      * Hidden constructor
      */
-    private Lexicon() {
+    private LexiconImpl() {
         initDictionary();
         initNames();
 		// the loading of the journal and conference names is lazy
@@ -454,7 +453,7 @@ public class Lexicon implements LexiconDictionary {
             throw new GrobidResourceException("Cannot add term to matcher, because the lexicon resource file " + 
 				"does not exist or cannot be read.", e);
         } catch (Exception e) {
-			throw new GrobidException("An exception occured while running Grobid Lexicon init.", e);
+			throw new GrobidException("An exception occured while running Grobid LexiconImpl init.", e);
 		}
     }
 	
@@ -465,7 +464,7 @@ public class Lexicon implements LexiconDictionary {
         } catch (PatternSyntaxException e) {
             throw new GrobidResourceException("Error when compiling lexicon regular expression for organisations.", e);
         } catch (Exception e) {
-			throw new GrobidException("An exception occured while running Grobid Lexicon init.", e);
+			throw new GrobidException("An exception occured while running Grobid LexiconImpl init.", e);
 		}
     }
 	

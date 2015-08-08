@@ -5,7 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 
-import org.grobid.core.lexicon.Lexicon;
+import org.grobid.core.lexicon.LexiconImpl;
 import org.grobid.core.mock.MockContext;
 import org.grobid.core.utilities.OffsetPosition;
 import org.junit.AfterClass;
@@ -17,7 +17,7 @@ import org.junit.Test;
  *  @author Patrice Lopez
  */
 public class TestFastMatcher {
-	private Lexicon lexicon = null;
+	private LexiconImpl lexicon = null;
 	
 	@BeforeClass
 	public static void setInitialContext() throws Exception {
@@ -31,7 +31,7 @@ public class TestFastMatcher {
 	
 	@Before
 	public void setUp() {
-		lexicon = Lexicon.getInstance();
+		lexicon = LexiconImpl.getInstance();
 	}
 	
 	@Test

@@ -12,13 +12,13 @@ import org.junit.Test;
 
 public class FastMatcherTest {
 	
-	private static Lexicon lexicon;
+	private static LexiconImpl lexicon;
 	
 	@BeforeClass
 	public static void setInitialContext() throws Exception{
 		MockContext.setInitialContext();
 		GrobidProperties.getInstance();
-		lexicon = Lexicon.getInstance();
+		lexicon = LexiconImpl.getInstance();
 	}
 	
 	@AfterClass

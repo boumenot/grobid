@@ -12,7 +12,7 @@ import org.grobid.core.engines.counters.CitationParserCounters;
 import org.grobid.core.engines.tagging.TaggerFactory;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.features.FeaturesVectorCitation;
-import org.grobid.core.lexicon.Lexicon;
+import org.grobid.core.lexicon.LexiconImpl;
 import org.grobid.core.utilities.Consolidation;
 import org.grobid.core.utilities.OffsetPosition;
 import org.grobid.core.utilities.TextUtilities;
@@ -28,7 +28,7 @@ import java.util.StringTokenizer;
 public class CitationParser extends AbstractParser {
     private Consolidation consolidator = null;
 
-    public Lexicon lexicon = Lexicon.getInstance();
+    public LexiconImpl lexicon = LexiconImpl.getInstance();
     private EngineParsers parsers;
 
     public CitationParser(EngineParsers parsers, TaggerFactory taggerFactory) {

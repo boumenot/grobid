@@ -5,7 +5,7 @@ import org.grobid.core.data.util.ClassicAuthorEmailAssigner;
 import org.grobid.core.data.util.EmailSanitizer;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.lang.Language;
-import org.grobid.core.lexicon.Lexicon;
+import org.grobid.core.lexicon.LexiconImpl;
 import org.grobid.core.utilities.LanguageUtilities;
 import org.grobid.core.utilities.TextUtilities;
 import org.grobid.core.utilities.KeyGen;
@@ -3133,7 +3133,7 @@ public class BiblioItem {
 
         List<Person> auts = fullAuthors;
 
-        Lexicon lexicon = Lexicon.getInstance();
+        LexiconImpl lexicon = LexiconImpl.getInstance();
 
         List<Affiliation> affs = fullAffiliations;
         if (affs == null)
