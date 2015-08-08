@@ -41,7 +41,9 @@ public class LanguageUtilities {
 	 * Hidden constructor
 	 */
 	private LanguageUtilities() {
-		useLanguageId = GrobidProperties.isUseLanguageId();
+		// XXX(boumenot): restore this as some point.
+//		useLanguageId = GrobidProperties.isUseLanguageId();
+		useLanguageId = false;
 		if (useLanguageId) {
 			String className = GrobidProperties.getLanguageDetectorFactory();
 			try {
