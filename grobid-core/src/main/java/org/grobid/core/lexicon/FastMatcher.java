@@ -28,7 +28,19 @@ public final class FastMatcher {
         try {
             loadTerms(file);
         } catch (Exception e) {
-            throw new GrobidException("An exception occured while running Grobid FastMatcher.", e);
+            throw new GrobidException("An exception occurred while running Grobid FastMatcher.", e);
+        }
+    }
+
+    public FastMatcher(String[] terms) {
+        try {
+            this.terms = new HashMap();
+            for (String term : terms) {
+                this.loadTerm(term);
+            }
+        }
+        catch (Exception e) {
+            throw new GrobidException("An exception occurred while running Grobid FastMatcher.", e);
         }
     }
 
