@@ -5,6 +5,7 @@ import org.grobid.core.data.Person;
 import org.grobid.core.engines.tagging.GenericTagger;
 import org.grobid.core.engines.tagging.TaggerFactory;
 import org.grobid.core.exceptions.GrobidException;
+import org.grobid.core.features.FeatureTester;
 import org.grobid.core.features.FeaturesVectorName;
 import org.grobid.core.utilities.TextUtilities;
 import org.slf4j.Logger;
@@ -23,8 +24,10 @@ public class AuthorParser implements Closeable {
 	private static Logger LOGGER = LoggerFactory.getLogger(AuthorParser.class);
     private final GenericTagger namesHeaderParser;
     private final GenericTagger namesCitationParser;
+    private final FeatureTester featureTester;
 
-    public AuthorParser(TaggerFactory taggerFactory) {
+    public AuthorParser(TaggerFactory taggerFactory, FeatureTester featureTester) {
+        this.featureTester = featureTester;
         namesHeaderParser = taggerFactory.create(GrobidModels.NAMES_HEADER);
         namesCitationParser = taggerFactory.create(GrobidModels.NAMES_CITATION);
     }
@@ -68,7 +71,7 @@ public class AuthorParser implements Closeable {
                 //System.out.println(authorBlocks);
             }
 
-            String header = FeaturesVectorName.addFeaturesName(authorBlocks);
+            String header = FeaturesVectorName.addFeaturesName(this.featureTester, authorBlocks);
             // clear internal context
 //            Tagger tagger = head ? taggerHeader : taggerCitation;
             GenericTagger tagger = head ? namesHeaderParser : namesCitationParser;
@@ -409,7 +412,7 @@ public class AuthorParser implements Closeable {
                 authorBlocks.add("\n");
             }
 
-            String header = FeaturesVectorName.addFeaturesName(authorBlocks);
+            String header = FeaturesVectorName.addFeaturesName(this.featureTester, authorBlocks);
             // clear internal context
 //            Tagger tagger = head ? taggerHeader : taggerCitation;
             GenericTagger tagger = head ? namesHeaderParser : namesCitationParser;

@@ -1,8 +1,7 @@
 package org.grobid.core.utilities;
 
 import org.grobid.core.exceptions.GrobidException;
-import org.grobid.core.features.FeatureFactory;
-import org.grobid.core.lexicon.Lexicon;
+import org.grobid.core.lexicon.LexiconDictionary;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -173,7 +172,7 @@ public class TextUtilities {
      * @param text the string to be processed without preserved end of lines.
      * @return Returns the dehyphenized string.
      */
-    public static String dehyphenizeHard(String text) {
+    public static String dehyphenizeHard(LexiconDictionary lexiconDictionary, String text) {
         if (text == null)
             return null;
         String res = "";
@@ -197,12 +196,7 @@ public class TextUtilities {
                     // we check if the composed token is in the lexicon
                     String hyphenToken = lastToken + firstToken;
                     //System.out.println(hyphenToken);
-                    /*if (lex == null)
-                             featureFactory.loadLexicon();*/
-                    Lexicon lex = Lexicon.getInstance();
-                    FeatureFactory featureFactory = FeatureFactory.getInstance();
-                    if (lex.inDictionary(hyphenToken.toLowerCase()) &
-                            !(featureFactory.test_digit(hyphenToken))) {
+                    if (lexiconDictionary.inDictionary(hyphenToken.toLowerCase())) {
                         // if yes, it is hyphenization
                         res += firstToken;
                         section = section.substring(firstToken.length(), section.length());

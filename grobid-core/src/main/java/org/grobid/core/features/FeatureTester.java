@@ -42,6 +42,16 @@ public interface FeatureTester {
     boolean test_common(String tok);
 
     /**
+     * Test if the current string is a first name
+     */
+    boolean test_first_names(String tok);
+
+    /**
+     * Test if the current string is a family name
+     */
+    boolean test_last_names(String tok);
+
+    /**
      * Test if the current string is a first name or family name
      */
     boolean test_names(String tok);

@@ -4,6 +4,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import org.grobid.core.lexicon.LexiconDictionary;
 import org.grobid.core.utilities.TextUtilities;
 
 import java.util.ArrayList;
@@ -32,10 +33,16 @@ public class RegexReferenceSegmenter implements ReferenceSegmenter {
             return new LabeledReferenceResult(input);
         }
     };
+    private final LexiconDictionary lexiconDictionary;
+
+    public RegexReferenceSegmenter(LexiconDictionary lexiconDictionary) {
+
+        this.lexiconDictionary = lexiconDictionary;
+    }
 
     @Override
     public List<LabeledReferenceResult> extract(String referenceBlock) {
-        return Lists.transform(segmentReferences(referenceBlock), LABELED_REFERENCE_RESULT_FUNCTION);
+        return Lists.transform(segmentReferences(this.lexiconDictionary, referenceBlock), LABELED_REFERENCE_RESULT_FUNCTION);
     }
 
     private static class StringLengthPredicate implements Predicate<String> {
@@ -51,7 +58,7 @@ public class RegexReferenceSegmenter implements ReferenceSegmenter {
         }
     }
 
-    private static List<String> segmentReferences(String references) {
+    private static List<String> segmentReferences(LexiconDictionary lexiconDictionary, String references) {
         List<String> grobidResults = new ArrayList<String>();
         int best = 0;
         Matcher bestMatcher;
@@ -98,16 +105,16 @@ public class RegexReferenceSegmenter implements ReferenceSegmenter {
             }
         }
 
-        diggitReferences = sanitizeCitationReferenceList(diggitReferences);
-        grobidResults = sanitizeCitationReferenceList(grobidResults);
+        diggitReferences = sanitizeCitationReferenceList(lexiconDictionary, diggitReferences);
+        grobidResults = sanitizeCitationReferenceList(lexiconDictionary, grobidResults);
 
         return grobidResults.size() > diggitReferences.size() ? grobidResults : diggitReferences;
     }
 
-    private static List<String> sanitizeCitationReferenceList(List<String> references) {
+    private static List<String> sanitizeCitationReferenceList(LexiconDictionary lexiconDictionary, List<String> references) {
         List<String> res = new ArrayList<String>();
         for (String r : references) {
-            res.add(TextUtilities.dehyphenizeHard(stripCitation(r)));
+            res.add(TextUtilities.dehyphenizeHard(lexiconDictionary, stripCitation(r)));
         }
         return Lists.newArrayList(Iterables.filter(res, new StringLengthPredicate(15)));
     }

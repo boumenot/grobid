@@ -18,6 +18,7 @@ import java.util.regex.PatternSyntaxException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.exceptions.GrobidResourceException;
 import org.grobid.core.lang.Language;
@@ -32,7 +33,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Patrice Lopez
  */
-public class Lexicon {
+public class Lexicon implements LexiconDictionary {
 	private static final Logger LOGGER = LoggerFactory
 			.getLogger(Lexicon.class);
     // private static volatile Boolean instanceController = false;
@@ -70,6 +71,9 @@ public class Lexicon {
      * Creates a new instance.
      */
 	private static synchronized void getNewInstance() {
+        for (StackTraceElement e : Thread.currentThread().getStackTrace())
+            LOGGER.debug(e.toString());
+
 		LOGGER.debug("Get new instance of Lexicon");
 		GrobidProperties.getInstance();
 		instance = new Lexicon();
@@ -343,6 +347,7 @@ public class Lexicon {
      * @param s a string to test
      * @return true if in the dictionary
      */
+    @Override
     public boolean inDictionary(String s) {
         return inDictionary(s, Language.EN);
     }

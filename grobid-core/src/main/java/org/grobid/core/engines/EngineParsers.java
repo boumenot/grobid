@@ -12,6 +12,9 @@ import org.grobid.core.engines.tagging.GrobidCRFEngine;
 import org.grobid.core.engines.tagging.TaggerFactory;
 import org.grobid.core.engines.tagging.WapitiTaggerFactory;
 import org.grobid.core.features.FeatureFactory;
+import org.grobid.core.features.FeatureTester;
+import org.grobid.core.lexicon.Lexicon;
+import org.grobid.core.lexicon.LexiconDictionary;
 import org.grobid.core.process.PdfToXmlCmdFactory;
 import org.grobid.core.process.PdfToXmlConverter;
 import org.grobid.core.process.PdfToXmlConverterImpl;
@@ -31,6 +34,8 @@ public class EngineParsers implements Closeable {
     private final PdfToXmlConverter pdfToXmlConverter;
     private final DocumentFactory documentFactory;
     private final TaggerFactory taggerFactory;
+    private final FeatureTester featureTester;
+    private final LexiconDictionary lexiconDictionary;
 
     private AuthorParser authorParser = null;
     private AffiliationAddressParser affiliationAddressParser = null;
@@ -45,7 +50,10 @@ public class EngineParsers implements Closeable {
 
     public static EngineParsers Create()
     {
+        LOGGER.debug("EngineParsers::Create()");
         GrobidProperties.getInstance();
+
+        LexiconDictionary lexiconDictionary = Lexicon.getInstance();
 
         return EngineParsers.Create(
                 new PdfToXmlConverterImpl(
@@ -53,18 +61,23 @@ public class EngineParsers implements Closeable {
                         GrobidProperties.getTempPath()),
                 new DocumentFactory(
                         new PdfXmlParser(),
-                        FeatureFactory.getInstance()),
+                        FeatureFactory.getInstance(),
+                        lexiconDictionary),
                 EngineParsers.createGenericFactory(
                         GrobidProperties.getGrobidCRFEngine(),
                         new GrobidModelStreamFactory()
-                ));
+                ),
+                FeatureFactory.getInstance(),
+                lexiconDictionary);
     }
 
     public static EngineParsers Create(
             PdfToXmlConverter pdfToXmlConverter,
             DocumentFactory documentFactory,
-            TaggerFactory taggerFactory) {
-        return new EngineParsers(pdfToXmlConverter, documentFactory, taggerFactory);
+            TaggerFactory taggerFactory,
+            FeatureTester featureTester,
+            LexiconDictionary lexiconDictionary) {
+        return new EngineParsers(pdfToXmlConverter, documentFactory, taggerFactory, featureTester, lexiconDictionary);
     }
 
     private static TaggerFactory createGenericFactory(
@@ -85,10 +98,14 @@ public class EngineParsers implements Closeable {
     private EngineParsers(
             PdfToXmlConverter pdfToXmlConverter,
             DocumentFactory documentFactory,
-            TaggerFactory taggerFactory) {
+            TaggerFactory taggerFactory,
+            FeatureTester featureTester,
+            LexiconDictionary lexiconDictionary) {
         this.pdfToXmlConverter = pdfToXmlConverter;
         this.documentFactory = documentFactory;
         this.taggerFactory = taggerFactory;
+        this.featureTester = featureTester;
+        this.lexiconDictionary = lexiconDictionary;
     }
 
     public AffiliationAddressParser getAffiliationAddressParser() {
@@ -106,7 +123,7 @@ public class EngineParsers implements Closeable {
         if (authorParser == null) {
             synchronized (this) {
                 if (authorParser == null) {
-                    authorParser = new AuthorParser(this.taggerFactory);
+                    authorParser = new AuthorParser(this.taggerFactory, this.featureTester);
                 }
             }
         }
@@ -121,7 +138,8 @@ public class EngineParsers implements Closeable {
                             this,
                             this.pdfToXmlConverter,
                             this.documentFactory,
-                            this.taggerFactory);
+                            this.taggerFactory,
+                            this.lexiconDictionary);
                 }
             }
         }

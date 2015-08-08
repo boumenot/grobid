@@ -14,11 +14,9 @@ import org.grobid.core.features.FeaturesVectorHeader;
 import org.grobid.core.lang.Language;
 import org.grobid.core.layout.Block;
 import org.grobid.core.layout.LayoutToken;
+import org.grobid.core.lexicon.LexiconDictionary;
 import org.grobid.core.process.PdfToXmlConverter;
-import org.grobid.core.utilities.Consolidation;
-import org.grobid.core.utilities.GrobidProperties;
-import org.grobid.core.utilities.LanguageUtilities;
-import org.grobid.core.utilities.TextUtilities;
+import org.grobid.core.utilities.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.StringTokenizer;
-import java.util.regex.Matcher;
 
 /**
  * @author Patrice Lopez
@@ -42,17 +39,20 @@ public class HeaderParser extends AbstractParser {
     private final EngineParsers parsers;
 	private final PdfToXmlConverter pdfToXmlConverter;
 	private final DocumentFactory documentFactory;
+	private final LexiconDictionary lexiconDictionary;
 
 	public HeaderParser(
 			EngineParsers parsers,
 			PdfToXmlConverter pdfToXmlConverter,
 			DocumentFactory documentFactory,
-			TaggerFactory taggerFactory) {
+			TaggerFactory taggerFactory,
+			LexiconDictionary lexiconDictionary) {
 		super(taggerFactory.create(GrobidModels.HEADER));
 
 		this.parsers = parsers;
 		this.pdfToXmlConverter = pdfToXmlConverter;
 		this.documentFactory = documentFactory;
+		this.lexiconDictionary = lexiconDictionary;
 	}
 
 	/**
@@ -125,13 +125,10 @@ public class HeaderParser extends AbstractParser {
 
 				if (resHeader != null) {
 					if (resHeader.getAbstract() != null) {
-						resHeader.setAbstract(TextUtilities.dehyphenizeHard(resHeader.getAbstract()));
-						//resHeader.setAbstract(TextUtilities.dehyphenize(resHeader.getAbstract()));
+						resHeader.setAbstract(TextUtilities.dehyphenizeHard(this.lexiconDictionary, resHeader.getAbstract()));
 					}
 					BiblioItem.cleanTitles(resHeader);
 					if (resHeader.getTitle() != null) {
-						// String temp =
-						// utilities.dehyphenizeHard(resHeader.getTitle());
 						String temp = TextUtilities.dehyphenize(resHeader.getTitle());
 						temp = temp.trim();
 						if (temp.length() > 1) {
@@ -324,13 +321,10 @@ public class HeaderParser extends AbstractParser {
 
 				if (resHeader != null) {
 					if (resHeader.getAbstract() != null) {
-						// resHeader.setAbstract(utilities.dehyphenizeHard(resHeader.getAbstract()));
 						resHeader.setAbstract(TextUtilities.dehyphenize(resHeader.getAbstract()));
 					}
 					BiblioItem.cleanTitles(resHeader);
 					if (resHeader.getTitle() != null) {
-						// String temp =
-						// utilities.dehyphenizeHard(resHeader.getTitle());
 						String temp = TextUtilities.dehyphenize(resHeader.getTitle());
 						temp = temp.trim();
 						if (temp.length() > 1) {

@@ -130,9 +130,7 @@ public class FeaturesVectorName {
      * Add feature for name parsing. The boolean indicates if the label set
      * should be limited or not to only title and date.
      */
-    static public String addFeaturesName(List<String> lines) throws Exception {
-        FeatureFactory featureFactory = FeatureFactory.getInstance();
-
+    static public String addFeaturesName(FeatureTester featureFactory, List<String> lines) throws Exception {
         String line;
         StringBuffer header = new StringBuffer();
         boolean newline = true;

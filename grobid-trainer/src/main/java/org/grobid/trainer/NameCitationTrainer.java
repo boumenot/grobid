@@ -2,6 +2,7 @@ package org.grobid.trainer;
 
 import org.grobid.core.GrobidModels;
 import org.grobid.core.exceptions.GrobidException;
+import org.grobid.core.features.FeatureFactory;
 import org.grobid.core.features.FeaturesVectorName;
 import org.grobid.core.mock.MockContext;
 import org.grobid.core.utilities.GrobidProperties;
@@ -112,7 +113,7 @@ public class NameCitationTrainer extends AbstractTrainer {
 				totalExamples += parser2.n;
 
 				// we can now add the features
-				final String names = FeaturesVectorName.addFeaturesName(labeled);
+				final String names = FeaturesVectorName.addFeaturesName(FeatureFactory.getInstance(), labeled);
 
 				// format with features for sequence tagging...
 				// given the split ratio we write either in the training file or the evaluation file
