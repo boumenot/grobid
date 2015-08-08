@@ -153,7 +153,8 @@ public class FeaturesVectorAffiliationAddress {
     /**
      * Add the features for the affiliation+address model.
      */
-    static public String addFeaturesAffiliationAddress(List<String> lines,
+    static public String addFeaturesAffiliationAddress(FeatureTester featureTester,
+                                                       List<String> lines,
                                                        List<List<OffsetPosition>> locationPlaces) throws Exception {
         if (locationPlaces == null) {
             throw new GrobidException("At least one list of gazetter matches positions is null.");
@@ -226,7 +227,7 @@ public class FeaturesVectorAffiliationAddress {
                     lineStatus = "LINEEND";
                 }
 
-                FeaturesVectorAffiliationAddress vector = addFeaturesAffiliationAddress(line, lineStatus, isPlace);
+                FeaturesVectorAffiliationAddress vector = addFeaturesAffiliationAddress(featureTester, line, lineStatus, isPlace);
                 result.append(vector.printVector());
 
                 if (lineStatus.equals("LINESTART")) {
@@ -239,10 +240,10 @@ public class FeaturesVectorAffiliationAddress {
         return result.toString();
     }
 
-    static private FeaturesVectorAffiliationAddress addFeaturesAffiliationAddress(String line,
+    static private FeaturesVectorAffiliationAddress addFeaturesAffiliationAddress(FeatureTester featureTester,
+                                                                                  String line,
                                                                                   String lineStatus,
                                                                                   boolean isPlace) {
-        FeatureFactory featureFactory = FeatureFactory.getInstance();
         FeaturesVectorAffiliationAddress featuresVector = new FeaturesVectorAffiliationAddress();
 
         StringTokenizer st = new StringTokenizer(line.trim(), "\t ");
@@ -262,27 +263,27 @@ public class FeaturesVectorAffiliationAddress {
                 featuresVector.singleChar = true;
             }
 
-            if (featureFactory.test_all_capital(word))
+            if (featureTester.test_all_capital(word))
                 featuresVector.capitalisation = "ALLCAPS";
-            else if (featureFactory.test_first_capital(word))
+            else if (featureTester.test_first_capital(word))
                 featuresVector.capitalisation = "INITCAP";
             else
                 featuresVector.capitalisation = "NOCAPS";
 
-            if (featureFactory.test_number(word))
+            if (featureTester.test_number(word))
                 featuresVector.digit = "ALLDIGIT";
-            else if (featureFactory.test_digit(word))
+            else if (featureTester.test_digit(word))
                 featuresVector.digit = "CONTAINDIGIT";
             else
                 featuresVector.digit = "NODIGIT";
 
-            if (featureFactory.test_common(word))
+            if (featureTester.test_common(word))
                 featuresVector.commonName = true;
 
-            if (featureFactory.test_names(word))
+            if (featureTester.test_names(word))
                 featuresVector.properName = true;
 
-            if (featureFactory.test_punct(word)) {
+            if (featureTester.test_punct(word)) {
                 featuresVector.punctType = "PUNCT";
             }
 
@@ -309,7 +310,7 @@ public class FeaturesVectorAffiliationAddress {
             if (featuresVector.punctType == null)
                 featuresVector.punctType = "NOPUNCT";
 
-            if (featureFactory.test_country(word)) {
+            if (featureTester.test_country(word)) {
                 featuresVector.countryName = true;
             }
 

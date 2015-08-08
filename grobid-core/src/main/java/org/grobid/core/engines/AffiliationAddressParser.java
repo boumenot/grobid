@@ -4,6 +4,8 @@ import org.grobid.core.GrobidModels;
 import org.grobid.core.data.Affiliation;
 import org.grobid.core.engines.tagging.TaggerFactory;
 import org.grobid.core.exceptions.GrobidException;
+import org.grobid.core.features.FeatureFactory;
+import org.grobid.core.features.FeatureTester;
 import org.grobid.core.features.FeaturesVectorAffiliationAddress;
 import org.grobid.core.lexicon.Lexicon;
 import org.grobid.core.utilities.OffsetPosition;
@@ -17,10 +19,12 @@ import java.util.StringTokenizer;
  * @author Patrice Lopez
  */
 public class AffiliationAddressParser extends AbstractParser {
+    private final FeatureTester featureTester;
     private final Lexicon lexicon;
 
-    public AffiliationAddressParser(TaggerFactory taggerFactory, Lexicon lexicon) {
+    public AffiliationAddressParser(TaggerFactory taggerFactory, FeatureTester featureTester, Lexicon lexicon) {
         super(taggerFactory.create(GrobidModels.AFFIILIATON_ADDRESS));
+        this.featureTester = featureTester;
         this.lexicon = lexicon;
     }
 
@@ -56,7 +60,7 @@ public class AffiliationAddressParser extends AbstractParser {
             List<List<OffsetPosition>> placesPositions = new ArrayList<List<OffsetPosition>>();
             placesPositions.add(this.lexicon.inCityNames(input));
 
-            String header = FeaturesVectorAffiliationAddress.addFeaturesAffiliationAddress(affiliationBlocks, placesPositions);
+            String header = FeaturesVectorAffiliationAddress.addFeaturesAffiliationAddress(this.featureTester, affiliationBlocks, placesPositions);
 
             // add context
 //            st = new StringTokenizer(header, "\n");
@@ -202,7 +206,7 @@ public class AffiliationAddressParser extends AbstractParser {
             List<List<OffsetPosition>> placesPositions = new ArrayList<List<OffsetPosition>>();
             placesPositions.add(lexicon.inCityNames(tokenizations));
             String header =
-                    FeaturesVectorAffiliationAddress.addFeaturesAffiliationAddress(affiliationBlocks, placesPositions);
+                    FeaturesVectorAffiliationAddress.addFeaturesAffiliationAddress(this.featureTester, affiliationBlocks, placesPositions);
 
             if ((header == null) || (header.trim().length() == 0)) {
                 return null;

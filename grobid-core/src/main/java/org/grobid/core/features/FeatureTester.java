@@ -6,6 +6,11 @@ package org.grobid.core.features;
 public interface FeatureTester {
 
     /**
+     * Test if the first letter of the string is a capital letter
+     */
+    boolean test_first_capital(String tok);
+
+    /**
      * Test if all the letters of the string are capital letters
      * (characters can be also digits which are then ignored)
      */
@@ -65,4 +70,9 @@ public interface FeatureTester {
      * Test for the current string contains at least one digit
      */
     boolean test_digit(String tok);
+
+    /**
+     * Test if the current string refers to a country
+     */
+    boolean test_country(String tok);
 }

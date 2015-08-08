@@ -2,6 +2,7 @@ package org.grobid.trainer;
 
 import org.grobid.core.GrobidModels;
 import org.grobid.core.exceptions.GrobidException;
+import org.grobid.core.features.FeatureFactory;
 import org.grobid.core.features.FeaturesVectorAffiliationAddress;
 import org.grobid.core.mock.MockContext;
 import org.grobid.core.utilities.GrobidProperties;
@@ -11,9 +12,7 @@ import org.grobid.trainer.sax.TEIAffiliationAddressSaxParser;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 
 /**
@@ -119,7 +118,7 @@ public class AffiliationAddressTrainer extends AbstractTrainer {
 
 				// we can now add the features
                 String affAdd =
-                        FeaturesVectorAffiliationAddress.addFeaturesAffiliationAddress(labeled, placesPositions);
+                        FeaturesVectorAffiliationAddress.addFeaturesAffiliationAddress(FeatureFactory.getInstance(), labeled, placesPositions);
 
 				// format with features for sequence tagging...
 				// given the split ratio we write either in the training file or the evaluation file

@@ -133,6 +133,7 @@ public class FeatureFactory implements FeatureTester {
     /**
      * Test if the first letter of the string is a capital letter
      */
+    @Override
     public boolean test_first_capital(String tok) {
         if (tok == null)
             return false;
@@ -325,6 +326,7 @@ public class FeatureFactory implements FeatureTester {
     /**
      * Test if the current string refers to a country
      */
+    @Override
     public boolean test_country(String tok) {
         return lexicon.isCountry(tok.toLowerCase());
     }
