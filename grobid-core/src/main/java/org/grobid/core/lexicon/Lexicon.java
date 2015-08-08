@@ -11,4 +11,5 @@ public interface Lexicon {
     boolean inDictionary(String s);
 
     List<OffsetPosition> inCityNames(String s);
+    List<OffsetPosition> inCityNames(List<String> s);
 }

@@ -618,6 +618,7 @@ public class LexiconImpl implements Lexicon {
     /**
      * Soft look-up in city name gazetteer for a given string already tokenized
      */
+    @Override
     public List<OffsetPosition> inCityNames(List<String> s) {
         if (cityPattern == null) {
             initCities();
