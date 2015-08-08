@@ -147,6 +147,7 @@ public class LibraryLoader {
     }
 
     private static String getLibraryFolder() {
+        LOGGER.debug("LibraryLoader::getLibraryFolder");
         GrobidProperties.getInstance();
         // TODO: change to fetching the basic dir from GrobidProperties object
         return String.format("%s" + File.separator + "%s", GrobidProperties

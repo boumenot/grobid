@@ -6,6 +6,8 @@ import org.grobid.core.engines.tagging.GrobidCRFEngine;
 import org.grobid.core.lexicon.Lexicon;
 import org.grobid.core.main.LibraryLoader;
 import org.grobid.core.utilities.GrobidProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -13,6 +15,7 @@ import org.grobid.core.utilities.GrobidProperties;
  * 
  */
 public class AbstractEngineFactory {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractEngineFactory.class);
 
 	/**
 	 * The engine.
@@ -47,6 +50,7 @@ public class AbstractEngineFactory {
 	 * Initializes all necessary things for starting grobid. 
 	 */
 	public static void init() {
+        LOGGER.debug("AbstractEngineFactory::init()");
 		GrobidProperties.getInstance();
 		LibraryLoader.load();
 	}
