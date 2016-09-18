@@ -12,6 +12,3 @@ copy nuget\grobid.nuspec                        nuget\package\grobid.nuspec
 copy Grobid.Java.dll                            nuget\package\lib\net20\
 
 nuget.exe pack -BasePath nuget\package nuget\grobid.nuspec
-
-
-

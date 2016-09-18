@@ -48,12 +48,16 @@ public class ProcessRunner extends Thread {
             }
 
             exit = process.waitFor();
+            LOGGER.info("ProcessRunner::run() exit={}", exit);
         } 
 		catch (InterruptedException ignore) {
+            LOGGER.error("Process worker was interrupted");
+            LOGGER.error(" -> {}", ignore);
             //Process needs to be destroyed -- it's done in the finally block
         } 
 		catch (IOException e) {
             LOGGER.error("IOException while launching the command {} : {}", cmd.toString(), e.getMessage());
+            LOGGER.error(" -> {}", e);
         } 
 		finally {
             if (process != null) {
@@ -89,7 +93,6 @@ public class ProcessRunner extends Thread {
                 }
             }
         }
-
     }
 
     public Integer getExitStatus() {

@@ -87,7 +87,7 @@ public class PdfToXmlConverterImpl implements PdfToXmlConverter {
             }
 
             if (worker.getExitStatus() == PdfToXmlConverterImpl.KILLED_DUE_2_TIMEOUT) {
-                throw new TimeoutException("PDF to XML conversion timed out");
+                throw new TimeoutException("PDF to XML conversion exceeded time limit and was killed");
             }
 
             if (worker.getExitStatus() != 0) {
@@ -96,6 +96,7 @@ public class PdfToXmlConverterImpl implements PdfToXmlConverter {
                                 + worker.getErrorStreamContents());
             }
         } catch (InterruptedException ex) {
+            LOGGER.error("runTimedCommand interrupted {}", ex);
             worker.interrupt();
             Thread.currentThread().interrupt();
         } finally {
