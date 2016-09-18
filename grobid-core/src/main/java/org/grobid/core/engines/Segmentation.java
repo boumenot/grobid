@@ -103,6 +103,8 @@ public class Segmentation extends AbstractParser {
      * @return Document object with segmentation informations
      */
     public Document processing(String input, boolean headerMode) {
+        LOGGER.debug("processing()");
+
         if (input == null) {
             throw new GrobidResourceException("Cannot process pdf file, because input file was null.");
         }
@@ -125,6 +127,7 @@ public class Segmentation extends AbstractParser {
 
             String content = getAllLinesFeatured(doc.getBlocks(), doc.getTokenizations());
             if ( (content != null) && (content.trim().length() > 0) ) {
+                LOGGER.debug("processing():130");
                 String labelledResult = label(content);
                 doc = BasicStructureBuilder.generalResultSegmentation(doc, labelledResult, doc.getTokenizations());
             }

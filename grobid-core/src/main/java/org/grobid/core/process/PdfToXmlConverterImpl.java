@@ -75,7 +75,7 @@ public class PdfToXmlConverterImpl implements PdfToXmlConverter {
     }
 
     private void runTimedCommand(Duration duration, List<String> cmd, String threadName) throws TimeoutException {
-        LOGGER.debug("Executing: " + cmd.toString());
+        LOGGER.info("Executing: {}", cmd);
         ProcessRunner worker = new ProcessRunner(cmd, threadName, true);
 
         worker.start();

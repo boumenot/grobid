@@ -37,6 +37,9 @@ public class AuthorParser implements Closeable {
      */
     public List<Person> processing(List<String> inputs,
                                    boolean head) {
+
+        LOGGER.debug("processing()");
+
         if (inputs == null)
             return null;
 
@@ -76,6 +79,7 @@ public class AuthorParser implements Closeable {
 //            Tagger tagger = head ? taggerHeader : taggerCitation;
             GenericTagger tagger = head ? namesHeaderParser : namesCitationParser;
 
+            LOGGER.debug("processing():82");
             String res = tagger.label(header);
 //            StringTokenizer st = new StringTokenizer(header, "\n");
 //            AbstractParser.feedTaggerAndParse(tagger, st);

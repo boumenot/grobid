@@ -360,9 +360,8 @@ public class Document {
         if (getHeader) {
             // String theHeader = getHeaderZFN(firstPass);
             String theHeader = getHeader();
-            if (theHeader == null) {
-                getHeaderLastHope();
-            } else if (theHeader.trim().length() == 1) {
+            LOGGER.debug("theHeader='''{}'''", theHeader);
+            if (theHeader == null || theHeader.trim().length() == 1) {
                 getHeaderLastHope();
             }
         }
@@ -375,6 +374,23 @@ public class Document {
         boolean endblock;
         for (Integer blocknum : blockDocumentHeaders) {
             Block block = blocks.get(blocknum);
+            LOGGER.debug("block[{}]: font={}, fontSize={}, color={}, isBold={}, isItalic={}, height={}, width={}, " +
+                    "X={}, Y={}, nbTokens={}, page={}, text='''{}''', type={}",
+                    blocknum,
+                    block.getFont(),
+                    block.getFontSize(),
+                    block.getColorFont(),
+                    block.getBold(),
+                    block.getItalic(), /* bool */
+                    block.getHeight(),
+                    block.getWidth(),
+                    block.getX(),
+                    block.getY(),
+                    block.getNbTokens(),
+                    block.getPage(),
+                    block.getText(),
+                    block.getType());
+
             boolean newline;
             boolean previousNewline = false;
             endblock = false;
@@ -384,21 +400,38 @@ public class Document {
             int n = 0;
             while (n < tokens.size()) {
                 LayoutToken token = tokens.get(n);
+                LOGGER.debug("  layout[{}]: font={}, fontSize={}, color={}, isBold={}, isItalic={}, height={}, width={}, " +
+                        "X={}, Y={}, rotation={}, text='''{}'''",
+                        n,
+                        token.getFont(),
+                        token.getFontSize(),
+                        token.getColorFont(),
+                        token.getBold(),
+                        token.getItalic(),
+                        token.getHeight(),
+                        token.getWidth(),
+                        token.getX(),
+                        token.getY(),
+                        token.getRotation(),
+                        token.getText());
+
                 features = new FeaturesVectorHeader();
                 features.token = token;
                 String text = token.getText();
                 if (text == null) {
                     n++;
+                    LOGGER.debug("skipped (text==null)");
                     continue;
                 }
                 text = text.trim();
                 if (text.length() == 0) {
                     n++;
+                    LOGGER.debug("skipped (text.length() == 0)");
                     continue;
                 }
 
                 if (text.equals("\n")) {
-                    newline = true;
+                    LOGGER.debug("skipped (text.equals(\"\\n\")");
                     previousNewline = true;
                     n++;
                     continue;
@@ -423,6 +456,7 @@ public class Document {
 
                 if (filter) {
                     n++;
+                    LOGGER.debug("skipped (filter)");
                     continue;
                 }
 
@@ -453,7 +487,6 @@ public class Document {
 
                 } else if (text.equals("\"") || text.equals("\'") || text.equals("`")) {
                     features.punctType = "QUOTE";
-
                 }
 
                 if (n == 0) {
@@ -617,12 +650,16 @@ public class Document {
     // CRF structure recognition
     // model
     public String getHeader() {
+        LOGGER.debug("getHeader()");
         //if (firstPass)
+
+        LOGGER.debug("fistPass():");
         BasicStructureBuilder.firstPass(this);
 
         // try first to find the introduction in a safe way
         String tmpRes = getHeaderByIntroduction();
         if (tmpRes != null) {
+            LOGGER.debug("getHeaderByIntroduction()");
             if (tmpRes.trim().length() > 0) {
                 return tmpRes;
             }

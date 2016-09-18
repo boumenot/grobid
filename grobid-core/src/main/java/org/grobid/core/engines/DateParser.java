@@ -6,6 +6,8 @@ import org.grobid.core.engines.tagging.TaggerFactory;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.features.FeaturesVectorDate;
 import org.grobid.core.utilities.TextUtilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.regex.Pattern;
  * @author Patrice Lopez
  */
 public class DateParser extends AbstractParser {
+    private static Logger LOGGER = LoggerFactory.getLogger(DateParser.class);
 
     public DateParser(TaggerFactory taggerFactory) {
         super(taggerFactory.create(GrobidModels.DATE));
@@ -26,6 +29,7 @@ public class DateParser extends AbstractParser {
      * Processing of authors in header
      */
     public List<Date> processing(String input) {
+        LOGGER.debug("processing()");
         if (input == null)
             return null;
 
@@ -51,6 +55,7 @@ public class DateParser extends AbstractParser {
 //            st = new StringTokenizer(headerDate, "\n");
             //TODO:
 //            String res = getTaggerResult(st, "<date>");
+            LOGGER.debug("processing():58");
             String res = label(headerDate);
             // extract results from the processed file
 

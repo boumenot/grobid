@@ -10,6 +10,8 @@ import org.grobid.core.features.FeaturesVectorAffiliationAddress;
 import org.grobid.core.lexicon.Lexicon;
 import org.grobid.core.utilities.OffsetPosition;
 import org.grobid.core.utilities.TextUtilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +21,8 @@ import java.util.StringTokenizer;
  * @author Patrice Lopez
  */
 public class AffiliationAddressParser extends AbstractParser {
+    private static Logger LOGGER = LoggerFactory.getLogger(AffiliationAddressParser.class);
+
     private final FeatureTester featureTester;
     private final Lexicon lexicon;
 
@@ -66,6 +70,7 @@ public class AffiliationAddressParser extends AbstractParser {
 //            st = new StringTokenizer(header, "\n");
 
             //TODO:
+            LOGGER.debug("processing():75");
             String res = label(header);
             return resultBuilder(res, tokenizations, false); // don't use pre-labels
         } catch (Exception e) {
@@ -212,6 +217,8 @@ public class AffiliationAddressParser extends AbstractParser {
                 return null;
             }
 
+
+            LOGGER.debug("processing():222");
             String res = label(header);
             res = label(res);
 

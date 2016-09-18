@@ -373,6 +373,9 @@ public class PDF2XMLSaxParser extends DefaultHandler {
 			if (tok0.length() > 0) {
 				StringTokenizer st = new StringTokenizer(tok0,
 						TextUtilities.fullPunctuations, true);
+
+//				LOGGER.debug("tok0='''{}'''", tok0);
+
 				boolean diaresis = false;
 				boolean accent = false;
 				//boolean keepLast = false;
@@ -488,6 +491,7 @@ public class PDF2XMLSaxParser extends DefaultHandler {
 						if ((!diaresis) && (!accent)) {
 							// blabla.append(" ");
 							blabla.append(tok);
+//							LOGGER.debug("  token.setText() to '''{}'''", tok);
 							token.setText(tok);
 
 							tokenizations.add(tok);

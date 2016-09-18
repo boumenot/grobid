@@ -3,6 +3,8 @@ package org.grobid.core.engines.tagging;
 import com.google.common.base.Joiner;
 import fr.limsi.wapiti.WapitiModel;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.jni.GrobidWapitiIO;
 
@@ -15,6 +17,7 @@ import java.io.InputStream;
  * Date: 3/20/14
  */
 public class WapitiTagger implements GenericTagger {
+    public static final Logger LOGGER = LoggerFactory.getLogger(WapitiTagger.class);
     private final WapitiModel wapitiModel;
 
     public WapitiTagger(WapitiModel wapitiModel) {
@@ -31,6 +34,7 @@ public class WapitiTagger implements GenericTagger {
         // FIXME(chrboum): don't swallow and convert to a RuntimeException.
         // FIXME(chrboum): why are you hard coding ISO-8859-1 - because ... so document the WHY!
         try {
+            LOGGER.debug("label(): data={}", data);
             InputStream in = IOUtils.toInputStream(data, "ISO-8859-1");
             ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -39,6 +43,8 @@ public class WapitiTagger implements GenericTagger {
             io.close();
 
             String label = out.toString("ISO-8859-1");
+            LOGGER.debug("label={}", label);
+
             //TODO: VZ: Grobid currently expects tabs as separators whereas wapiti uses spaces for separating features.
             // for now it is safer to replace, although it does not look nice
             return label.replaceAll(" ", "\t");

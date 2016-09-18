@@ -2,6 +2,8 @@ package org.grobid.core.document;
 
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.sax.PDF2XMLSaxParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -11,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class PdfXmlParser {
+    public static final Logger LOGGER = LoggerFactory.getLogger(PdfXmlParser.class);
 
     /**  Parse PDF2XML output representation and get the tokenized form of the document.
      */

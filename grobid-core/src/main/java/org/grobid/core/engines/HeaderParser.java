@@ -59,6 +59,7 @@ public class HeaderParser extends AbstractParser {
      * Processing with application of the segmentation model
      */ 
     public Pair<String, Document> processing(String input, boolean consolidate, BiblioItem resHeader) {
+    	LOGGER.debug("processing()");
         Document doc = parsers.getSegmentationParser().processing(input);
         
         try{
@@ -80,10 +81,11 @@ public class HeaderParser extends AbstractParser {
                 pathXML = this.pdfToXmlConverter.convertHeaderOnly(new File(input));
                 Document doc = this.documentFactory.fromXmlPdf(
                     new FileInputStream(pathXML));
-                
+
                 String tei = processingHeaderBlock(consolidate, doc, resHeader);
                 return new ImmutablePair<String, Document>(tei, doc);
             } catch (final Exception exp) {
+				LOGGER.error("processing2: {}", exp);
                 throw new GrobidException("An exception occurred while running Grobid: " + exp);
             } finally {
                 Document.cleanLxmlFile(pathXML, true);
@@ -91,15 +93,20 @@ public class HeaderParser extends AbstractParser {
         }
 
 	public String processingHeaderBlock(boolean consolidate, Document doc, BiblioItem resHeader) {
-			String header;
+
+        String header;
 			if (doc.getBlockDocumentHeaders() == null) {
+				LOGGER.debug("true,true");
 				header = doc.getHeaderFeatured(true, true);
 			} else {
+				LOGGER.debug("false,true");
 				header = doc.getHeaderFeatured(false, true);
 			}
+
 			List<String> tokenizations = doc.getTokenizationsHeader();
  		   	
 			if ( (header != null) && (header.trim().length() > 0) ) {
+                LOGGER.debug("processing():108");
 	            String res = label(header);
 				resHeader = resultExtraction(res, true, tokenizations, resHeader);
 
@@ -263,6 +270,7 @@ public class HeaderParser extends AbstractParser {
 	 *  Header processing after application of the segmentation model
 	 */
 	public String processingHeaderSection(Document doc, boolean consolidate, BiblioItem resHeader) {
+	    LOGGER.debug("processing()");
         try {
             SortedSet<DocumentPiece> documentHeaderParts = doc.getDocumentPart(SegmentationLabel.HEADER);
 			List<String> tokenizations = doc.getTokenizations();
@@ -284,7 +292,8 @@ public class HeaderParser extends AbstractParser {
 				String header = getSectionHeaderFeatured(doc, documentHeaderParts, true);
 				String res = null;
 				if ( (header != null) && (header.trim().length() > 0) ) {
-					res = label(header);
+                    LOGGER.debug("processing():294");
+                    res = label(header);
 					resHeader = resultExtraction(res, true, tokenizations, resHeader);
 				}
 				
@@ -754,6 +763,7 @@ public class HeaderParser extends AbstractParser {
 					new FileInputStream(pathXML));
 
             String header = doc.getHeaderFeatured(true, true);
+			LOGGER.debug("getHeaderFeatured={}", header);
             List<String> tokenizations = doc.getTokenizationsHeader();
 
             // we write the header untagged
@@ -791,6 +801,7 @@ public class HeaderParser extends AbstractParser {
 
             // buffer for the header block
 //			String rese = res.toString();
+            LOGGER.debug("processing():803");
             String rese = label(header);
             StringBuilder bufferHeader = trainingExtraction(rese, true, tokenizations);
 

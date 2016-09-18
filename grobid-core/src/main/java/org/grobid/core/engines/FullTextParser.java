@@ -81,6 +81,9 @@ public class FullTextParser extends AbstractParser {
 							int startPage,
 							int endPage,
 							boolean generateIDs) throws Exception {
+
+    	LOGGER.debug("processing()");
+
         if (input == null) {
             throw new GrobidResourceException("Cannot process pdf file, because input file was null.");
         }
@@ -108,7 +111,8 @@ public class FullTextParser extends AbstractParser {
 				// document segmentation
 				String bodytext = featSeg.getA();
 				tokenizationsBody = featSeg.getB();
-	            rese = label(bodytext);
+				LOGGER.debug("processing():114");
+				rese = label(bodytext);
 				//System.out.println(rese);
 			}
 
@@ -148,7 +152,8 @@ public class FullTextParser extends AbstractParser {
 				// document segmentation
 				String bodytext = featSeg.getA();
 				tokenizationsBody2 = featSeg.getB();
-	            rese2 = label(bodytext);
+	            LOGGER.debug("processing():154");
+				rese2 = label(bodytext);
 				//System.out.println(rese);
 			}
 

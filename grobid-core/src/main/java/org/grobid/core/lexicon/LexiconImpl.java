@@ -105,6 +105,7 @@ public class LexiconImpl implements Lexicon {
     }
 
     public final void addDictionary(String path, String lang) {
+        LOGGER.debug("addDictionary(): path={}, lang={}", path, lang);
         File file = new File(path);
         if (!file.exists()) {
             throw new GrobidResourceException("Cannot add entries to dictionary (language '" + lang +

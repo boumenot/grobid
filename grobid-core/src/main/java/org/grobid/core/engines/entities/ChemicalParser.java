@@ -7,6 +7,8 @@ import org.grobid.core.engines.tagging.TaggerFactory;
 import org.grobid.core.exceptions.GrobidException;
 import org.grobid.core.features.FeaturesVectorChemicalEntity;
 import org.grobid.core.utilities.TextUtilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,7 @@ import java.util.StringTokenizer;
  * @author Patrice Lopez
  */
 public class ChemicalParser extends AbstractParser {
+    private static Logger LOGGER = LoggerFactory.getLogger(ChemicalParser.class);
     public ChemicalParser(TaggerFactory taggerFactory) {
         super(taggerFactory.create(GrobidModels.ENTITIES_CHEMISTRY));
     }
@@ -26,6 +29,8 @@ public class ChemicalParser extends AbstractParser {
      * Extract all reference from a simple piece of text.
      */
     public List<ChemicalEntity> extractChemicalEntities(String text) throws Exception {
+        LOGGER.debug("processing()");
+
 //        int nbRes = 0;
         if (text == null)
             return null;

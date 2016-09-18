@@ -33,6 +33,7 @@ public class ReferenceSegmenterParser extends AbstractParser implements Referenc
      *              example: <"[1]", "Hu W., Barkana, R., &amp; Gruzinov A. Phys. Rev. Lett. 85, 1158">
      */
     public List<LabeledReferenceResult> extract(String referenceBlock) {
+        LOGGER.debug("processing()");
         List<String> blocks = new ArrayList<String>();
 
 
@@ -65,6 +66,7 @@ public class ReferenceSegmenterParser extends AbstractParser implements Referenc
         }
         blocks.add("\n");
         String featureVector = FeaturesVectorReferenceSegmenter.addFeaturesReferenceSegmenter(blocks);
+        LOGGER.debug("processing():69");
         String res = label(featureVector);
 
         List<Pair<String, String>> labeled = GenericTaggerUtils.getTokensAndLabels(res);

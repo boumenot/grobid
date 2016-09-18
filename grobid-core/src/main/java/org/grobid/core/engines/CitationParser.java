@@ -16,6 +16,8 @@ import org.grobid.core.lexicon.LexiconImpl;
 import org.grobid.core.utilities.Consolidation;
 import org.grobid.core.utilities.OffsetPosition;
 import org.grobid.core.utilities.TextUtilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,6 +28,7 @@ import java.util.StringTokenizer;
  * @author Patrice Lopez
  */
 public class CitationParser extends AbstractParser {
+    private static Logger LOGGER = LoggerFactory.getLogger(CitationParser.class);
     private Consolidation consolidator = null;
 
     public LexiconImpl lexicon = LexiconImpl.getInstance();
@@ -37,6 +40,8 @@ public class CitationParser extends AbstractParser {
     }
 
     public BiblioItem processing(String input, boolean consolidate) {
+        LOGGER.debug("processing()");
+
         BiblioItem resCitation;
         if (StringUtils.isBlank(input)) {
             return null;
@@ -78,6 +83,7 @@ public class CitationParser extends AbstractParser {
             String ress = FeaturesVectorCitation.addFeaturesCitation(
                     citationBlocks, journalsPositions, abbrevJournalsPositions,
                     conferencesPositions, publishersPositions);
+            LOGGER.debug("processing():86");
             String res = label(ress);
 
             resCitation = resultExtraction(res, true, tokenizations);
