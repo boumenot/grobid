@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <version>3.3.0</version>
+    <authors>Christopher Boumenot</authors>
+    <owners />
+    <licenseUrl>https://github.com/boumenot/grobid/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/boumenot/grobid</projectUrl>
+    <id>Grobid.NET</id>
+    <title>Grobid.NET</title>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Grobid.NET is a port of GROBID to .NET</description>
+    <tags>Grobid .NET</tags>
+    <releaseNotes></releaseNotes>
+    <dependencies>
+      <dependency id="IKVM" version="[8.1.5721]" />
+      <dependency id="IKVM.NativeBinaries" version="[8.1.5721]" />
+    </dependencies>
+  </metadata>  
+</package>
